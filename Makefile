@@ -3,3 +3,6 @@ build:
 
 run:
 	go run cmd/gocan/main.go
+
+it:
+	go test cmd/gocan/tests/*.go
