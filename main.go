@@ -1,7 +1,7 @@
 package main
 
 import (
-  "fmt"
+  create_scene "com.fha.gocan/create-scene"
   "github.com/spf13/cobra"
 )
 
@@ -9,13 +9,7 @@ var rootCmd = &cobra.Command{
   Use: "gocan",
 }
 
-var createCmd = &cobra.Command{
-  Use: "create-scene",
-  RunE: func(cmd *cobra.Command, args []string) error {
-    fmt.Println("create scene")
-    return nil
-  },
-}
+var createCmd = create_scene.BuildCreateSceneCmd()
 
 func main() {
   rootCmd.AddCommand(createCmd)
