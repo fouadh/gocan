@@ -1,7 +1,17 @@
 package main
 
-import "fmt"
+import (
+	create_scene "com.fha.gocan/create-scene"
+	"github.com/spf13/cobra"
+)
+
+var rootCmd = &cobra.Command{
+	Use: "gocan",
+}
+
+var createCmd = create_scene.BuildCreateSceneCmd()
 
 func main() {
-	fmt.Println("gocan cli running...")
+	rootCmd.AddCommand(createCmd)
+	rootCmd.Execute()
 }
