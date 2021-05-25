@@ -1,7 +1,7 @@
 package main
 
 import (
-	create_scene "com.fha.gocan/create-scene"
+	create_scene "com.fha.gocan/internal/create-scene"
 	"github.com/spf13/cobra"
 )
 

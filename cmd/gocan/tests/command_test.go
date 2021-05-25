@@ -1,7 +1,8 @@
-package create_scene
+package tests
 
 import (
   "bytes"
+  "com.fha.gocan/internal/create-scene"
   "github.com/pborman/uuid"
   "testing"
 )
@@ -11,7 +12,7 @@ func TestCreateScene(t *testing.T) {
   // run the migration scripts
 
   name := uuid.New()
-  cmd := BuildCreateSceneCmd()
+  cmd := create_scene.BuildCreateSceneCmd()
 
   // run the command
   buf := new(bytes.Buffer)
