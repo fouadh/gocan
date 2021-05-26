@@ -3,10 +3,10 @@ package tests
 import (
   "bytes"
   "com.fha.gocan/internal/create-scene"
-  "fmt"
   embeddedpostgres "github.com/fergusstrange/embedded-postgres"
   "github.com/jmoiron/sqlx"
   "github.com/pborman/uuid"
+  "github.com/pressly/goose"
   "testing"
 )
 
@@ -14,14 +14,6 @@ const succeed = "\u2713"
 const failed = "\u2717"
 
 var postgres *embeddedpostgres.EmbeddedPostgres
-
-func setupDb() {
-  fmt.Println("----- init")
-  postgres = embeddedpostgres.NewDatabase()
-  postgres.Start()
-  // start the db
-  // run the migration scripts
-}
 
 func connect() (*sqlx.DB, error) {
   db, err := sqlx.Connect("postgres", "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
@@ -40,8 +32,12 @@ func TestCreateScene(t *testing.T) {
     }
   }()
 
-  _, err := connect()
+  db, err := connect()
   if err != nil {
+    t.Fatal(err)
+  }
+
+  if err := goose.Up(db.DB, "./migrations"); err != nil {
     t.Fatal(err)
   }
 
