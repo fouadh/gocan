@@ -3,10 +3,10 @@ package tests
 import (
   "bytes"
   "com.fha.gocan/internal/create-scene"
+  init_db "com.fha.gocan/internal/init-db"
   embeddedpostgres "github.com/fergusstrange/embedded-postgres"
   "github.com/jmoiron/sqlx"
   "github.com/pborman/uuid"
-  "github.com/pressly/goose"
   "github.com/spf13/cobra"
   "testing"
 )
@@ -16,8 +16,8 @@ const failed = "\u2717"
 
 var postgres *embeddedpostgres.EmbeddedPostgres
 
-func connect() (*sqlx.DB, error) {
-  db, err := sqlx.Connect("postgres", "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
+func connect(dsn string) (*sqlx.DB, error) {
+  db, err := sqlx.Connect("postgres", dsn)
   return db, err
 }
 
@@ -33,21 +33,23 @@ func TestCreateScene(t *testing.T) {
     }
   }()
 
-  db, err := connect()
+  db, err := connect("host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
   if err != nil {
     t.Fatalf("%s Cannot connect to the database: %+v", failed, err)
   }
 
-  if err := goose.Up(db.DB, "../../../internal/init-db/migrations"); err != nil {
+  /*if err := goose.Up(db.DB, "../../../internal/init-db/migrations"); err != nil {
     t.Fatalf("%s Cannot run the migration scripts: %+v", failed, err)
-  }
+  }*/
+  ui := FakeUI{}
+  init_db.InitDb("host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable", &ui)
 
   name := uuid.New()
   t.Logf("\tGiven no scene named %s exists", name)
   {
     t.Logf("\tWhen I create a scene named %s", name)
+
     {
-      ui := FakeUI{}
       cmd := create_scene.BuildCreateSceneCmd(db, &ui)
 
       if _, err := runCommand(cmd, name); err != nil {
