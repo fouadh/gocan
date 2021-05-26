@@ -16,6 +16,8 @@ var rootCmd = &cobra.Command{
 	Use: "gocan",
 }
 
+const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
+
 var uiCmd = ui.BuildUiCommand()
 func main() {
 	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
@@ -26,7 +28,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	db, err := connect()
+	db, err := connect(dsn)
 	if err != nil {
 		ui.Failed(fmt.Sprintf("%s Cannot connect to the database: %+v\n", err))
 		os.Exit(3)
@@ -39,9 +41,7 @@ func main() {
 		}
 	}()
 
-	init_db.InitDb(ui)
-
-
+	init_db.InitDb(dsn, ui)
 
 	var createCmd = create_scene.BuildCreateSceneCmd(db, ui)
 	rootCmd.AddCommand(createCmd)
@@ -49,8 +49,8 @@ func main() {
 	rootCmd.Execute()
 }
 
-func connect() (*sqlx.DB, error) {
-	db, err := sqlx.Connect("postgres", "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
+func connect(dsn string) (*sqlx.DB, error) {
+	db, err := sqlx.Connect("postgres", dsn)
 	return db, err
 }
 

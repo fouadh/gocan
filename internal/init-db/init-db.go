@@ -13,13 +13,13 @@ import (
 //go:embed migrations
 var migrations embed.FS
 
-func InitDb(ui terminal.UI) *sqlx.DB {
+func InitDb(dsn string, ui terminal.UI) *sqlx.DB {
 	embedSource := &migration.EmbedMigrationSource{
 		EmbedFS: migrations,
 		Dir:     "migrations",
 	}
 
-	driver, err := postgres.New("host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
+	driver, err := postgres.New(dsn)
 	if err != nil {
 		ui.Failed(fmt.Sprintf("%s Cannot connect to the database: %+v\n", err))
 		os.Exit(1)
