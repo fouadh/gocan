@@ -7,6 +7,7 @@ import (
   "github.com/jmoiron/sqlx"
   "github.com/pborman/uuid"
   "github.com/pressly/goose"
+  "github.com/spf13/cobra"
   "testing"
 )
 
@@ -23,37 +24,32 @@ func connect() (*sqlx.DB, error) {
 func TestCreateScene(t *testing.T) {
   database := embeddedpostgres.NewDatabase()
   if err := database.Start(); err != nil {
-    t.Fatal(err)
+    t.Fatalf("%s Cannot start the database: %+v", failed, err)
   }
 
   defer func() {
     if err := database.Stop(); err != nil {
-      t.Fatal(err)
+      t.Fatalf("%s Cannot stop the database: %+v", failed, err)
     }
   }()
 
   db, err := connect()
   if err != nil {
-    t.Fatal(err)
+    t.Fatalf("%s Cannot connect to the database: %+v", failed, err)
   }
 
   if err := goose.Up(db.DB, "../../../internal/init-db/migrations"); err != nil {
-    t.Fatal(err)
+    t.Fatalf("%s Cannot run the migration scripts: %+v", failed, err)
   }
 
   name := uuid.New()
   t.Logf("\tGiven no scene named %s exists", name)
   {
-    t.Logf("\tWhen I create a scene named %s",  name)
+    t.Logf("\tWhen I create a scene named %s", name)
     {
       cmd := create_scene.BuildCreateSceneCmd(db)
-      // run the command
-      buf := new(bytes.Buffer)
-      cmd.SetOut(buf)
-      cmd.SetErr(buf)
-      cmd.SetArgs([]string{name})
 
-      if _, err := cmd.ExecuteC(); err != nil {
+      if _, err := runCommand(cmd, name); err != nil {
         t.Fatalf("\t%s Failed to execute create scene command: %+v", failed, err)
       }
       // check that the scene has been added to the db
@@ -65,6 +61,17 @@ func TestCreateScene(t *testing.T) {
       }
     }
   }
+}
+
+func runCommand(cmd *cobra.Command, args ...string) (string, error) {
+  buf := new(bytes.Buffer)
+  cmd.SetOut(buf)
+  cmd.SetErr(buf)
+  cmd.SetArgs(args)
+
+  _, err := cmd.ExecuteC()
+
+  return buf.String(), err
 }
 
 // todo
