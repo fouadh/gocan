@@ -1,14 +1,14 @@
 package create_scene
 
 import (
-  "com.fha.gocan/internal/terminal"
+  terminal2 "com.fha.gocan/internal/platform/terminal"
   "fmt"
   "github.com/jmoiron/sqlx"
   "github.com/pborman/uuid"
   "github.com/spf13/cobra"
 )
 
-func BuildCreateSceneCmd(db *sqlx.DB, ui terminal.UI) *cobra.Command {
+func BuildCreateSceneCmd(db *sqlx.DB, ui terminal2.UI) *cobra.Command {
   return &cobra.Command{
     Use: "create-scene",
     Args:  cobra.ExactArgs(1),

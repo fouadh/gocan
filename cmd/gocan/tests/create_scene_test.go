@@ -3,7 +3,7 @@ package tests
 import (
   "bytes"
   create_scene "com.fha.gocan/internal/create-scene"
-  "com.fha.gocan/internal/db"
+  "com.fha.gocan/internal/platform/db"
   "github.com/pborman/uuid"
   "github.com/spf13/cobra"
   "testing"

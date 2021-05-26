@@ -1,7 +1,7 @@
 package db
 
 import (
-	"com.fha.gocan/internal/terminal"
+	"com.fha.gocan/internal/platform/terminal"
 	"fmt"
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 	"github.com/jmoiron/sqlx"

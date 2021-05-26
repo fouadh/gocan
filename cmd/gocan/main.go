@@ -2,8 +2,8 @@ package main
 
 import (
 	create_scene "com.fha.gocan/internal/create-scene"
-	"com.fha.gocan/internal/db"
-	"com.fha.gocan/internal/terminal"
+	"com.fha.gocan/internal/platform/db"
+	"com.fha.gocan/internal/platform/terminal"
 	"com.fha.gocan/internal/ui"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"

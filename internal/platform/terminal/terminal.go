@@ -55,7 +55,7 @@ type Table struct {
   rows        [][]string
   columnWidth []int
   colSpacing  string
-  transformer   []Transformer
+  transformer []Transformer
 }
 
 type rowTransformer interface {

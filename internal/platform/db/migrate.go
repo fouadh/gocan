@@ -1,7 +1,7 @@
 package db
 
 import (
-	"com.fha.gocan/internal/terminal"
+	terminal2 "com.fha.gocan/internal/platform/terminal"
 	"embed"
 	"fmt"
 	"github.com/Boostport/migration"
@@ -13,7 +13,7 @@ import (
 //go:embed migrations
 var migrations embed.FS
 
-func Migrate(dsn string, ui terminal.UI) *sqlx.DB {
+func Migrate(dsn string, ui terminal2.UI) *sqlx.DB {
 	embedSource := &migration.EmbedMigrationSource{
 		EmbedFS: migrations,
 		Dir:     "migrations",

@@ -1,6 +1,8 @@
 package tests
 
-import "com.fha.gocan/internal/terminal"
+import (
+	terminal2 "com.fha.gocan/internal/platform/terminal"
+)
 
 type FakeUI struct {
 	FakeTable   *fakeTable
@@ -37,7 +39,7 @@ func (f *FakeUI) Failed(message string) {
 	f.Errors = append(f.Errors, message)
 }
 
-func (f *FakeUI) Table(headers []string) terminal.UITable {
+func (f *FakeUI) Table(headers []string) terminal2.UITable {
 	t := &fakeTable{
 		Headers: headers,
 	}
