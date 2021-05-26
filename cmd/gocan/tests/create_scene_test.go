@@ -19,22 +19,25 @@ func TestCreateScene(t *testing.T) {
   ui := FakeUI{}
   database.Start(&ui)
   defer database.Stop(&ui)
-  connection := database.Connect(dsn, &ui)
+
   db.Migrate(dsn, &ui)
 
   name := uuid.New()
   t.Logf("\tGiven no scene named %s exists", name)
   {
     t.Logf("\tWhen I create a scene named %s", name)
-
     {
-      cmd := create_scene.BuildCreateSceneCmd(connection, &ui)
+      dataSource := db.SqlxDataSource{
+        Dsn: dsn,
+      }
+      cmd := create_scene.BuildCreateSceneCmd(&dataSource, &ui)
 
       if _, err := runCommand(cmd, name); err != nil {
         t.Fatalf("\t%s Failed to execute create scene command: %+v", failed, err)
       }
 
       var id string
+      connection := dataSource.GetConnection(&ui)
       if err := connection.Get(&id, "select id from scenes where name=$1", name); err != nil {
         t.Errorf("\t%s Failed retrieving created scene: %+v", failed, err)
       } else {

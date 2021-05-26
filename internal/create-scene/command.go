@@ -8,15 +8,20 @@ import (
   "github.com/spf13/cobra"
 )
 
-func BuildCreateSceneCmd(db *sqlx.DB, ui terminal2.UI) *cobra.Command {
+type DataSource interface {
+  GetConnection(ui terminal2.UI) *sqlx.DB
+}
+
+func BuildCreateSceneCmd(datasource DataSource, ui terminal2.UI) *cobra.Command {
   return &cobra.Command{
     Use: "create-scene",
     Args:  cobra.ExactArgs(1),
     RunE: func(cmd *cobra.Command, args []string) error {
-      ui.Say("Creating scene...")
       id := uuid.NewUUID().String()
       name := args[0]
+      db := datasource.GetConnection(ui)
 
+      ui.Say("Creating scene...")
       _, err := db.Exec("insert into scenes(id, name) values($1, $2)", id, name)
 
       if err != nil {
