@@ -37,7 +37,7 @@ func TestCreateScene(t *testing.T) {
     t.Fatal(err)
   }
 
-  if err := goose.Up(db.DB, "./migrations"); err != nil {
+  if err := goose.Up(db.DB, "../../../internal/init-db/migrations"); err != nil {
     t.Fatal(err)
   }
 
