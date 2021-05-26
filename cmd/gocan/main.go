@@ -4,6 +4,7 @@ import (
 	create_scene "com.fha.gocan/internal/create-scene"
 	"com.fha.gocan/internal/platform/db"
 	"com.fha.gocan/internal/platform/terminal"
+	setup_db "com.fha.gocan/internal/setup-db"
 	"com.fha.gocan/internal/ui"
 	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
@@ -28,6 +29,7 @@ func main() {
 
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(uiCmd)
+	rootCmd.AddCommand(setup_db.BuildSetupDbCmd(ui))
 
 	rootCmd.Execute()
 }
