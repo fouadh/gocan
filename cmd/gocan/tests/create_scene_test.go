@@ -46,7 +46,7 @@ func TestCreateScene(t *testing.T) {
   {
     t.Logf("\tWhen I create a scene named %s",  name)
     {
-      cmd := create_scene.BuildCreateSceneCmd()
+      cmd := create_scene.BuildCreateSceneCmd(db)
       // run the command
       buf := new(bytes.Buffer)
       cmd.SetOut(buf)
@@ -57,7 +57,12 @@ func TestCreateScene(t *testing.T) {
         t.Fatalf("\t%s Failed to execute create scene command: %+v", failed, err)
       }
       // check that the scene has been added to the db
-      t.Logf("\t%s Then the scene must have been added to the database", succeed)
+      var id string
+      if err := db.Get(&id, "select id from scenes where name=$1", name); err != nil {
+        t.Errorf("\t%s Failed retrieving created scene: %+v", failed, err)
+      } else {
+        t.Logf("\t%s Then the scene must have been added to the database", succeed)
+      }
     }
   }
 }
