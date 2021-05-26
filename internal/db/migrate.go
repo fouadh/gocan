@@ -1,4 +1,4 @@
-package init_db
+package db
 
 import (
 	"com.fha.gocan/internal/terminal"
@@ -13,7 +13,7 @@ import (
 //go:embed migrations
 var migrations embed.FS
 
-func InitDb(dsn string, ui terminal.UI) *sqlx.DB {
+func Migrate(dsn string, ui terminal.UI) *sqlx.DB {
 	embedSource := &migration.EmbedMigrationSource{
 		EmbedFS: migrations,
 		Dir:     "migrations",
