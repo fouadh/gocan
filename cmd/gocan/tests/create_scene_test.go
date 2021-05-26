@@ -3,6 +3,9 @@ package tests
 import (
   "bytes"
   "com.fha.gocan/internal/create-scene"
+  "fmt"
+  embeddedpostgres "github.com/fergusstrange/embedded-postgres"
+  "github.com/jmoiron/sqlx"
   "github.com/pborman/uuid"
   "testing"
 )
@@ -10,9 +13,37 @@ import (
 const succeed = "\u2713"
 const failed = "\u2717"
 
-func TestCreateScene(t *testing.T) {
+var postgres *embeddedpostgres.EmbeddedPostgres
+
+func setupDb() {
+  fmt.Println("----- init")
+  postgres = embeddedpostgres.NewDatabase()
+  postgres.Start()
   // start the db
   // run the migration scripts
+}
+
+func connect() (*sqlx.DB, error) {
+  db, err := sqlx.Connect("postgres", "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable")
+  return db, err
+}
+
+func TestCreateScene(t *testing.T) {
+  database := embeddedpostgres.NewDatabase()
+  if err := database.Start(); err != nil {
+    t.Fatal(err)
+  }
+
+  defer func() {
+    if err := database.Stop(); err != nil {
+      t.Fatal(err)
+    }
+  }()
+
+  _, err := connect()
+  if err != nil {
+    t.Fatal(err)
+  }
 
   name := uuid.New()
   t.Logf("\tGiven no scene named %s exists", name)
