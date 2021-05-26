@@ -1,5 +1,3 @@
--- +goose Up
--- +goose StatementBegin
 create table scenes
 (
     id uuid not null
@@ -10,9 +8,3 @@ create table scenes
             unique,
     created_at timestamp without time zone default (now() at time zone 'utc')
 );
--- +goose StatementEnd
-
--- +goose Down
--- +goose StatementBegin
-drop table scenes;
--- +goose StatementEnd
