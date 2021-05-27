@@ -5,6 +5,9 @@ import (
 	"fmt"
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 	"os"
+	"os/exec"
+	"os/user"
+	"path/filepath"
 )
 
 type EmbeddedDatabase struct {
@@ -24,9 +27,16 @@ func (ed *EmbeddedDatabase) Start(ui terminal.UI) {
 
 func (ed *EmbeddedDatabase) Stop(ui terminal.UI) {
 	ui.Say("Stopping the database...")
-	if err := ed.database.Stop(); err != nil {
-		ui.Failed(fmt.Sprintf("Cannot stop the database: %+v\n", err))
-		os.Exit(2)
-	}
+	usr, _ := user.Current()
+	dir := usr.HomeDir
+	stopPostgres(filepath.Join(dir, ".embedded-postgres-go/extracted"))
 	ui.Ok()
+}
+
+func stopPostgres(binaryExtractLocation string) {
+	postgresBinary := filepath.Join(binaryExtractLocation, "bin/pg_ctl")
+	dataLocation := filepath.Join(binaryExtractLocation, "data")
+	postgresProcess := exec.Command(postgresBinary, "stop", "-w",
+		"-D", dataLocation)
+	postgresProcess.Run()
 }
