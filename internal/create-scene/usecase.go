@@ -12,6 +12,10 @@ type CreateSceneRequest struct {
 }
 
 func CreateScene(request CreateSceneRequest, ctx *context.Context) error {
+	if err := ctx.Validator.Struct(request); err != nil {
+		return errors.Wrap(err, "Invalid request to create a scene")
+	}
+
 	datasource := ctx.DataSource
 	connection, err := datasource.GetConnection()
 	if err != nil {
