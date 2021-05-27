@@ -8,7 +8,7 @@ import (
 )
 
 type CreateSceneRequest struct {
-	Name string `validate:"required"`
+	Name string `validate:"required,max=255"`
 }
 
 func CreateScene(request CreateSceneRequest, ctx *context.Context) error {
