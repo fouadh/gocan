@@ -1,12 +1,9 @@
 package create_app
 
 import (
-	"github.com/go-playground/validator"
+	"com.fha.gocan/internal/test_support"
 	"testing"
 )
-
-const succeed = "\u2713"
-const failed = "\u2717"
 
 func TestEmptyNameReturnsError(t *testing.T) {
 	t.Log("\tGiven a create app request")
@@ -17,28 +14,26 @@ func TestEmptyNameReturnsError(t *testing.T) {
 				Name:      "",
 				SceneName: "scene name",
 			}
-			v := validator.New()
-			err := v.Struct(request)
-
-			if err == nil {
-				t.Fatalf("\t%s There is no invalid field", failed)
-			}
-
-			errors := err.(validator.ValidationErrors)
-
-			if len(errors) > 1 {
-				t.Fatalf("\t%s More than one field is invalid", failed)
-			}
-
-			invalidField := errors[0].Field()
-			if invalidField != "Name" {
-				t.Fatalf("\t%s The invalid field is %s instead of Name", failed, invalidField)
-			}
-
-			t.Logf("\t%s Then an error should have be returned", succeed)
+			test_support.AssertInvalidField(t, request, "Name")
 		}
 	}
 }
+
+func TestEmptySceneNameReturnsError(t *testing.T) {
+	t.Log("\tGiven a create app request")
+	{
+		t.Log("\tWhen the provided scene name is empty")
+		{
+			request := CreateAppRequest{
+				Name:      "app name",
+				SceneName: "",
+			}
+			test_support.AssertInvalidField(t, request, "SceneName")
+		}
+	}
+}
+
+
 
 
 
