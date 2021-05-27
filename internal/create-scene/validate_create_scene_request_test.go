@@ -8,10 +8,6 @@ import (
 const succeed = "\u2713"
 const failed = "\u2717"
 
-type CreateSceneRequest struct {
-	Name string `validate:"required"`
-}
-
 func TestEmptyNameReturnsError(t *testing.T) {
 	t.Log("\tGiven a create scene request")
 	{
