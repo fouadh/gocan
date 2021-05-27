@@ -47,6 +47,20 @@ func TestMaxAppNameLength(t *testing.T) {
 	}
 }
 
+func TestMaxSceneNameLength(t *testing.T) {
+	t.Log("\tGiven a create app request")
+	{
+		t.Log("\tWhen the provided scene name is longer than 255 characters")
+		{
+			request := CreateAppRequest{
+				Name: "an app",
+				SceneName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+			}
+			test_support.AssertInvalidField(t, request, "SceneName")
+		}
+	}
+
+}
 
 
 

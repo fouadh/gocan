@@ -9,7 +9,7 @@ import (
 
 type CreateAppRequest struct {
 	Name      string `validate:"required,max=255"`
-	SceneName string `validate:"required"`
+	SceneName string `validate:"required,max=255"`
 }
 
 func CreateApp(request CreateAppRequest, ctx *context.Context) error {
