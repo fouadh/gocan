@@ -28,7 +28,7 @@ func TestCreateScene(t *testing.T) {
     t.Logf("\tWhen I create a scene named %s", name)
     {
       ctx := context.New(dsn, &ui)
-      cmd := create_scene.BuildCreateSceneCmd(ctx)
+      cmd := create_scene.NewCommand(ctx)
 
       if _, err := runCommand(cmd, name); err != nil {
         t.Fatalf("\t%s Failed to execute create scene command: %+v", failed, err)

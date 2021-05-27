@@ -6,7 +6,7 @@ import (
   "github.com/spf13/cobra"
 )
 
-func BuildCreateSceneCmd(ctx *context.Context) *cobra.Command {
+func NewCommand(ctx *context.Context) *cobra.Command {
   return &cobra.Command{
     Use: "create-scene",
     Args:  cobra.ExactArgs(1),

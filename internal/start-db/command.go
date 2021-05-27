@@ -8,7 +8,7 @@ import (
 
 const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
 
-func BuildStartDbCmd(ctx *context.Context) *cobra.Command {
+func NewCommand(ctx *context.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "start-db",
 		Short: "Start en embedded database",

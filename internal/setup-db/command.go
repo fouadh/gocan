@@ -17,7 +17,7 @@ type Config struct {
 	Dsn string `json:"dsn"`
 }
 
-func BuildSetupDbCmd(ctx *context.Context) *cobra.Command {
+func NewCommand(ctx *context.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "setup-db",
 		RunE: func(cmd *cobra.Command, args []string) error {

@@ -25,12 +25,12 @@ func main() {
 	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
 	ctx := context.New(dsn, ui)
 
-	var createCmd = create_scene.BuildCreateSceneCmd(ctx)
+	var createCmd = create_scene.NewCommand(ctx)
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(uiCmd)
-	rootCmd.AddCommand(setup_db.BuildSetupDbCmd(ctx))
-	rootCmd.AddCommand(start_db.BuildStartDbCmd(ctx))
-	rootCmd.AddCommand(stop_db.BuildStopDbCmd(ctx))
+	rootCmd.AddCommand(setup_db.NewCommand(ctx))
+	rootCmd.AddCommand(start_db.NewCommand(ctx))
+	rootCmd.AddCommand(stop_db.NewCommand(ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		ui.Failed(errors.Cause(err).Error())

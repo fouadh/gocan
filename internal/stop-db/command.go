@@ -6,7 +6,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func BuildStopDbCmd(ctx *context.Context) *cobra.Command {
+func NewCommand(ctx *context.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "stop-db",
 		Short: "Stop the embedded database",
