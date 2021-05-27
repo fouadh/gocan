@@ -20,7 +20,7 @@ func Migrate(dsn string, ui terminal2.UI) error {
 
 	driver, err := postgres.New(dsn)
 	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("%s Cannot connect to the database: %+v\n", err))
+		return errors.Wrap(err, fmt.Sprintf("Cannot connect to the database: %+v\n", err))
 	}
 
 	applied, err := migration.Migrate(driver, embedSource, migration.Up, 0)
