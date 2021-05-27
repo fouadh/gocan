@@ -21,12 +21,11 @@ var uiCmd = ui.BuildUiCommand()
 
 func main() {
 	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
-	config, err := setup_db.ReadConfig()
-	if err  != nil {
-		ui.Failed("Could not read the configuration file. Please use gocan setup-db to eventually regenerate it")
+	ctx, err := context.New(ui)
+	if err != nil {
+		ui.Failed(errors.Cause(err).Error())
 		os.Exit(2)
 	}
-	ctx := context.New(config.Dsn(), ui)
 
 	var createCmd = create_scene.NewCommand(ctx)
 	rootCmd.AddCommand(createCmd)

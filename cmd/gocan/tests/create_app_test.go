@@ -15,7 +15,7 @@ func TestCreateApp(t *testing.T) {
 	database.Start(&ui)
 	db.Migrate(dsn, &ui)
 	defer database.Stop(&ui)
-	ctx := context.New(dsn, &ui)
+	ctx, _ := context.New(&ui)
 
 	t.Log("\tGiven a scene has been created")
 	{

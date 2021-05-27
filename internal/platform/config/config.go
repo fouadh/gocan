@@ -1,4 +1,4 @@
-package setup_db
+package config
 
 import (
 	"encoding/json"

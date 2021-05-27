@@ -2,6 +2,7 @@ package setup_db
 
 import (
 	context "com.fha.gocan/internal/platform"
+	"com.fha.gocan/internal/platform/config"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -19,7 +20,7 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.Say("Configuring the database...")
-			data, err := json.Marshal(&DefaultConfig)
+			data, err := json.Marshal(&config.DefaultConfig)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("Failed to marshal configuration object into json: %v", err))
 			}
