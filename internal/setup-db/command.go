@@ -13,10 +13,6 @@ import (
 
 const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
 
-type Config struct {
-	Dsn string `json:"dsn"`
-}
-
 func NewCommand(ctx *context.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use: "setup-db",
@@ -24,7 +20,12 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 			ui := ctx.Ui
 			ui.Say("Configuring the database...")
 			config := Config{
-				Dsn: dsn,
+				Host:     "localhost",
+				Port:     5432,
+				User:     "postgres",
+				Password: "postgres",
+				Database: "postgres",
+				Embedded: true,
 			}
 			data, err := json.Marshal(&config)
 			if err != nil {
@@ -38,13 +39,13 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 
 			path := usr.HomeDir + "/.gocan"
 			if _, err := os.Stat(path); os.IsNotExist(err) {
-				err = os.Mkdir(path, os.ModeDir | 0755)
+				err = os.Mkdir(path, os.ModeDir|0755)
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("Failed to create gocan directory: %v", err))
 				}
 			}
 
-			if err := ioutil.WriteFile(path + "/config.json", data, 0644); err != nil {
+			if err := ioutil.WriteFile(path+"/config.json", data, 0644); err != nil {
 				return errors.Wrap(err, fmt.Sprintf("Failed to save configuration: %v", err))
 			}
 
