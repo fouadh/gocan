@@ -19,15 +19,7 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.Say("Configuring the database...")
-			config := Config{
-				Host:     "localhost",
-				Port:     5432,
-				User:     "postgres",
-				Password: "postgres",
-				Database: "postgres",
-				Embedded: true,
-			}
-			data, err := json.Marshal(&config)
+			data, err := json.Marshal(&DefaultConfig)
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("Failed to marshal configuration object into json: %v", err))
 			}

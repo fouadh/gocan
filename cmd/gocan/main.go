@@ -17,13 +17,16 @@ var rootCmd = &cobra.Command{
 	Use: "gocan",
 }
 
-const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
-
 var uiCmd = ui.BuildUiCommand()
 
 func main() {
 	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
-	ctx := context.New(dsn, ui)
+	config, err := setup_db.ReadConfig()
+	if err  != nil {
+		ui.Failed("Could not read the configuration file. Please use gocan setup-db to eventually regenerate it")
+		os.Exit(2)
+	}
+	ctx := context.New(config.Dsn(), ui)
 
 	var createCmd = create_scene.NewCommand(ctx)
 	rootCmd.AddCommand(createCmd)
