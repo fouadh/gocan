@@ -20,7 +20,6 @@ func TestCreateScene(t *testing.T) {
   ui := FakeUI{}
   database.Start(&ui)
   defer database.Stop(&ui)
-
   db.Migrate(dsn, &ui)
 
   name := uuid.New()
