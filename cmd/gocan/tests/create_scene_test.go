@@ -58,6 +58,5 @@ func runCommand(cmd *cobra.Command, args ...string) (string, error) {
 }
 
 // todo
-// try to create a scene with an empty name
 // try to create a scene with a name that is too long for the db
 

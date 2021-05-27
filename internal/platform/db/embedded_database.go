@@ -29,6 +29,7 @@ func (ed *EmbeddedDatabase) Stop(ui terminal.UI) {
 	ui.Say("Stopping the database...")
 	usr, _ := user.Current()
 	dir := usr.HomeDir
+	// todo the path to the db should come from the configuration
 	stopPostgres(filepath.Join(dir, ".embedded-postgres-go/extracted"))
 	ui.Ok()
 }
