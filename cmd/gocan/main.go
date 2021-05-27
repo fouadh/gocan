@@ -26,9 +26,9 @@ func main() {
 	var createCmd = create_scene.BuildCreateSceneCmd(ctx)
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(uiCmd)
-	rootCmd.AddCommand(setup_db.BuildSetupDbCmd(ui))
-	rootCmd.AddCommand(start_db.BuildStartDbCmd(ui))
-	rootCmd.AddCommand(stop_db.BuildStopDbCmd(ui))
+	rootCmd.AddCommand(setup_db.BuildSetupDbCmd(ctx))
+	rootCmd.AddCommand(start_db.BuildStartDbCmd(ctx))
+	rootCmd.AddCommand(stop_db.BuildStopDbCmd(ctx))
 
 	rootCmd.Execute()
 }
