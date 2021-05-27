@@ -3,6 +3,7 @@ package tests
 import (
   "bytes"
   create_scene "com.fha.gocan/internal/create-scene"
+  context "com.fha.gocan/internal/platform"
   "com.fha.gocan/internal/platform/db"
   "github.com/pborman/uuid"
   "github.com/spf13/cobra"
@@ -27,18 +28,15 @@ func TestCreateScene(t *testing.T) {
   {
     t.Logf("\tWhen I create a scene named %s", name)
     {
-      dataSource := db.SqlxDataSource{
-        Dsn: dsn,
-        Ui: &ui,
-      }
-      cmd := create_scene.BuildCreateSceneCmd(&dataSource, &ui)
+      ctx := context.New(dsn, &ui)
+      cmd := create_scene.BuildCreateSceneCmd(ctx)
 
       if _, err := runCommand(cmd, name); err != nil {
         t.Fatalf("\t%s Failed to execute create scene command: %+v", failed, err)
       }
 
       var id string
-      connection := dataSource.GetConnection()
+      connection := ctx.DataSource.GetConnection()
       if err := connection.Get(&id, "select id from scenes where name=$1", name); err != nil {
         t.Errorf("\t%s Failed retrieving created scene: %+v", failed, err)
       } else {

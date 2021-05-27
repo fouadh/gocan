@@ -1,19 +1,20 @@
 package create_scene
 
 import (
-  "com.fha.gocan/internal/platform/db"
-  terminal2 "com.fha.gocan/internal/platform/terminal"
+  context "com.fha.gocan/internal/platform"
   "fmt"
   "github.com/pborman/uuid"
   "github.com/spf13/cobra"
 )
 
 
-func BuildCreateSceneCmd(datasource db.DataSource, ui terminal2.UI) *cobra.Command {
+func BuildCreateSceneCmd(ctx *context.Context) *cobra.Command {
   return &cobra.Command{
     Use: "create-scene",
     Args:  cobra.ExactArgs(1),
     RunE: func(cmd *cobra.Command, args []string) error {
+      ui := ctx.Ui
+      datasource := ctx.DataSource
       id := uuid.NewUUID().String()
       name := args[0]
       connection := datasource.GetConnection()
