@@ -4,6 +4,7 @@ import (
   context "com.fha.gocan/internal/platform"
   "fmt"
   "github.com/pborman/uuid"
+  "github.com/pkg/errors"
   "github.com/spf13/cobra"
 )
 
@@ -17,13 +18,17 @@ func BuildCreateSceneCmd(ctx *context.Context) *cobra.Command {
       datasource := ctx.DataSource
       id := uuid.NewUUID().String()
       name := args[0]
-      connection := datasource.GetConnection()
+
+      connection, err := datasource.GetConnection()
+      if err != nil {
+        return errors.Wrap(err, fmt.Sprintf("The connection to the dabase could not be established: %v", err.Error()))
+      }
 
       ui.Say("Creating scene...")
-      _, err := connection.Exec("insert into scenes(id, name) values($1, $2)", id, name)
 
+      _, err = connection.Exec("insert into scenes(id, name) values($1, $2)", id, name)
       if err != nil {
-        ui.Failed(fmt.Sprintf("Scene could not be created: %v", err))
+        return errors.Wrap(err, "Scene could not be created")
       } else {
         ui.Ok()
       }

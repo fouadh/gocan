@@ -8,7 +8,9 @@ import (
 	start_db "com.fha.gocan/internal/start-db"
 	stop_db "com.fha.gocan/internal/stop-db"
 	"com.fha.gocan/internal/ui"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var rootCmd = &cobra.Command{
@@ -30,5 +32,8 @@ func main() {
 	rootCmd.AddCommand(start_db.BuildStartDbCmd(ctx))
 	rootCmd.AddCommand(stop_db.BuildStopDbCmd(ctx))
 
-	rootCmd.Execute()
+	if err := rootCmd.Execute(); err != nil {
+		ui.Failed(errors.Cause(err).Error())
+		os.Exit(1)
+	}
 }

@@ -36,7 +36,7 @@ func TestCreateScene(t *testing.T) {
       }
 
       var id string
-      connection := ctx.DataSource.GetConnection()
+      connection, _ := ctx.DataSource.GetConnection()
       if err := connection.Get(&id, "select id from scenes where name=$1", name); err != nil {
         t.Errorf("\t%s Failed retrieving created scene: %+v", failed, err)
       } else {

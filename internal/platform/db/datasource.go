@@ -2,13 +2,12 @@ package db
 
 import (
 	"com.fha.gocan/internal/platform/terminal"
-	"fmt"
 	"github.com/jmoiron/sqlx"
-	"os"
+	"github.com/pkg/errors"
 )
 
 type DataSource interface {
-	GetConnection() *sqlx.DB
+	GetConnection() (*sqlx.DB, error)
 }
 
 type SqlxDataSource struct {
@@ -16,13 +15,12 @@ type SqlxDataSource struct {
 	Ui terminal.UI
 }
 
-func (ds *SqlxDataSource) GetConnection() *sqlx.DB {
+func (ds *SqlxDataSource) GetConnection() (*sqlx.DB, error) {
 	ds.Ui.Say("Connecting to the database...")
 	db, err := sqlx.Connect("postgres", ds.Dsn)
 	if err != nil {
-		ds.Ui.Failed(fmt.Sprintf("Cannot connect to the database: %v\n", err))
-		os.Exit(3)
+		return nil, errors.Wrap(err, "Cannot connect to the database")
 	}
 	ds.Ui.Ok()
-	return db
+	return db, nil
 }

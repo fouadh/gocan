@@ -4,6 +4,7 @@ import (
 	context "com.fha.gocan/internal/platform"
 	"encoding/json"
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"os"
@@ -27,27 +28,24 @@ func BuildSetupDbCmd(ctx *context.Context) *cobra.Command {
 			}
 			data, err := json.Marshal(&config)
 			if err != nil {
-				ui.Failed(fmt.Sprintf("Failed to marshal configuration object into json: %v", err))
-				os.Exit(1)
+				return errors.Wrap(err, fmt.Sprintf("Failed to marshal configuration object into json: %v", err))
 			}
 
 			usr, err := user.Current()
 			if err != nil {
-				ui.Failed(fmt.Sprintf("Failed to get current user info: %v", err))
-				os.Exit(2)
+				return errors.Wrap(err, fmt.Sprintf("Failed to get current user info: %v", err))
 			}
 
 			path := usr.HomeDir + "/.gocan"
 			if _, err := os.Stat(path); os.IsNotExist(err) {
 				err = os.Mkdir(path, os.ModeDir | 0755)
 				if err != nil {
-					ui.Failed(fmt.Sprintf("Failed to create gocan directory: %v", err))
-					os.Exit(3)
+					return errors.Wrap(err, fmt.Sprintf("Failed to create gocan directory: %v", err))
 				}
 			}
 
 			if err := ioutil.WriteFile(path + "/config.json", data, 0644); err != nil {
-				ui.Failed(fmt.Sprintf("Failed to save configuration: %v", err))
+				return errors.Wrap(err, fmt.Sprintf("Failed to save configuration: %v", err))
 			}
 
 			ui.Ok()
