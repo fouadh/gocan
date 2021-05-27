@@ -29,6 +29,7 @@ func TestCreateScene(t *testing.T) {
     {
       dataSource := db.SqlxDataSource{
         Dsn: dsn,
+        Ui: &ui,
       }
       cmd := create_scene.BuildCreateSceneCmd(&dataSource, &ui)
 
@@ -37,7 +38,7 @@ func TestCreateScene(t *testing.T) {
       }
 
       var id string
-      connection := dataSource.GetConnection(&ui)
+      connection := dataSource.GetConnection()
       if err := connection.Get(&id, "select id from scenes where name=$1", name); err != nil {
         t.Errorf("\t%s Failed retrieving created scene: %+v", failed, err)
       } else {

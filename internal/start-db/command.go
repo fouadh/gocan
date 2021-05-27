@@ -14,7 +14,6 @@ func BuildStartDbCmd(ui terminal.UI) *cobra.Command {
 		Short: "Start en embedded database",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			database := db.EmbeddedDatabase{}
-			database.Init()
 			database.Start(ui)
 			db.Migrate(dsn, ui)
 			return nil

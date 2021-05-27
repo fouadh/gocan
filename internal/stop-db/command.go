@@ -12,7 +12,6 @@ func BuildStopDbCmd(ui terminal.UI) *cobra.Command {
 		Short: "Stop the embedded database",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			database := db.EmbeddedDatabase{}
-			database.Init()
 			database.Stop(ui)
 			return nil
 		},

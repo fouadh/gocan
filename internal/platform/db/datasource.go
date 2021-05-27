@@ -7,17 +7,22 @@ import (
 	"os"
 )
 
-type SqlxDataSource struct {
-	Dsn string
+type DataSource interface {
+	GetConnection() *sqlx.DB
 }
 
-func (ds SqlxDataSource) GetConnection(ui terminal.UI) *sqlx.DB {
-	ui.Say("Connecting to the database...")
+type SqlxDataSource struct {
+	Dsn string
+	Ui terminal.UI
+}
+
+func (ds *SqlxDataSource) GetConnection() *sqlx.DB {
+	ds.Ui.Say("Connecting to the database...")
 	db, err := sqlx.Connect("postgres", ds.Dsn)
 	if err != nil {
-		ui.Failed(fmt.Sprintf("Cannot connect to the database: %v\n", err))
+		ds.Ui.Failed(fmt.Sprintf("Cannot connect to the database: %v\n", err))
 		os.Exit(3)
 	}
-	ui.Ok()
+	ds.Ui.Ok()
 	return db
 }

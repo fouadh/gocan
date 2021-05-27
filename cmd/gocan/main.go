@@ -24,6 +24,7 @@ func main() {
 	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
 	dataSource := db.SqlxDataSource{
 		Dsn: dsn,
+		Ui: ui,
 	}
 
 	var createCmd = create_scene.BuildCreateSceneCmd(&dataSource, ui)

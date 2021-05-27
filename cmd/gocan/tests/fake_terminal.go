@@ -2,6 +2,7 @@ package tests
 
 import (
 	terminal2 "com.fha.gocan/internal/platform/terminal"
+	"fmt"
 )
 
 type FakeUI struct {
@@ -27,6 +28,7 @@ func (f *fakeTable) Print() {
 }
 
 func (f *FakeUI) Say(message string) {
+	fmt.Println(message)
 	f.Said = append(f.Said, message)
 }
 
@@ -35,6 +37,7 @@ func (f *FakeUI) Ok() {
 }
 
 func (f *FakeUI) Failed(message string) {
+	fmt.Println(message)
 	f.FailedCount++
 	f.Errors = append(f.Errors, message)
 }

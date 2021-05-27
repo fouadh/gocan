@@ -11,11 +11,8 @@ type EmbeddedDatabase struct {
 	database *embeddedpostgres.EmbeddedPostgres
 }
 
-func (ed *EmbeddedDatabase) Init() {
-	ed.database = embeddedpostgres.NewDatabase()
-}
-
 func (ed *EmbeddedDatabase) Start(ui terminal.UI) {
+	ed.database = embeddedpostgres.NewDatabase()
 	ui.Say("Starting the embedded database...")
 	if err := ed.database.Start(); err != nil {
 		ui.Failed(fmt.Sprintf("Cannot start the database: %+v\n", err))
