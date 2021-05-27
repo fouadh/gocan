@@ -8,7 +8,7 @@ import (
 )
 
 type CreateAppRequest struct {
-	Name      string
+	Name      string `validate:"required"`
 	SceneName string
 }
 
