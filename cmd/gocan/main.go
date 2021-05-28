@@ -3,6 +3,7 @@ package main
 import (
 	create_scene "com.fha.gocan/internal/create-scene"
 	context "com.fha.gocan/internal/platform"
+	"com.fha.gocan/internal/platform/config"
 	"com.fha.gocan/internal/platform/terminal"
 	setup_db "com.fha.gocan/internal/setup-db"
 	start_db "com.fha.gocan/internal/start-db"
@@ -21,11 +22,11 @@ var uiCmd = ui.BuildUiCommand()
 
 func main() {
 	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
-	ctx, err := context.New(ui)
-	if err != nil {
+	config, err := config.ReadConfig()
+	if err  != nil {
 		ui.Failed(errors.Cause(err).Error())
-		os.Exit(2)
 	}
+	ctx := context.New(ui, config)
 
 	var createCmd = create_scene.NewCommand(ctx)
 	rootCmd.AddCommand(createCmd)

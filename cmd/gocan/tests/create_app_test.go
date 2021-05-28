@@ -4,6 +4,7 @@ import (
 	create_app "com.fha.gocan/internal/create-app"
 	create_scene "com.fha.gocan/internal/create-scene"
 	context "com.fha.gocan/internal/platform"
+	"com.fha.gocan/internal/platform/config"
 	"com.fha.gocan/internal/platform/db"
 	"github.com/pborman/uuid"
 	"testing"
@@ -11,7 +12,8 @@ import (
 
 func TestCreateApp(t *testing.T) {
 	ui := FakeUI{}
-	ctx, _ := context.New(&ui)
+	c := config.DefaultConfig
+	ctx := context.New(&ui, &c)
 	database := db.EmbeddedDatabase{Config: ctx.Config}
 	database.Start(&ui)
 	db.Migrate(dsn, &ui)

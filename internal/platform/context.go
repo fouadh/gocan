@@ -5,7 +5,6 @@ import (
 	"com.fha.gocan/internal/platform/db"
 	"com.fha.gocan/internal/platform/terminal"
 	"github.com/go-playground/validator"
-	"github.com/pkg/errors"
 )
 
 type Context struct {
@@ -15,12 +14,7 @@ type Context struct {
 	Config *config.Config
 }
 
-func New(ui terminal.UI) (*Context, error) {
-	config, err := config.ReadConfig()
-	if err  != nil {
-		return nil, errors.Wrap(err, "Could not read the configuration file. Please use gocan setup-db to eventually regenerate it")
-	}
-
+func New(ui terminal.UI, config *config.Config) *Context {
 	dataSource := db.SqlxDataSource{
 		Dsn: config.Dsn(),
 		Ui: ui,
@@ -31,5 +25,5 @@ func New(ui terminal.UI) (*Context, error) {
 		DataSource: &dataSource,
 		Validator: validator.New(),
 		Config: config,
-	}, nil
+	}
 }

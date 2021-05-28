@@ -4,6 +4,7 @@ import (
   "bytes"
   create_scene "com.fha.gocan/internal/create-scene"
   context "com.fha.gocan/internal/platform"
+  "com.fha.gocan/internal/platform/config"
   "com.fha.gocan/internal/platform/db"
   "github.com/pborman/uuid"
   "github.com/spf13/cobra"
@@ -17,7 +18,8 @@ const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=pos
 
 func TestCreateScene(t *testing.T) {
   ui := FakeUI{}
-  ctx, _ := context.New(&ui)
+  c := config.DefaultConfig
+  ctx := context.New(&ui, &c)
   database := db.EmbeddedDatabase{Config: ctx.Config}
   database.Start(&ui)
   defer database.Stop(&ui)
