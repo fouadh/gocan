@@ -5,9 +5,6 @@ build:
 run:
 	go run cmd/gocan/main.go
 
-it:
-	go test ./cmd/gocan/tests/...
-
 e2e: build
 	go test ./e2e/...
 
