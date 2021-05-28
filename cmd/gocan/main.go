@@ -8,7 +8,7 @@ import (
 	setup_db "com.fha.gocan/internal/setup-db"
 	start_db "com.fha.gocan/internal/start-db"
 	stop_db "com.fha.gocan/internal/stop-db"
-	"com.fha.gocan/internal/ui"
+	ui2 "com.fha.gocan/internal/ui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"os"
@@ -17,8 +17,6 @@ import (
 var rootCmd = &cobra.Command{
 	Use: "gocan",
 }
-
-var uiCmd = ui.BuildUiCommand()
 
 func main() {
 	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
@@ -29,9 +27,8 @@ func main() {
 	}
 	ctx := context.New(ui, config)
 
-	var createCmd = create_scene.NewCommand(ctx)
-	rootCmd.AddCommand(createCmd)
-	rootCmd.AddCommand(uiCmd)
+	rootCmd.AddCommand(create_scene.NewCommand(ctx))
+	rootCmd.AddCommand(ui2.NewCommand(ctx))
 	rootCmd.AddCommand(setup_db.NewCommand(ctx))
 	rootCmd.AddCommand(start_db.NewCommand(ctx))
 	rootCmd.AddCommand(stop_db.NewCommand(ctx))
