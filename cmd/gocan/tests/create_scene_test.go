@@ -1,14 +1,9 @@
 package tests
 
 import (
-  "bytes"
+  "com.fha.gocan/cmd/gocan/tests/support"
   create_scene "com.fha.gocan/internal/create-scene"
-  context "com.fha.gocan/internal/platform"
-  "com.fha.gocan/internal/platform/config"
-  "com.fha.gocan/internal/platform/db"
   "github.com/pborman/uuid"
-  "github.com/spf13/cobra"
-  "io/ioutil"
   "os"
   "testing"
 )
@@ -17,20 +12,11 @@ const succeed = "\u2713"
 const failed = "\u2717"
 
 func TestCreateScene(t *testing.T) {
-  ui := FakeUI{}
-  c := config.DefaultConfig
-  dir, err := ioutil.TempDir("", "gocan")
-  if err != nil {
-    t.Fatalf("Cannot create temp directory")
-  }
-  c.EmbeddedDataPath = dir
-  defer os.RemoveAll(dir)
+  ctx := support.CreateContext()
+  defer os.RemoveAll(ctx.Config.EmbeddedDataPath)
 
-  ctx := context.New(&ui, &c)
-  database := db.EmbeddedDatabase{Config: ctx.Config}
-  database.Start(&ui)
-  defer database.Stop(&ui)
-  db.Migrate(c.Dsn(), &ui)
+  database := support.CreateDatabase(ctx)
+  defer database.Stop(ctx.Ui)
 
   name := uuid.New()
   t.Logf("\tGiven no scene named %s exists", name)
@@ -39,7 +25,7 @@ func TestCreateScene(t *testing.T) {
     {
       cmd := create_scene.NewCommand(ctx)
 
-      if _, err := runCommand(cmd, name); err != nil {
+      if _, err := support.RunCommand(cmd, name); err != nil {
         t.Fatalf("\t%s Failed to execute create scene command: %+v", failed, err)
       }
 
@@ -53,18 +39,4 @@ func TestCreateScene(t *testing.T) {
     }
   }
 }
-
-func runCommand(cmd *cobra.Command, args ...string) (string, error) {
-  buf := new(bytes.Buffer)
-  cmd.SetOut(buf)
-  cmd.SetErr(buf)
-  cmd.SetArgs(args)
-
-  _, err := cmd.ExecuteC()
-
-  return buf.String(), err
-}
-
-// todo
-// try to create a scene with a name that is too long for the db
 

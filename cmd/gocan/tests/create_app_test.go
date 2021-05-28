@@ -1,31 +1,21 @@
 package tests
 
 import (
+	"com.fha.gocan/cmd/gocan/tests/support"
 	create_app "com.fha.gocan/internal/create-app"
 	create_scene "com.fha.gocan/internal/create-scene"
 	context "com.fha.gocan/internal/platform"
-	"com.fha.gocan/internal/platform/config"
-	"com.fha.gocan/internal/platform/db"
 	"github.com/pborman/uuid"
-	"io/ioutil"
 	"os"
 	"testing"
 )
 
 func TestCreateApp(t *testing.T) {
-	ui := FakeUI{}
-	c := config.DefaultConfig
-	dir, err := ioutil.TempDir("", "gocan")
-	if err != nil {
-		t.Fatalf("Cannot create temp directory")
-	}
-	c.EmbeddedDataPath = dir
-	defer os.RemoveAll(dir)
-	ctx := context.New(&ui, &c)
-	database := db.EmbeddedDatabase{Config: ctx.Config}
-	database.Start(&ui)
-	db.Migrate(c.Dsn(), &ui)
-	defer database.Stop(&ui)
+	ctx := support.CreateContext()
+	defer os.RemoveAll(ctx.Config.EmbeddedDataPath)
+
+	database := support.CreateDatabase(ctx)
+	defer database.Stop(ctx.Ui)
 
 	t.Log("\tGiven a scene has been created")
 	{
@@ -34,7 +24,7 @@ func TestCreateApp(t *testing.T) {
 		t.Logf("\tWhen I create an app named %s in this scene", name)
 		{
 			cmd := create_app.NewCommand(ctx)
-			if _, err := runCommand(cmd, name, "--scene", scene); err != nil {
+			if _, err := support.RunCommand(cmd, name, "--scene", scene); err != nil {
 				t.Fatalf("\t%s Failed to execute create app command: %+v", failed, err)
 			}
 

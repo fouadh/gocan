@@ -1,4 +1,4 @@
-package tests
+package support
 
 import (
 	terminal2 "com.fha.gocan/internal/platform/terminal"
