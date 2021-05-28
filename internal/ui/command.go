@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-//go:embed dist/index.html
+//go:embed dist
 var app embed.FS
 
 func BuildUiCommand() *cobra.Command {
