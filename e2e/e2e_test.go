@@ -2,7 +2,6 @@ package e2e
 
 import (
 	"bytes"
-	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -19,6 +18,18 @@ func TestE2E(t *testing.T) {
 	defer os.RemoveAll(dir)
 	defer runCommand(t, "stop-db")
 	startDatabase(t)
+	sceneName := "a-scene"
+	createScene(t, sceneName)
+}
+
+func createScene(t *testing.T, sceneName string) {
+	output := runCommand(t, "create-scene", sceneName)
+	if strings.Contains(output, "Creating the scene") && strings.Contains(output, "OK") {
+		t.Logf("%s Scene created", succeed)
+	} else {
+		t.Log(output)
+		t.Fatalf("%s Scene configuration failed", failed)
+	}
 }
 
 func startDatabase(t *testing.T) {
@@ -48,10 +59,9 @@ func setupDatabase(t *testing.T) (string) {
 
 func startCommand(t *testing.T, sleep time.Duration, args ...string) string {
 	command := exec.Command("../bin/gocan", args...)
-
-	var stdoutBuf, stderrBuf bytes.Buffer
-	command.Stdout = io.MultiWriter(os.Stdout, &stdoutBuf)
-	command.Stderr = io.MultiWriter(os.Stderr, &stderrBuf)
+	var out bytes.Buffer
+	command.Stdout = &out
+	command.Stderr = &out
 
 	err := command.Start()
 
@@ -61,16 +71,13 @@ func startCommand(t *testing.T, sleep time.Duration, args ...string) string {
 
 	time.Sleep(sleep)
 
-	outStr, errStr := string(stdoutBuf.Bytes()), string(stderrBuf.Bytes())
-	t.Logf("\nout:\n%s\nerr:\n%s\n", outStr, errStr)
-
-	return outStr
+	return string(out.Bytes())
 }
 
 func runCommand(t *testing.T, args ...string) string {
 	command := exec.Command("../bin/gocan", args...)
-
 	out, err := command.CombinedOutput()
+
 	if err != nil {
 		t.Logf("Failed to execute the command: %s", err)
 	}
