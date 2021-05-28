@@ -8,22 +8,29 @@ import (
   "com.fha.gocan/internal/platform/db"
   "github.com/pborman/uuid"
   "github.com/spf13/cobra"
+  "io/ioutil"
+  "os"
   "testing"
 )
 
 const succeed = "\u2713"
 const failed = "\u2717"
 
-const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
-
 func TestCreateScene(t *testing.T) {
   ui := FakeUI{}
   c := config.DefaultConfig
+  dir, err := ioutil.TempDir("", "gocan")
+  if err != nil {
+    t.Fatalf("Cannot create temp directory")
+  }
+  c.EmbeddedDataPath = dir
+  defer os.RemoveAll(dir)
+
   ctx := context.New(&ui, &c)
   database := db.EmbeddedDatabase{Config: ctx.Config}
   database.Start(&ui)
   defer database.Stop(&ui)
-  db.Migrate(dsn, &ui)
+  db.Migrate(c.Dsn(), &ui)
 
   name := uuid.New()
   t.Logf("\tGiven no scene named %s exists", name)

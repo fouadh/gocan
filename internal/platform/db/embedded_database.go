@@ -21,7 +21,8 @@ func (ed *EmbeddedDatabase) Start(ui terminal.UI) {
 		Username(ed.Config.User).
 		Password(ed.Config.Password).
 		Database(ed.Config.Database).
-		Port(uint32(ed.Config.Port)))
+		Port(uint32(ed.Config.Port)).
+		DataPath(ed.Config.EmbeddedDataPath))
 
 	ui.Say("Starting the embedded database...")
 	if err := ed.database.Start(); err != nil {
@@ -37,14 +38,13 @@ func (ed *EmbeddedDatabase) Stop(ui terminal.UI) {
 	usr, _ := user.Current()
 	dir := usr.HomeDir
 	// todo the path to the db should come from the configuration
-	stopPostgres(filepath.Join(dir, ".embedded-postgres-go/extracted"))
+	stopPostgres(filepath.Join(dir, ".embedded-postgres-go/extracted"), ed.Config)
 	ui.Ok()
 }
 
-func stopPostgres(binaryExtractLocation string) {
+func stopPostgres(binaryExtractLocation string, c *config.Config) {
 	postgresBinary := filepath.Join(binaryExtractLocation, "bin/pg_ctl")
-	dataLocation := filepath.Join(binaryExtractLocation, "data")
 	postgresProcess := exec.Command(postgresBinary, "stop", "-w",
-		"-D", dataLocation)
+		"-D", c.EmbeddedDataPath)
 	postgresProcess.Run()
 }

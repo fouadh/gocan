@@ -7,16 +7,24 @@ import (
 	"com.fha.gocan/internal/platform/config"
 	"com.fha.gocan/internal/platform/db"
 	"github.com/pborman/uuid"
+	"io/ioutil"
+	"os"
 	"testing"
 )
 
 func TestCreateApp(t *testing.T) {
 	ui := FakeUI{}
 	c := config.DefaultConfig
+	dir, err := ioutil.TempDir("", "gocan")
+	if err != nil {
+		t.Fatalf("Cannot create temp directory")
+	}
+	c.EmbeddedDataPath = dir
+	defer os.RemoveAll(dir)
 	ctx := context.New(&ui, &c)
 	database := db.EmbeddedDatabase{Config: ctx.Config}
 	database.Start(&ui)
-	db.Migrate(dsn, &ui)
+	db.Migrate(c.Dsn(), &ui)
 	defer database.Stop(&ui)
 
 	t.Log("\tGiven a scene has been created")
