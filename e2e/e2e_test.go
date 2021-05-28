@@ -20,6 +20,19 @@ func TestE2E(t *testing.T) {
 	startDatabase(t)
 	sceneName := "a-scene"
 	createScene(t, sceneName)
+	appName := "an-app"
+	createApp(t, appName, sceneName)
+
+}
+
+func createApp(t *testing.T, appName string, sceneName string) {
+	output := runCommand(t, "create-app", appName, "--scene", sceneName)
+	if strings.Contains(output, "Creating the app") && strings.Contains(output, "OK") {
+		t.Logf("%s App created", succeed)
+	} else {
+		t.Log(output)
+		t.Fatalf("%s App creation failed", failed)
+	}
 }
 
 func createScene(t *testing.T, sceneName string) {
@@ -28,7 +41,7 @@ func createScene(t *testing.T, sceneName string) {
 		t.Logf("%s Scene created", succeed)
 	} else {
 		t.Log(output)
-		t.Fatalf("%s Scene configuration failed", failed)
+		t.Fatalf("%s Scene creation failed", failed)
 	}
 }
 

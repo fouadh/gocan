@@ -1,6 +1,7 @@
 package main
 
 import (
+	create_app "com.fha.gocan/internal/create-app"
 	create_scene "com.fha.gocan/internal/create-scene"
 	context "com.fha.gocan/internal/platform"
 	"com.fha.gocan/internal/platform/config"
@@ -27,11 +28,12 @@ func main() {
 	}
 	ctx := context.New(ui, config)
 
-	rootCmd.AddCommand(create_scene.NewCommand(ctx))
 	rootCmd.AddCommand(ui2.NewCommand(ctx))
 	rootCmd.AddCommand(setup_db.NewCommand(ctx))
 	rootCmd.AddCommand(start_db.NewCommand(ctx))
 	rootCmd.AddCommand(stop_db.NewCommand(ctx))
+	rootCmd.AddCommand(create_scene.NewCommand(ctx))
+	rootCmd.AddCommand(create_app.NewCommand(ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
