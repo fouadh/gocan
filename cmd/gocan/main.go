@@ -25,6 +25,7 @@ func main() {
 	config, err := config.ReadConfig()
 	if err  != nil {
 		ui.Failed(errors.Cause(err).Error())
+		os.Exit(2)
 	}
 	ctx := context.New(ui, config)
 
@@ -36,7 +37,6 @@ func main() {
 	rootCmd.AddCommand(stop_db.NewCommand(ctx))
 
 	if err := rootCmd.Execute(); err != nil {
-		ui.Failed(errors.Cause(err).Error())
 		os.Exit(1)
 	}
 }
