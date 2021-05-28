@@ -12,7 +12,7 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 		Short: "Stop the embedded database",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
-			database := db.EmbeddedDatabase{}
+			database := db.EmbeddedDatabase{Config: ctx.Config}
 			database.Stop(ui)
 			return nil
 		},

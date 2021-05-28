@@ -16,8 +16,9 @@ const failed = "\u2717"
 const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
 
 func TestCreateScene(t *testing.T) {
-  database := db.EmbeddedDatabase{}
   ui := FakeUI{}
+  ctx, _ := context.New(&ui)
+  database := db.EmbeddedDatabase{Config: ctx.Config}
   database.Start(&ui)
   defer database.Stop(&ui)
   db.Migrate(dsn, &ui)
@@ -27,7 +28,6 @@ func TestCreateScene(t *testing.T) {
   {
     t.Logf("\tWhen I create a scene named %s", name)
     {
-      ctx, _ := context.New(&ui)
       cmd := create_scene.NewCommand(ctx)
 
       if _, err := runCommand(cmd, name); err != nil {

@@ -14,7 +14,7 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 		Short: "Start en embedded database",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
-			database := db.EmbeddedDatabase{}
+			database := db.EmbeddedDatabase{Config: ctx.Config}
 			database.Start(ui)
 			return db.Migrate(dsn, ui)
 		},

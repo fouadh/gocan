@@ -1,6 +1,7 @@
 package db
 
 import (
+	"com.fha.gocan/internal/platform/config"
 	"com.fha.gocan/internal/platform/terminal"
 	"fmt"
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
@@ -12,10 +13,16 @@ import (
 
 type EmbeddedDatabase struct {
 	database *embeddedpostgres.EmbeddedPostgres
+	Config *config.Config
 }
 
 func (ed *EmbeddedDatabase) Start(ui terminal.UI) {
-	ed.database = embeddedpostgres.NewDatabase()
+	ed.database = embeddedpostgres.NewDatabase(embeddedpostgres.DefaultConfig().
+		Username(ed.Config.User).
+		Password(ed.Config.Password).
+		Database(ed.Config.Database).
+		Port(uint32(ed.Config.Port)))
+
 	ui.Say("Starting the embedded database...")
 	if err := ed.database.Start(); err != nil {
 		ui.Failed(fmt.Sprintf("Cannot start the database: %+v\n", err))
