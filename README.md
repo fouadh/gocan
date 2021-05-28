@@ -2,6 +2,8 @@
 
 ## Setup the database
 
+### To setup the embedded database
+
 ```
 gocan setup-db
 ```
