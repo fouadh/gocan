@@ -16,7 +16,8 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 			ui := ctx.Ui
 			database := db.EmbeddedDatabase{Config: ctx.Config}
 			database.Start(ui)
-			return db.Migrate(dsn, ui)
+			//return db.Migrate(dsn, ui)
+			return nil
 		},
 	}
 

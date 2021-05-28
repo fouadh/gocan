@@ -13,6 +13,8 @@ import (
 )
 
 func NewCommand(ctx *context.Context) *cobra.Command {
+	var dataPath string
+
 	cmd := &cobra.Command{
 		Use: "setup-db",
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -24,6 +26,11 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 			}
 
 			path := usr.HomeDir + "/.gocan"
+			if dataPath == "" {
+				dataPath = path
+			} else {
+				ui.Say("Data path will be set to: " + dataPath)
+			}
 
 			c := config.Config{
 				Host:             config.DefaultConfig.Host,
@@ -32,7 +39,7 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 				Password:         config.DefaultConfig.Password,
 				Database:         config.DefaultConfig.Database,
 				Embedded:         true,
-				EmbeddedDataPath: path + "/data",
+				EmbeddedDataPath: dataPath + "/data",
 			}
 
 			data, err := json.Marshal(c)
@@ -51,10 +58,13 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 				return errors.Wrap(err, fmt.Sprintf("Failed to save configuration: %v", err))
 			}
 
+			ui.Say("Database configured")
 			ui.Ok()
 			return nil
 		},
 	}
+
+	cmd.Flags().StringVarP(&dataPath, "path", "p", "", "Path where the postgresql data will be stored")
 
 	return cmd
 }
