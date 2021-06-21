@@ -29,8 +29,12 @@ func importHistory(t *testing.T, appName string, sceneName string) {
 	appFolder := createTempFolder(t)
 	defer os.RemoveAll(appFolder)
 
-	cmd := exec.Command("cd " + appFolder + " && touch file1 && git init && git commit -m 'init repo'")
-	cmd.Run()
+	out, err := exec.Command("/bin/sh", "-c", "cd " + appFolder + "; touch file1; git init; git add .; git commit -m 'init repo'").Output()
+	if err != nil {
+		t.Log(string(out))
+		t.Fatalf("%s Initializing git repo", failed)
+		return
+	}
 
 	output := runCommand(t, "import-history", appName, "--scene", sceneName, "--path", appFolder)
 	if strings.Contains(output, "Importing history") && strings.Contains(output, "OK") {
