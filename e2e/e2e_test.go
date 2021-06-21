@@ -22,16 +22,10 @@ func TestE2E(t *testing.T) {
 	createScene(t, sceneName)
 	appName := "an-app"
 	createApp(t, appName, sceneName)
+	appFolder := createTempFolder(t)
+	defer os.RemoveAll(appFolder)
 
-
-	dir, err := ioutil.TempDir("", "gocan-")
-	if err != nil {
-		t.Log(err)
-		t.Fatalf("%s Creating temp folder", failed)
-	}
-	defer os.RemoveAll(dir)
-
-	cmd := exec.Command("cd " + dir + " && touch file1")
+	cmd := exec.Command("cd " + appFolder + " && touch file1")
 	cmd.Run()
 
 	output := runCommand(t, "import-history", appName, "--scene", sceneName, "--directory", dir)
@@ -41,6 +35,15 @@ func TestE2E(t *testing.T) {
 		t.Log(output)
 		t.Fatalf("%s History Import failed", failed)
 	}
+}
+
+func createTempFolder(t *testing.T) string {
+	dir, err := ioutil.TempDir("", "gocan-")
+	if err != nil {
+		t.Log(err)
+		t.Fatalf("%s Creating temp folder", failed)
+	}
+	return dir
 }
 
 func createApp(t *testing.T, appName string, sceneName string) {
@@ -74,10 +77,7 @@ func startDatabase(t *testing.T) {
 }
 
 func setupDatabase(t *testing.T) (string) {
-	dir, err := ioutil.TempDir("", "gocan")
-	if err != nil {
-		t.Fatalf("Cannot create temp directory: %s", err.Error())
-	}
+	dir := createTempFolder(t)
 	output := runCommand(t, "setup-db", "--path", dir)
 	if strings.Contains(output, "Database configured") {
 		t.Logf("%s Database configured", succeed)
