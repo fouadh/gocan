@@ -7,7 +7,7 @@ import (
 
 func NewCommand(ctx *context.Context) *cobra.Command {
 	var sceneName string
-	var directory string
+	var path string
 
 	cmd := cobra.Command{
 		Use: "import-history",
@@ -21,7 +21,7 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&directory, "directory", "d", ".", "App directory")
+	cmd.Flags().StringVarP(&path, "path", "d", ".", "App directory")
 	return &cmd
 }
 

@@ -22,13 +22,17 @@ func TestE2E(t *testing.T) {
 	createScene(t, sceneName)
 	appName := "an-app"
 	createApp(t, appName, sceneName)
+	importHistory(t, appName, sceneName)
+}
+
+func importHistory(t *testing.T, appName string, sceneName string) {
 	appFolder := createTempFolder(t)
 	defer os.RemoveAll(appFolder)
 
-	cmd := exec.Command("cd " + appFolder + " && touch file1")
+	cmd := exec.Command("cd " + appFolder + " && touch file1 && git init && git commit -m 'init repo'")
 	cmd.Run()
 
-	output := runCommand(t, "import-history", appName, "--scene", sceneName, "--directory", dir)
+	output := runCommand(t, "import-history", appName, "--scene", sceneName, "--path", appFolder)
 	if strings.Contains(output, "Importing history") && strings.Contains(output, "OK") {
 		t.Logf("%s History imported", succeed)
 	} else {
