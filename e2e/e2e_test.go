@@ -23,6 +23,24 @@ func TestE2E(t *testing.T) {
 	appName := "an-app"
 	createApp(t, appName, sceneName)
 
+
+	dir, err := ioutil.TempDir("", "gocan-")
+	if err != nil {
+		t.Log(err)
+		t.Fatalf("%s Creating temp folder", failed)
+	}
+	defer os.RemoveAll(dir)
+
+	cmd := exec.Command("cd " + dir + " && touch file1")
+	cmd.Run()
+
+	output := runCommand(t, "import-history", appName, "--scene", sceneName, "--directory", dir)
+	if strings.Contains(output, "Importing history") && strings.Contains(output, "OK") {
+		t.Logf("%s History imported", succeed)
+	} else {
+		t.Log(output)
+		t.Fatalf("%s History Import failed", failed)
+	}
 }
 
 func createApp(t *testing.T, appName string, sceneName string) {
