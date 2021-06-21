@@ -7,6 +7,7 @@ import (
 	context "com.fha.gocan/internal/platform"
 	"com.fha.gocan/internal/platform/config"
 	"com.fha.gocan/internal/platform/terminal"
+	"com.fha.gocan/internal/revisions"
 	setup_db "com.fha.gocan/internal/setup-db"
 	start_db "com.fha.gocan/internal/start-db"
 	stop_db "com.fha.gocan/internal/stop-db"
@@ -36,6 +37,7 @@ func main() {
 	rootCmd.AddCommand(create_scene.NewCommand(ctx))
 	rootCmd.AddCommand(create_app.NewCommand(ctx))
 	rootCmd.AddCommand(import_history.NewCommand(ctx))
+	rootCmd.AddCommand(revisions.NewCommand(ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
