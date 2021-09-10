@@ -5,7 +5,6 @@ import (
 	"com.fha.gocan/foundation/terminal"
 	"fmt"
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
-	"log"
 	"os"
 	"os/exec"
 	"os/user"
@@ -44,23 +43,6 @@ func (ed *EmbeddedDatabase) Stop(ui terminal.UI) {
 	stopPostgres(filepath.Join(dir, ".embedded-postgres-go/extracted"), ed.Config)
 	ui.Ok()
 }
-
-func startPostgres(binaryExtractLocation string, c *config.Config) error {
-	postgresBinary := filepath.Join(binaryExtractLocation, "bin/pg_ctl")
-	postgresProcess := exec.Command(postgresBinary, "start", "-w",
-		"-D", c.EmbeddedDataPath,
-		"-o", fmt.Sprintf(`"-p %d"`, c.Port))
-	log.Println(postgresProcess.String())
-	//postgresProcess.Stderr = config.logger
-	//postgresProcess.Stdout = config.logger
-
-	if err := postgresProcess.Run(); err != nil {
-		return fmt.Errorf("could not start postgres using %s", postgresProcess.String())
-	}
-
-	return nil
-}
-
 
 func stopPostgres(binaryExtractLocation string, c *config.Config) {
 	postgresBinary := filepath.Join(binaryExtractLocation, "bin/pg_ctl")
