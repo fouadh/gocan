@@ -3,7 +3,7 @@ package context
 import (
 	"com.fha.gocan/business/platform/config"
 	"com.fha.gocan/business/platform/db"
-	"com.fha.gocan/business/platform/terminal"
+	"com.fha.gocan/foundation/terminal"
 	"github.com/go-playground/validator"
 )
 

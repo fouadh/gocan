@@ -2,7 +2,7 @@ package db
 
 import (
 	"com.fha.gocan/business/platform/config"
-	"com.fha.gocan/business/platform/terminal"
+	"com.fha.gocan/foundation/terminal"
 	"fmt"
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 	"log"
