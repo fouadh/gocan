@@ -30,9 +30,6 @@ func (ed *EmbeddedDatabase) Start(ui terminal.UI) {
 		os.Exit(1)
 	}
 	ui.Ok()
-	ui.Say("Applying migrations...")
-	Migrate(ed.Config.Dsn(), ui)
-	ui.Ok()
 }
 
 func (ed *EmbeddedDatabase) Stop(ui terminal.UI) {

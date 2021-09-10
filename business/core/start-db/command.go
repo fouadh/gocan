@@ -1,6 +1,7 @@
 package start_db
 
 import (
+	"com.fha.gocan/business/data"
 	context "com.fha.gocan/business/platform"
 	"com.fha.gocan/business/platform/db"
 	"github.com/spf13/cobra"
@@ -16,7 +17,9 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 			ui := ctx.Ui
 			database := db.EmbeddedDatabase{Config: ctx.Config}
 			database.Start(ui)
-			//return db.Migrate(dsn, ui)
+			ui.Say("Applying migrations...")
+			data.Migrate(ctx.Config.Dsn(), ui)
+			ui.Ok()
 			return nil
 		},
 	}

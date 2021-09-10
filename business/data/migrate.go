@@ -1,4 +1,4 @@
-package db
+package data
 
 import (
 	terminal2 "com.fha.gocan/foundation/terminal"
