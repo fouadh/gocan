@@ -1,7 +1,7 @@
 package create_app
 
 import (
-	context "com.fha.gocan/business/core/platform"
+	context "com.fha.gocan/business/platform"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )

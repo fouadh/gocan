@@ -1,7 +1,7 @@
 package db
 
 import (
-	"com.fha.gocan/business/core/platform/terminal"
+	"com.fha.gocan/business/platform/terminal"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )

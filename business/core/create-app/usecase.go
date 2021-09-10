@@ -1,7 +1,7 @@
 package create_app
 
 import (
-	"com.fha.gocan/business/core/platform"
+	"com.fha.gocan/business/platform"
 	"fmt"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"

@@ -1,8 +1,8 @@
 package setup_db
 
 import (
-	context "com.fha.gocan/business/core/platform"
-	"com.fha.gocan/business/core/platform/config"
+	context "com.fha.gocan/business/platform"
+	"com.fha.gocan/business/platform/config"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"

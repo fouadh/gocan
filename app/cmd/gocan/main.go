@@ -4,17 +4,17 @@ import (
 	create_app "com.fha.gocan/business/core/create-app"
 	create_scene "com.fha.gocan/business/core/create-scene"
 	"com.fha.gocan/business/core/import_history"
-	"com.fha.gocan/business/core/platform/config"
-	"com.fha.gocan/business/core/platform/terminal"
+	"com.fha.gocan/business/platform/config"
+	"com.fha.gocan/business/platform/terminal"
 	"com.fha.gocan/business/core/revisions"
 	setup_db "com.fha.gocan/business/core/setup-db"
 	start_db "com.fha.gocan/business/core/start-db"
 	stop_db "com.fha.gocan/business/core/stop-db"
 	ui2 "com.fha.gocan/business/core/ui"
+	context "com.fha.gocan/business/platform"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"os"
-	context "com.fha.gocan/business/core/platform"
 )
 
 var rootCmd = &cobra.Command{

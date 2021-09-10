@@ -1,7 +1,7 @@
 package revisions
 
 import (
-	context "com.fha.gocan/business/core/platform"
+	context "com.fha.gocan/business/platform"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"

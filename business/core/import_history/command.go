@@ -1,7 +1,7 @@
 package import_history
 
 import (
-	context "com.fha.gocan/business/core/platform"
+	context "com.fha.gocan/business/platform"
 	"encoding/json"
 	"fmt"
 	"github.com/boyter/scc/processor"
