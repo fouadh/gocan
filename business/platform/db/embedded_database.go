@@ -1,7 +1,6 @@
 package db
 
 import (
-	"com.fha.gocan/business/platform/config"
 	"com.fha.gocan/foundation/terminal"
 	"fmt"
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
@@ -13,7 +12,7 @@ import (
 
 type EmbeddedDatabase struct {
 	database *embeddedpostgres.EmbeddedPostgres
-	Config *config.Config
+	Config *Config
 }
 
 func (ed *EmbeddedDatabase) Start(ui terminal.UI) {
@@ -41,7 +40,7 @@ func (ed *EmbeddedDatabase) Stop(ui terminal.UI) {
 	ui.Ok()
 }
 
-func stopPostgres(binaryExtractLocation string, c *config.Config) {
+func stopPostgres(binaryExtractLocation string, c *Config) {
 	postgresBinary := filepath.Join(binaryExtractLocation, "bin/pg_ctl")
 	postgresProcess := exec.Command(postgresBinary, "stop", "-w",
 		"-D", c.EmbeddedDataPath)

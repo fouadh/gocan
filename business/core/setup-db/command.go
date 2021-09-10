@@ -2,7 +2,7 @@ package setup_db
 
 import (
 	context "com.fha.gocan/business/platform"
-	"com.fha.gocan/business/platform/config"
+	"com.fha.gocan/business/platform/db"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -32,12 +32,12 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 				ui.Say("Data path will be set to: " + dataPath)
 			}
 
-			c := config.Config{
-				Host:             config.DefaultConfig.Host,
-				Port:             config.DefaultConfig.Port,
-				User:             config.DefaultConfig.User,
-				Password:         config.DefaultConfig.Password,
-				Database:         config.DefaultConfig.Database,
+			c := db.Config{
+				Host:             db.DefaultConfig.Host,
+				Port:             db.DefaultConfig.Port,
+				User:             db.DefaultConfig.User,
+				Password:         db.DefaultConfig.Password,
+				Database:         db.DefaultConfig.Database,
 				Embedded:         true,
 				EmbeddedDataPath: dataPath + "/data",
 			}
