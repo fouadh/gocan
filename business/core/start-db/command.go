@@ -3,7 +3,7 @@ package start_db
 import (
 	"com.fha.gocan/business/data"
 	context "com.fha.gocan/business/platform"
-	"com.fha.gocan/business/platform/db"
+	"com.fha.gocan/foundation/db"
 	"github.com/spf13/cobra"
 )
 

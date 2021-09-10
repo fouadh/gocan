@@ -4,7 +4,7 @@ import (
 	create_app "com.fha.gocan/business/core/create-app"
 	create_scene "com.fha.gocan/business/core/create-scene"
 	"com.fha.gocan/business/core/import_history"
-	"com.fha.gocan/business/platform/db"
+	"com.fha.gocan/foundation/db"
 	"com.fha.gocan/foundation/terminal"
 	"com.fha.gocan/business/core/revisions"
 	setup_db "com.fha.gocan/business/core/setup-db"
