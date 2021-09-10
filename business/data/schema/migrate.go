@@ -1,4 +1,4 @@
-package data
+package schema
 
 import (
 	terminal2 "com.fha.gocan/foundation/terminal"
