@@ -1,4 +1,4 @@
-package create_app
+package app
 
 import (
 	"com.fha.gocan/business/core/test_support"
@@ -10,25 +10,25 @@ func TestEmptyNameReturnsError(t *testing.T) {
 	{
 		t.Log("\tWhen the provided name is empty")
 		{
-			request := CreateAppRequest{
+			request := NewApp{
 				Name:      "",
-				SceneName: "scene name",
+				SceneId: "sceneId",
 			}
 			test_support.AssertInvalidField(t, request, "Name")
 		}
 	}
 }
 
-func TestEmptySceneNameReturnsError(t *testing.T) {
+func TestEmptySceneIdReturnsError(t *testing.T) {
 	t.Log("\tGiven a create app request")
 	{
 		t.Log("\tWhen the provided scene name is empty")
 		{
-			request := CreateAppRequest{
+			request := NewApp{
 				Name:      "app name",
-				SceneName: "",
+				SceneId: "",
 			}
-			test_support.AssertInvalidField(t, request, "SceneName")
+			test_support.AssertInvalidField(t, request, "SceneId")
 		}
 	}
 }
@@ -38,30 +38,14 @@ func TestMaxAppNameLength(t *testing.T) {
 	{
 		t.Log("\tWhen the provided app name is longer than 255 characters")
 		{
-			request := CreateAppRequest{
+			request := NewApp{
 				Name: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-				SceneName: "some scene",
+				SceneId: "sceneId",
 			}
 			test_support.AssertInvalidField(t, request, "Name")
 		}
 	}
 }
-
-func TestMaxSceneNameLength(t *testing.T) {
-	t.Log("\tGiven a create app request")
-	{
-		t.Log("\tWhen the provided scene name is longer than 255 characters")
-		{
-			request := CreateAppRequest{
-				Name: "an app",
-				SceneName: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-			}
-			test_support.AssertInvalidField(t, request, "SceneName")
-		}
-	}
-
-}
-
 
 
 
