@@ -1,8 +1,8 @@
 package db
 
 import (
-	"com.fha.gocan/internal/platform/config"
-	"com.fha.gocan/internal/platform/terminal"
+	"com.fha.gocan/business/core/platform/config"
+	"com.fha.gocan/business/core/platform/terminal"
 	"fmt"
 	embeddedpostgres "github.com/fergusstrange/embedded-postgres"
 	"log"

@@ -1,7 +1,7 @@
 package create_scene
 
 import (
-	"com.fha.gocan/internal/test_support"
+	"com.fha.gocan/business/core/test_support"
 	"testing"
 )
 

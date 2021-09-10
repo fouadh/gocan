@@ -1,20 +1,20 @@
 package main
 
 import (
-	create_app "com.fha.gocan/internal/create-app"
-	create_scene "com.fha.gocan/internal/create-scene"
-	"com.fha.gocan/internal/import_history"
-	context "com.fha.gocan/internal/platform"
-	"com.fha.gocan/internal/platform/config"
-	"com.fha.gocan/internal/platform/terminal"
-	"com.fha.gocan/internal/revisions"
-	setup_db "com.fha.gocan/internal/setup-db"
-	start_db "com.fha.gocan/internal/start-db"
-	stop_db "com.fha.gocan/internal/stop-db"
-	ui2 "com.fha.gocan/internal/ui"
+	create_app "com.fha.gocan/business/core/create-app"
+	create_scene "com.fha.gocan/business/core/create-scene"
+	"com.fha.gocan/business/core/import_history"
+	"com.fha.gocan/business/core/platform/config"
+	"com.fha.gocan/business/core/platform/terminal"
+	"com.fha.gocan/business/core/revisions"
+	setup_db "com.fha.gocan/business/core/setup-db"
+	start_db "com.fha.gocan/business/core/start-db"
+	stop_db "com.fha.gocan/business/core/stop-db"
+	ui2 "com.fha.gocan/business/core/ui"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"os"
+	context "com.fha.gocan/business/core/platform"
 )
 
 var rootCmd = &cobra.Command{

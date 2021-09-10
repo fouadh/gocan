@@ -1,7 +1,7 @@
 package db
 
 import (
-	terminal2 "com.fha.gocan/internal/platform/terminal"
+	terminal2 "com.fha.gocan/business/core/platform/terminal"
 	"embed"
 	"fmt"
 	"github.com/Boostport/migration"

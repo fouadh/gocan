@@ -1,9 +1,9 @@
 package context
 
 import (
-	"com.fha.gocan/internal/platform/config"
-	"com.fha.gocan/internal/platform/db"
-	"com.fha.gocan/internal/platform/terminal"
+	"com.fha.gocan/business/core/platform/config"
+	"com.fha.gocan/business/core/platform/db"
+	"com.fha.gocan/business/core/platform/terminal"
 	"github.com/go-playground/validator"
 )
 

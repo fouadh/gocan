@@ -1,7 +1,7 @@
 package create_scene
 
 import (
-  context "com.fha.gocan/internal/platform"
+  context "com.fha.gocan/business/core/platform"
   "github.com/pkg/errors"
   "github.com/spf13/cobra"
 )
