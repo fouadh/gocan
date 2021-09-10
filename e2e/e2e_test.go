@@ -129,7 +129,7 @@ func runCommand(t *testing.T, args ...string) string {
 	out, err := command.CombinedOutput()
 
 	if err != nil {
-		t.Logf("Failed to execute the command: %s", err)
+		t.Fatalf("Failed to execute the command: %s", err)
 	}
 
 	return string(out)
