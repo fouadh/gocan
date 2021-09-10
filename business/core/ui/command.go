@@ -1,7 +1,7 @@
 package ui
 
 import (
-	context "com.fha.gocan/business/platform"
+	context "com.fha.gocan/foundation"
 	"embed"
 	"fmt"
 	"github.com/spf13/cobra"

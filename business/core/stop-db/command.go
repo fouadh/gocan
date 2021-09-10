@@ -1,7 +1,7 @@
 package stop_db
 
 import (
-	context "com.fha.gocan/business/platform"
+	context "com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/db"
 	"github.com/spf13/cobra"
 )

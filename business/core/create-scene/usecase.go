@@ -1,7 +1,7 @@
 package create_scene
 
 import (
-	context "com.fha.gocan/business/platform"
+	context "com.fha.gocan/foundation"
 	"fmt"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"

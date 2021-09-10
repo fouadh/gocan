@@ -1,4 +1,4 @@
-package context
+package foundation
 
 import (
 	"com.fha.gocan/foundation/db"

@@ -11,7 +11,7 @@ import (
 	start_db "com.fha.gocan/business/core/start-db"
 	stop_db "com.fha.gocan/business/core/stop-db"
 	web_ui "com.fha.gocan/business/core/ui"
-	context "com.fha.gocan/business/platform"
+	context "com.fha.gocan/foundation"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"os"
