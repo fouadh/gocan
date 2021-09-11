@@ -1,13 +1,11 @@
 package main
 
 import (
-	create_app "com.fha.gocan/business/core/create-app"
-	create_scene "com.fha.gocan/business/core/create-scene"
-	"com.fha.gocan/business/core/import_history"
+	"com.fha.gocan/business/core/app"
+	db2 "com.fha.gocan/business/core/db"
+	"com.fha.gocan/business/core/history"
 	"com.fha.gocan/business/core/revisions"
-	setup_db "com.fha.gocan/business/core/setup-db"
-	start_db "com.fha.gocan/business/core/start-db"
-	stop_db "com.fha.gocan/business/core/stop-db"
+	"com.fha.gocan/business/core/scene"
 	web_ui "com.fha.gocan/business/core/ui"
 	context "com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/db"
@@ -30,14 +28,14 @@ func main() {
 	}
 	ctx := context.New(ui, config)
 
-	rootCmd.AddCommand(web_ui.NewCommand(ctx))
-	rootCmd.AddCommand(setup_db.NewCommand(ctx))
-	rootCmd.AddCommand(start_db.NewCommand(ctx))
-	rootCmd.AddCommand(stop_db.NewCommand(ctx))
-	rootCmd.AddCommand(create_scene.NewCommand(ctx))
-	rootCmd.AddCommand(create_app.NewCommand(ctx))
-	rootCmd.AddCommand(import_history.NewCommand(ctx))
-	rootCmd.AddCommand(revisions.NewCommand(ctx))
+	rootCmd.AddCommand(web_ui.NewStartUiCommand(ctx))
+	rootCmd.AddCommand(db2.NewSetupDbCommand(ctx))
+	rootCmd.AddCommand(db2.NewStartDbCommand(ctx))
+	rootCmd.AddCommand(db2.NewStopDbCommand(ctx))
+	rootCmd.AddCommand(scene.NewCreateSceneCommand(ctx))
+	rootCmd.AddCommand(app.NewCreateAppCommand(ctx))
+	rootCmd.AddCommand(history.NewImportHistoryCommand(ctx))
+	rootCmd.AddCommand(revisions.NewRevisionsCommand(ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

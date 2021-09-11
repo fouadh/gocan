@@ -17,7 +17,7 @@ type Revision struct {
 	Code                        int
 }
 
-func NewCommand(ctx *context.Context) *cobra.Command {
+func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 	var sceneName string
 
 	cmd := cobra.Command{

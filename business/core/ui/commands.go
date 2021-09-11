@@ -14,7 +14,7 @@ import (
 //go:embed dist
 var app embed.FS
 
-func NewCommand(ctx *context.Context) *cobra.Command {
+func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 	var serverPort string
 
 	cmd := cobra.Command{

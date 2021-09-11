@@ -1,7 +1,8 @@
-package setup_db
+package db
 
 import (
-	context "com.fha.gocan/foundation"
+	"com.fha.gocan/business/data/schema"
+	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/db"
 	"encoding/json"
 	"fmt"
@@ -12,7 +13,7 @@ import (
 	"os/user"
 )
 
-func NewCommand(ctx *context.Context) *cobra.Command {
+func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 	var dataPath string
 
 	cmd := &cobra.Command{
@@ -65,6 +66,41 @@ func NewCommand(ctx *context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&dataPath, "path", "p", "", "Path where the postgresql data will be stored")
+
+	return cmd
+}
+
+//const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
+
+func NewStartDbCommand(ctx *foundation.Context) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "start-db",
+		Short: "Start en embedded database",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			database := db.EmbeddedDatabase{Config: ctx.Config}
+			database.Start(ui)
+			ui.Say("Applying migrations...")
+			schema.Migrate(ctx.Config.Dsn(), ui)
+			ui.Ok()
+			return nil
+		},
+	}
+
+	return cmd
+}
+
+func NewStopDbCommand(ctx *foundation.Context) *cobra.Command {
+	cmd := &cobra.Command{
+		Use:   "stop-db",
+		Short: "Stop the embedded database",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			database := db.EmbeddedDatabase{Config: ctx.Config}
+			database.Stop(ui)
+			return nil
+		},
+	}
 
 	return cmd
 }
