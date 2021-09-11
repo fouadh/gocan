@@ -57,7 +57,7 @@ func (c Core) Import(ctx context.Context, appName string, sceneName string, path
 		return err
 	}
 
-	if err = c.stat.ImportAppStats(a.Id, stats); err != nil {
+	if err = c.stat.BulkImport(a.Id, stats); err != nil {
 		return errors.Wrap(err, "Unable to save stats")
 	}
 
