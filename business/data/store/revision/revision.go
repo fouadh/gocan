@@ -2,6 +2,7 @@ package revision
 
 import (
 	"github.com/jmoiron/sqlx"
+	"time"
 )
 
 type Store struct {
@@ -12,7 +13,7 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
-func (s Store) QueryByAppId(appId string) ([]Revision, error) {
+func (s Store) QueryByAppIdAndDateRange(appId string, before time.Time, after time.Time) ([]Revision, error) {
 	const q = `
 	SELECT 
 		entity,
@@ -21,17 +22,19 @@ func (s Store) QueryByAppId(appId string) ([]Revision, error) {
 		normalizedNumberOfRevisions,
 		code
 	FROM
-		revisions
-	WHERE
-		app_id = :app_id
+		revisions(:app_id, :before, :after)
 `
 	// todo add dates
 	results := []Revision{}
 
 	data := struct {
-		AppId string `db:"app_id"`
+		AppId  string `db:"app_id"`
+		Before time.Time `db:"before"`
+		After  time.Time `db:"after"`
 	}{
-		AppId: appId,
+		AppId:  appId,
+		Before: before,
+		After:  after,
 	}
 
 	rows, err := s.connection.NamedQuery(q, data)

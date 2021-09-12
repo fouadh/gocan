@@ -35,5 +35,5 @@ func (c Core) GetRevisions(ctx context.Context, appName string, sceneName string
 		return []revision.Revision{}, errors.Wrap(err, "App not found")
 	}
 
-	return c.revision.QueryByAppId(a.Id)
+	return c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
 }
