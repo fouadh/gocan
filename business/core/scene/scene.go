@@ -17,7 +17,8 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Create(ctx context.Context, newScene scene.NewScene) (scene.Scene, error) {
+func (c Core) Create(ctx context.Context, sceneName string) (scene.Scene, error) {
+	newScene := scene.NewScene{Name: sceneName}
 	s, err := c.scene.Create(ctx, newScene)
 	if err != nil {
 		return scene.Scene{}, errors.Wrap(err, "create")

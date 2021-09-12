@@ -1,7 +1,6 @@
 package scene
 
 import (
-	"com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/foundation"
 	"fmt"
 	"github.com/pkg/errors"
@@ -15,7 +14,6 @@ func NewCreateSceneCommand(ctx *foundation.Context) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.Say("Creating the scene...")
-			newScene := scene.NewScene{Name: args[0]}
 
 			datasource := ctx.DataSource
 			connection, err := datasource.GetConnection()
@@ -25,7 +23,7 @@ func NewCreateSceneCommand(ctx *foundation.Context) *cobra.Command {
 			}
 
 			core := NewCore(connection)
-			s, err := core.Create(*ctx, newScene)
+			s, err := core.Create(*ctx, args[0])
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("Unable to create the scene: %s", err.Error()))
 			}

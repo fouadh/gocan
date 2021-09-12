@@ -24,7 +24,6 @@ func (s Store) QueryByAppIdAndDateRange(appId string, before time.Time, after ti
 	FROM
 		revisions(:app_id, :before, :after)
 `
-	// todo add dates
 	results := []Revision{}
 
 	data := struct {
