@@ -4,7 +4,7 @@ import (
 	"com.fha.gocan/business/core/app"
 	db2 "com.fha.gocan/business/core/db"
 	"com.fha.gocan/business/core/history"
-	"com.fha.gocan/business/core/revisions"
+	"com.fha.gocan/business/core/revision"
 	"com.fha.gocan/business/core/scene"
 	web_ui "com.fha.gocan/business/core/ui"
 	context "com.fha.gocan/foundation"
@@ -35,7 +35,7 @@ func main() {
 	rootCmd.AddCommand(scene.NewCreateSceneCommand(ctx))
 	rootCmd.AddCommand(app.NewCreateAppCommand(ctx))
 	rootCmd.AddCommand(history.NewImportHistoryCommand(ctx))
-	rootCmd.AddCommand(revisions.NewRevisionsCommand(ctx))
+	rootCmd.AddCommand(revision.NewRevisionsCommand(ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

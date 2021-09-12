@@ -28,7 +28,7 @@ func GetCommits(path string) ([]commit.Commit, error) {
 	outStr = outStr[:len(outStr)-1]
 	data := fmt.Sprintf("[%s]", outStr)
 	data = strings.ReplaceAll(data, "\\", "\\\\")
-	gitCommits := []commit.NewCommit{}
+	gitCommits := []gitCommit{}
 	if err := json.Unmarshal([]byte(data), &gitCommits); err != nil {
 		return nil, err
 	}
@@ -84,4 +84,10 @@ func buildStat(commitId string, line string) stat.Stat {
 	}
 }
 
+type gitCommit struct {
+	Id      string
+	Author  string
+	Date    string
+	Message string
+}
 

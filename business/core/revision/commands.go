@@ -1,4 +1,4 @@
-package revisions
+package revision
 
 import (
 	context "com.fha.gocan/foundation"
@@ -8,14 +8,6 @@ import (
 	"github.com/spf13/cobra"
 	"time"
 )
-
-type Revision struct {
-	Entity                      string
-	NumberOfRevisions           int
-	NumberOfAuthors             int
-	NormalizedNumberOfRevisions float64
-	Code                        int
-}
 
 func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 	var sceneName string
@@ -34,7 +26,7 @@ func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 			}
 
 			appName := args[0]
-			appId, err := getAppId(appName, connection, sceneName)
+			/*appId, err := getAppId(appName, connection, sceneName)
 			if err != nil {
 				return err
 			}
@@ -54,14 +46,25 @@ func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 					  AND FILE NOT LIKE '%%=>%%'
 					 GROUP BY file
 				 ) a
-				ORDER BY %s desc             
+				ORDER BY %s desc
 			`, "numberOfRevisions")
 
-			revisions := []Revision{}
+			revisions := []revision.Revision{}
 			before := time.Now().AddDate(0, 0, 1)
 			after, _ := time.Parse("2006-01-02", "1970-01-01")
 
 			err = connection.Select(&revisions, sql, appId, before, after)
+
+			if err != nil {
+				ui.Failed("Cannot fetch revisions: " + err.Error())
+				return err
+			}*/
+
+			core := NewCore(connection)
+			before := time.Now().AddDate(0, 0, 1)
+			after, _ := time.Parse("2006-01-02", "1970-01-01")
+
+			revisions, err := core.GetRevisions(*ctx, appName, sceneName, before, after)
 
 			if err != nil {
 				ui.Failed("Cannot fetch revisions: " + err.Error())

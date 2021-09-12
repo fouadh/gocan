@@ -10,10 +10,3 @@ type Commit struct {
 	AppId   string
 }
 
-type NewCommit struct {
-	Id      string
-	Author  string
-	Date    string
-	Message string
-}
-
