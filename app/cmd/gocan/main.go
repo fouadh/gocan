@@ -33,6 +33,7 @@ func main() {
 	rootCmd.AddCommand(db2.NewStartDbCommand(ctx))
 	rootCmd.AddCommand(db2.NewStopDbCommand(ctx))
 	rootCmd.AddCommand(scene.NewCreateSceneCommand(ctx))
+	rootCmd.AddCommand(scene.NewScenesCommand(ctx))
 	rootCmd.AddCommand(app.NewCreateAppCommand(ctx))
 	rootCmd.AddCommand(history.NewImportHistoryCommand(ctx))
 	rootCmd.AddCommand(revision.NewRevisionsCommand(ctx))

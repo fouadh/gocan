@@ -6,7 +6,6 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
-	"strings"
 )
 
 type Store struct {
@@ -66,28 +65,18 @@ func (s Store) QueryByName(name string) (Scene, error) {
 	return result, nil
 }
 
-func queryString(query string, args ...interface{}) string {
-	query, params, err := sqlx.Named(query, args)
-	if err != nil {
-		return err.Error()
+func (s Store) QueryAll() ([]Scene, error) {
+	const q = `
+	SELECT 
+		id, name 
+	FROM 
+		scenes
+`
+
+	var scenes []Scene
+	if err := s.connection.Select(&scenes, q); err != nil {
+		return []Scene{}, errors.Wrap(err, fmt.Sprintf("Cannot fetch scenes: %s", err.Error()))
 	}
 
-	for _, param := range params {
-		var value string
-		switch v := param.(type) {
-		case string:
-			value = fmt.Sprintf("%q", v)
-		case []byte:
-			value = fmt.Sprintf("%q", string(v))
-		default:
-			value = fmt.Sprintf("%v", v)
-		}
-		query = strings.Replace(query, "?", value, 1)
-	}
-
-	query = strings.ReplaceAll(query, "\t", "")
-	query = strings.ReplaceAll(query, "\n", " ")
-
-	return strings.Trim(query, " ")
+	return scenes, nil
 }
-

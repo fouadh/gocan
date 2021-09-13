@@ -26,3 +26,7 @@ func (c Core) Create(ctx context.Context, sceneName string) (scene.Scene, error)
 
 	return s, nil
 }
+
+func (c Core) QueryAll() ([]scene.Scene, error) {
+	return c.scene.QueryAll()
+}
