@@ -1,6 +1,7 @@
 package app
 
 import (
+	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/foundation"
 	"fmt"
 	"github.com/pkg/errors"
@@ -57,16 +58,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 
 			ctx.Ui.Ok()
 
-			table := ctx.Ui.Table([]string{
-				"id",
-				"name",
-			})
-
-			for _, a := range apps {
-				table.Add(a.Id, a.Name)
-			}
-
-			table.Print()
+			printApps(ctx, apps)
 
 			return nil
 		},
@@ -74,4 +66,17 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	return &cmd
+}
+
+func printApps(ctx *foundation.Context, apps []app.App) {
+	table := ctx.Ui.Table([]string{
+		"id",
+		"name",
+	})
+
+	for _, a := range apps {
+		table.Add(a.Id, a.Name)
+	}
+
+	table.Print()
 }
