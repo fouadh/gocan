@@ -2,7 +2,6 @@ package history
 
 import (
 	"com.fha.gocan/foundation"
-	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -16,10 +15,9 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
-			datasource := ctx.DataSource
-			connection, err := datasource.GetConnection()
+			connection, err := ctx.GetConnection()
 			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("The connection to the dabase could not be established: %v", err.Error()))
+				return err
 			}
 
 			ui.Say("Importing history...")

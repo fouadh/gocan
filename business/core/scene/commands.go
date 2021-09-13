@@ -15,11 +15,9 @@ func NewCreateSceneCommand(ctx *foundation.Context) *cobra.Command {
 			ui := ctx.Ui
 			ui.Say("Creating the scene...")
 
-			datasource := ctx.DataSource
-			connection, err := datasource.GetConnection()
-
+			connection, err := ctx.GetConnection()
 			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("The connection to the dabase could not be established: %v", err.Error()))
+				return err
 			}
 
 			core := NewCore(connection)

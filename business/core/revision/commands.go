@@ -20,10 +20,9 @@ func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 			ui := ctx.Ui
 			ui.Say("Getting app revisions...")
 
-			datasource := ctx.DataSource
-			connection, err := datasource.GetConnection()
+			connection, err := ctx.GetConnection()
 			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("The connection to the dabase could not be established: %v", err.Error()))
+				return err
 			}
 
 			appName := args[0]

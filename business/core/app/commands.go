@@ -16,11 +16,9 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx.Ui.Say("Creating the app...")
 
-			datasource := ctx.DataSource
-			connection, err := datasource.GetConnection()
-
+			connection, err := ctx.GetConnection()
 			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("The connection to the dabase could not be established: %v", err.Error()))
+				return err
 			}
 
 			core := NewCore(connection)
