@@ -2,10 +2,10 @@ package revision
 
 import (
 	context "com.fha.gocan/foundation"
+	"com.fha.gocan/foundation/date"
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"time"
 )
 
 func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
@@ -29,11 +29,15 @@ func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 			appName := args[0]
 
 			core := NewCore(connection)
-			beforeTime := time.Now().AddDate(0, 0, 1)
-			if after == "" {
-				after = "1970-01-01"
+			beforeTime, err := date.ParseDay(before)
+			if err != nil {
+				return errors.Wrap(err, "Invalid before date")
 			}
-			afterTime, _ := time.Parse("2006-01-02", after)
+
+			afterTime, err := date.ParseDay(after)
+			if err != nil {
+				return errors.Wrap(err, "Invalid after date")
+			}
 
 			revisions, err := core.GetRevisions(*ctx, appName, sceneName, beforeTime, afterTime)
 
@@ -57,7 +61,8 @@ func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", "", "")
-	cmd.Flags().StringVarP(&after, "after", "", "", "")
+	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the revisions before this day")
+	cmd.Flags().StringVarP(&after, "after", "b", "1970-01-01", "Fetch all the revisions after this day")
 	return &cmd
 }
+
