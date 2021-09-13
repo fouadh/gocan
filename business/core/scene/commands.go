@@ -68,10 +68,12 @@ func NewScenesCommand(ctx *foundation.Context) *cobra.Command {
 
 func printScenes(ui terminal.UI, scenes []scene.Scene) {
 	table := ui.Table([]string{
+		"id",
 		"name",
 	})
 
 	for _, s := range scenes {
+		table.Add(s.Id)
 		table.Add(s.Name)
 	}
 
