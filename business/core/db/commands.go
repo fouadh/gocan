@@ -21,18 +21,7 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.Say("Configuring the database...")
-			usr, err := user.Current()
-			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("Failed to get current user info: %v", err))
-			}
-
-			path := usr.HomeDir + "/.gocan"
-			if dataPath == "" {
-				dataPath = path
-			} else {
-				ui.Say("Data path will be set to: " + dataPath)
-			}
-
+			ui.Say("Data path will be set to: " + dataPath)
 			c := db.Config{
 				Host:             db.DefaultConfig.Host,
 				Port:             db.DefaultConfig.Port,
@@ -48,14 +37,14 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 				return errors.Wrap(err, fmt.Sprintf("Failed to marshal configuration object into json: %v", err))
 			}
 
-			if _, err := os.Stat(path); os.IsNotExist(err) {
-				err = os.Mkdir(path, os.ModeDir|0755)
+			if _, err := os.Stat(dataPath); os.IsNotExist(err) {
+				err = os.Mkdir(dataPath, os.ModeDir|0755)
 				if err != nil {
 					return errors.Wrap(err, fmt.Sprintf("Failed to create gocan directory: %v", err))
 				}
 			}
 
-			if err := ioutil.WriteFile(path+"/config.json", data, 0644); err != nil {
+			if err := ioutil.WriteFile(dataPath + "/config.json", data, 0644); err != nil {
 				return errors.Wrap(err, fmt.Sprintf("Failed to save configuration: %v", err))
 			}
 
@@ -65,7 +54,7 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 		},
 	}
 
-	cmd.Flags().StringVarP(&dataPath, "path", "p", "", "Path where the postgresql data will be stored")
+	cmd.Flags().StringVarP(&dataPath, "path", "p", defaultPath(), "Path where the postgresql data will be stored")
 
 	return cmd
 }
@@ -103,4 +92,14 @@ func NewStopDbCommand(ctx *foundation.Context) *cobra.Command {
 	}
 
 	return cmd
+}
+
+func defaultPath() string {
+	usr, err := user.Current()
+	if err != nil {
+		fmt.Println("Cannot get user information: the config path will be created within this location")
+		return ".gocan"
+	}
+
+	return usr.HomeDir + "/.gocan"
 }
