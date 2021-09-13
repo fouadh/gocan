@@ -33,13 +33,11 @@ func NewCore(connection *sqlx.DB) Core {
 
 func (c Core) Import(ctx context.Context, appName string, sceneName string, path string) error {
 	s, err := c.scene.QueryByName(sceneName)
-
 	if err != nil {
 		return fmt.Errorf("unable to retrieve scene %s", sceneName)
 	}
 
 	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
-
 	if err != nil {
 		return fmt.Errorf("unable to retrieve app %s linked to the scene %s", appName, sceneName)
 	}

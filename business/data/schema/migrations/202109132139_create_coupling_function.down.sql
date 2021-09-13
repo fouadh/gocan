@@ -1,0 +1,1 @@
+drop function couplings(app_id uuid, before timestamp, after timestamp, minimalcoupling double precision, minimalaveragerevisions double precision);

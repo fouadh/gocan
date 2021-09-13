@@ -1,1 +1,1 @@
-drop function revisions;
+drop function revisions(app_id uuid, before timestamp, after timestamp);

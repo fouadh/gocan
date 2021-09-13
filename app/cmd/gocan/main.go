@@ -2,6 +2,7 @@ package main
 
 import (
 	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core/coupling"
 	db2 "com.fha.gocan/business/core/db"
 	"com.fha.gocan/business/core/history"
 	"com.fha.gocan/business/core/revision"
@@ -38,6 +39,7 @@ func main() {
 	rootCmd.AddCommand(app.NewAppsCommand(ctx))
 	rootCmd.AddCommand(history.NewImportHistoryCommand(ctx))
 	rootCmd.AddCommand(revision.NewRevisionsCommand(ctx))
+	rootCmd.AddCommand(coupling.NewCouplingCommand(ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

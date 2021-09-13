@@ -61,7 +61,7 @@ func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the revisions before this day")
-	cmd.Flags().StringVarP(&after, "after", "b", "1970-01-01", "Fetch all the revisions after this day")
+	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the revisions after this day")
 	return &cmd
 }
 

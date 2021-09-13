@@ -9,3 +9,7 @@ func ParseDay(day string) (time.Time, error) {
 func Today() string {
 	return time.Now().AddDate(0, 0, 1).Format("2006-01-02")
 }
+
+func LongTimeAgo() string {
+	return "1970-01-01"
+}
