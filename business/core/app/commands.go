@@ -14,13 +14,12 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 		Use:  "create-app",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx.Ui.Say("Creating the app...")
-
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
 			}
 
+			ctx.Ui.Say("Creating the app...")
 			core := NewCore(connection)
 			a, err := core.Create(*ctx, args[0], sceneName)
 
@@ -37,3 +36,42 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 	return &cmd
 }
 
+func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
+	var sceneName string
+
+	cmd := cobra.Command{
+		Use: "apps",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			ctx.Ui.Say("Retrieving the apps...")
+			core := NewCore(connection)
+			apps, err := core.QueryBySceneName(sceneName)
+
+			if err != nil {
+				return errors.Wrap(err, fmt.Sprintf("Unable to fetch the apps: %s", err.Error()))
+			}
+
+			ctx.Ui.Ok()
+
+			table := ctx.Ui.Table([]string{
+				"id",
+				"name",
+			})
+
+			for _, a := range apps {
+				table.Add(a.Id, a.Name)
+			}
+
+			table.Print()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	return &cmd
+}

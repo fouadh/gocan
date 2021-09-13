@@ -21,8 +21,8 @@ func (s Store) Create(ctx context.Context, newApp NewApp) (App, error) {
 	}
 
 	a := App{
-		Id: uuid.NewUUID().String(),
-		Name: newApp.Name,
+		Id:      uuid.NewUUID().String(),
+		Name:    newApp.Name,
 		SceneId: newApp.SceneId,
 	}
 
@@ -67,4 +67,36 @@ func (s Store) QueryBySceneIdAndName(sceneId string, name string) (App, error) {
 
 	return result, nil
 
+}
+
+func (s Store) QueryBySceneId(sceneId string) ([]App, error) {
+	const q = `
+	SELECT 
+		id, name, scene_id
+	FROM
+		apps
+	WHERE
+		scene_id = :scene_id
+`
+	data := struct {
+		SceneId string `db:"scene_id"`
+	}{
+		SceneId: sceneId,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return []App{}, err
+	}
+
+	results := []App{}
+	for rows.Next() {
+		var item App
+		if err := rows.StructScan(&item); err != nil {
+			return []App{}, err
+		}
+		results = append(results, item)
+	}
+
+	return results, nil
 }

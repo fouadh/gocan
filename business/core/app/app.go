@@ -35,3 +35,12 @@ func (c Core) Create(ctx context.Context, appName string, sceneName string) (app
 
 	return a, nil
 }
+
+func (c Core) QueryBySceneName(sceneName string) ([]app.App, error) {
+	s, err := c.scene.QueryByName(sceneName)
+	if err != nil {
+		return []app.App{}, errors.Wrap(err, "Scene not found")
+	}
+
+	return c.app.QueryBySceneId(s.Id)
+}

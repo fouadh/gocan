@@ -35,6 +35,7 @@ func main() {
 	rootCmd.AddCommand(scene.NewCreateSceneCommand(ctx))
 	rootCmd.AddCommand(scene.NewScenesCommand(ctx))
 	rootCmd.AddCommand(app.NewCreateAppCommand(ctx))
+	rootCmd.AddCommand(app.NewAppsCommand(ctx))
 	rootCmd.AddCommand(history.NewImportHistoryCommand(ctx))
 	rootCmd.AddCommand(revision.NewRevisionsCommand(ctx))
 
