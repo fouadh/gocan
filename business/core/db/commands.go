@@ -59,8 +59,6 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 	return cmd
 }
 
-//const dsn = "host=localhost port=5432 user=postgres password=postgres dbname=postgres sslmode=disable"
-
 func NewStartDbCommand(ctx *foundation.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start-db",
