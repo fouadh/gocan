@@ -89,6 +89,7 @@ func NewSocCommand(ctx foundation.Context) *cobra.Command {
 			ui.Say("Retrieving summary...")
 
 			c := NewCore(connection)
+
 			beforeTime, err := date.ParseDay(before)
 			if err != nil {
 				return errors.Wrap(err, "Invalid before date")
