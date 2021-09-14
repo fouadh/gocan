@@ -1,4 +1,4 @@
-package developer
+package churn
 
 import (
 	"github.com/jmoiron/sqlx"
@@ -9,16 +9,14 @@ type Store struct {
 	connection *sqlx.DB
 }
 
-func (s Store) QueryMainDevelopers(appId string, before time.Time, after time.Time) ([]EntityDeveloper, error) {
+func (s Store) QueryCodeChurn(appId string, before time.Time, after time.Time) ([]CodeChurn, error) {
 	const q = `
 	SELECT 
-		entity,
-	    author,
-		added,
-	    totalAdded,
-		ownership
+		date,
+	    added,
+		deleted
 	FROM 
-		main_developers(:app_id, :before, :after)
+		code_churn(:app_id, :before, :after)
 `
 
 	data := struct {
@@ -31,17 +29,17 @@ func (s Store) QueryMainDevelopers(appId string, before time.Time, after time.Ti
 		After:                   after,
 	}
 
-	var results []EntityDeveloper
+	var results []CodeChurn
 
 	rows, err := s.connection.NamedQuery(q, data)
 	if err != nil {
-		return []EntityDeveloper{}, err
+		return []CodeChurn{}, err
 	}
 
 	for rows.Next() {
-		var item EntityDeveloper
+		var item CodeChurn
 		if err := rows.StructScan(&item); err != nil {
-			return []EntityDeveloper{}, err
+			return []CodeChurn{}, err
 		}
 		results = append(results, item)
 	}

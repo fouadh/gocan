@@ -2,6 +2,7 @@ package main
 
 import (
 	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core/churn"
 	"com.fha.gocan/business/core/coupling"
 	db2 "com.fha.gocan/business/core/db"
 	"com.fha.gocan/business/core/developer"
@@ -43,6 +44,7 @@ func main() {
 	rootCmd.AddCommand(coupling.NewCouplingCommand(ctx))
 	rootCmd.AddCommand(coupling.NewSocCommand(*ctx))
 	rootCmd.AddCommand(developer.NewMainDevelopers(*ctx))
+	rootCmd.AddCommand(churn.NewCodeChurn(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

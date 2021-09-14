@@ -1,0 +1,1 @@
+drop function code_churn(app_id uuid, before timestamp, after timestamp);
