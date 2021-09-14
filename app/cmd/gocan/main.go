@@ -44,6 +44,7 @@ func main() {
 	rootCmd.AddCommand(coupling.NewCouplingCommand(ctx))
 	rootCmd.AddCommand(coupling.NewSocCommand(*ctx))
 	rootCmd.AddCommand(developer.NewMainDevelopers(*ctx))
+	rootCmd.AddCommand(developer.NewKnowledgeMapCommand(*ctx))
 	rootCmd.AddCommand(churn.NewCodeChurn(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
