@@ -6,3 +6,8 @@ type Coupling struct {
 	Degree           float64
 	AverageRevisions float64
 }
+
+type Soc struct {
+	Entity string
+	Soc    int
+}

@@ -70,3 +70,56 @@ func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
 
 	return &cmd
 }
+
+func NewSocCommand(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var before string
+	var after string
+
+	cmd := cobra.Command{
+		Use:  "soc",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			ui.Say("Retrieving summary...")
+
+			c := NewCore(connection)
+			beforeTime, err := date.ParseDay(before)
+			if err != nil {
+				return errors.Wrap(err, "Invalid before date")
+			}
+
+			afterTime, err := date.ParseDay(after)
+			if err != nil {
+				return errors.Wrap(err, "Invalid after date")
+			}
+
+			data, err := c.QuerySoc(sceneName, args[0], beforeTime, afterTime)
+
+			if err != nil {
+				return errors.Wrap(err, "Cannot retrieve summary of coupling")
+			}
+
+			ui.Ok()
+
+			table := ui.Table([]string { "entity", "soc" })
+			for _, soc := range data {
+				table.Add(soc.Entity, fmt.Sprint(soc.Soc))
+			}
+			table.Print()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the summary of coupling before this day")
+	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the summary of coupling after this day")
+
+	return &cmd
+}

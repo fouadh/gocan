@@ -40,6 +40,7 @@ func main() {
 	rootCmd.AddCommand(history.NewImportHistoryCommand(ctx))
 	rootCmd.AddCommand(revision.NewRevisionsCommand(ctx))
 	rootCmd.AddCommand(coupling.NewCouplingCommand(ctx))
+	rootCmd.AddCommand(coupling.NewSocCommand(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

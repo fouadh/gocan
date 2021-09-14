@@ -36,3 +36,17 @@ func (c Core) Query(sceneName string, appName string, before time.Time, after ti
 
 	return c.coupling.Query(a.Id, before, after, minimalCoupling, minimalRevisionsAverage)
 }
+
+func (c Core) QuerySoc(sceneName string, appName string, before time.Time, after time.Time) ([]coupling.Soc, error) {
+	s, err := c.scene.QueryByName(sceneName)
+	if err != nil {
+		return []coupling.Soc{}, fmt.Errorf("unable to retrieve scene %s", sceneName)
+	}
+
+	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
+	if err != nil {
+		return []coupling.Soc{}, fmt.Errorf("unable to retrieve app %s linked to the scene %s", appName, sceneName)
+	}
+
+	return c.coupling.QuerySoc(a.Id, before, after)
+}
