@@ -3,12 +3,13 @@ package revision
 import (
 	context "com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
+	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
-func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
+func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -38,7 +39,7 @@ func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 				return errors.Wrap(err, "Invalid after date")
 			}
 
-			revisions, err := core.GetRevisions(*ctx, appName, sceneName, beforeTime, afterTime)
+			revisions, err := core.GetRevisions(ctx, appName, sceneName, beforeTime, afterTime)
 
 			if err != nil {
 				ui.Failed("Cannot fetch revisions: " + err.Error())
@@ -65,3 +66,49 @@ func NewRevisionsCommand(ctx *context.Context) *cobra.Command {
 	return &cmd
 }
 
+func NewHotspotsCommand(ctx context.Context) *cobra.Command {
+	var sceneName string
+	var before string
+	var after string
+
+	cmd := cobra.Command{
+		Use: "hotspots",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.Say("Getting app revisions...")
+
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			appName := args[0]
+
+			core := NewCore(connection)
+			beforeTime, err := date.ParseDay(before)
+			if err != nil {
+				return errors.Wrap(err, "Invalid before date")
+			}
+
+			afterTime, err := date.ParseDay(after)
+			if err != nil {
+				return errors.Wrap(err, "Invalid after date")
+			}
+
+			hotspots, err := core.GetHotspots(ctx, appName, sceneName, beforeTime, afterTime)
+
+			ui.Ok()
+
+			str, _ := json.MarshalIndent(hotspots, "", "  ")
+			ui.Say(string(str))
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
+	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the hotspots after this day")
+	return &cmd
+}

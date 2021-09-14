@@ -8,3 +8,9 @@ type Revision struct {
 	Code                        int
 }
 
+type HotspotHierarchy struct {
+	Name          string              `json:"name"`
+	Children      []*HotspotHierarchy `json:"children,omitempty"`
+	Weight        float64             `json:"weight,omitempty"`
+	Size          int                 `json:"size,omitempty"`
+}
