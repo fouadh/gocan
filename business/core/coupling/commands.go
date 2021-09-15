@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
+	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -113,6 +114,52 @@ func NewSocCommand(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the summary of coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the summary of coupling after this day")
+
+	return &cmd
+}
+
+func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var before string
+	var after string
+	var minCoupling int
+	var minRevsAvg int
+
+	cmd := cobra.Command{
+		Use: "coupling-hierarchy",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			ui.Say("Retrieving summary...")
+
+			c := NewCore(connection)
+
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+			if err != nil {
+				return errors.Wrap(err, "Invalid argument(s)")
+			}
+
+			ch, err := c.BuildCouplingHierarchy(a, beforeTime, afterTime, float64(minCoupling)/100, minRevsAvg)
+
+			ui.Ok()
+
+			str, _ := json.MarshalIndent(ch, "", "  ")
+			ui.Say(string(str))
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the couplings before this day")
+	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the couplings after this day")
+	cmd.Flags().IntVarP(&minCoupling, "min-degree", "d", 30, "minimal degree of coupling wanted (in percent)")
+	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
 
 	return &cmd
 }

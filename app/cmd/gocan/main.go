@@ -44,6 +44,7 @@ func main() {
 	rootCmd.AddCommand(revision.NewHotspotsCommand(*ctx))
 	rootCmd.AddCommand(coupling.NewCouplingCommand(ctx))
 	rootCmd.AddCommand(coupling.NewSocCommand(*ctx))
+	rootCmd.AddCommand(coupling.NewCouplingHierarchyCommand(*ctx))
 	rootCmd.AddCommand(developer.NewMainDevelopers(*ctx))
 	rootCmd.AddCommand(developer.NewEntityEfforts(*ctx))
 	rootCmd.AddCommand(developer.NewKnowledgeMapCommand(*ctx))
