@@ -1,7 +1,7 @@
 package developer
 
 import (
-	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"encoding/json"
@@ -29,19 +29,9 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 
 			c := NewCore(connection)
 
-			beforeTime, err := date.ParseDay(before)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
-				return errors.Wrap(err, "Invalid before date")
-			}
-
-			afterTime, err := date.ParseDay(after)
-			if err != nil {
-				return errors.Wrap(err, "Invalid after date")
-			}
-
-			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
-			if err != nil {
-				return errors.Wrap(err, "Command failed")
+				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
 			data, err := c.QueryMainDevelopers(a.Id, beforeTime, afterTime)
@@ -87,19 +77,9 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 
 			c := NewCore(connection)
 
-			beforeTime, err := date.ParseDay(before)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
-				return errors.Wrap(err, "Invalid before date")
-			}
-
-			afterTime, err := date.ParseDay(after)
-			if err != nil {
-				return errors.Wrap(err, "Invalid after date")
-			}
-
-			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
-			if err != nil {
-				return errors.Wrap(err, "Command failed")
+				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
 			km, err := c.BuildKnowledgeMap(a, beforeTime, afterTime)

@@ -1,7 +1,7 @@
 package coupling
 
 import (
-	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"fmt"
@@ -30,19 +30,10 @@ func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
 			ui.Say("Retrieving couplings...")
 
 			c := NewCore(connection)
-			beforeTime, err := date.ParseDay(before)
-			if err != nil {
-				return errors.Wrap(err, "Invalid before date")
-			}
 
-			afterTime, err := date.ParseDay(after)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
-				return errors.Wrap(err, "Invalid after date")
-			}
-
-			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
-			if err != nil {
-				return errors.Wrap(err, "Coupling failed")
+				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
 			data, err := c.Query(a.Id, beforeTime, afterTime, float64(minCoupling)/100, minRevsAvg)
@@ -96,19 +87,9 @@ func NewSocCommand(ctx foundation.Context) *cobra.Command {
 
 			c := NewCore(connection)
 
-			beforeTime, err := date.ParseDay(before)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
-				return errors.Wrap(err, "Invalid before date")
-			}
-
-			afterTime, err := date.ParseDay(after)
-			if err != nil {
-				return errors.Wrap(err, "Invalid after date")
-			}
-
-			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
-			if err != nil {
-				return errors.Wrap(err, "Command failed")
+				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
 			data, err := c.QuerySoc(a.Id, beforeTime, afterTime)

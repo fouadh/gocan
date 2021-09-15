@@ -1,7 +1,7 @@
 package churn
 
 import (
-	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"fmt"
@@ -15,7 +15,7 @@ func NewCodeChurn(ctx foundation.Context) *cobra.Command {
 	var after string
 
 	cmd := cobra.Command{
-		Use: "code-churn",
+		Use:  "code-churn",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -28,19 +28,9 @@ func NewCodeChurn(ctx foundation.Context) *cobra.Command {
 
 			c := NewCore(connection)
 
-			beforeTime, err := date.ParseDay(before)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
-				return errors.Wrap(err, "Invalid before date")
-			}
-
-			afterTime, err := date.ParseDay(after)
-			if err != nil {
-				return errors.Wrap(err, "Invalid after date")
-			}
-
-			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
-			if err != nil {
-				return errors.Wrap(err, "Command failed")
+				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
 			data, err := c.QueryCodeChurn(a.Id, beforeTime, afterTime)
@@ -69,3 +59,4 @@ func NewCodeChurn(ctx foundation.Context) *cobra.Command {
 
 	return &cmd
 }
+

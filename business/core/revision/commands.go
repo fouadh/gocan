@@ -1,7 +1,7 @@
 package revision
 
 import (
-	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core"
 	context "com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"encoding/json"
@@ -27,23 +27,10 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 				return err
 			}
 
-			core := NewCore(connection)
-			beforeTime, err := date.ParseDay(before)
-			if err != nil {
-				return errors.Wrap(err, "Invalid before date")
-			}
+			c := NewCore(connection)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 
-			afterTime, err := date.ParseDay(after)
-			if err != nil {
-				return errors.Wrap(err, "Invalid after date")
-			}
-
-			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
-			if err != nil {
-				return errors.Wrap(err, "Command failed")
-			}
-
-			revisions, err := core.GetRevisions(a.Id, beforeTime, afterTime)
+			revisions, err := c.GetRevisions(a.Id, beforeTime, afterTime)
 
 			if err != nil {
 				ui.Failed("Cannot fetch revisions: " + err.Error())
@@ -87,23 +74,13 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 				return err
 			}
 
-			core := NewCore(connection)
-			beforeTime, err := date.ParseDay(before)
-			if err != nil {
-				return errors.Wrap(err, "Invalid before date")
-			}
-
-			afterTime, err := date.ParseDay(after)
-			if err != nil {
-				return errors.Wrap(err, "Invalid after date")
-			}
-
-			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
+			c := NewCore(connection)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
 				return errors.Wrap(err, "Command failed")
 			}
 
-			hotspots, err := core.GetHotspots(a, beforeTime, afterTime)
+			hotspots, err := c.GetHotspots(a, beforeTime, afterTime)
 
 			ui.Ok()
 
