@@ -1,6 +1,7 @@
 package churn
 
 import (
+	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"fmt"
@@ -37,7 +38,12 @@ func NewCodeChurn(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Invalid after date")
 			}
 
-			data, err := c.QueryCodeChurn(sceneName, args[0], beforeTime, afterTime)
+			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
+			if err != nil {
+				return errors.Wrap(err, "Command failed")
+			}
+
+			data, err := c.QueryCodeChurn(a.Id, beforeTime, afterTime)
 
 			if err != nil {
 				return errors.Wrap(err, "Cannot retrieve code churn")

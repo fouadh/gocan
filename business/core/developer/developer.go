@@ -5,7 +5,6 @@ import (
 	"com.fha.gocan/business/data/store/developer"
 	"com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/business/data/store/scene"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"strings"
@@ -19,31 +18,11 @@ type Core struct {
 	revision revision.Store
 }
 
-func (c Core) QueryMainDevelopers(sceneName string, appName string, before time.Time, after time.Time) ([]developer.EntityDeveloper, error) {
-	s, err := c.scene.QueryByName(sceneName)
-	if err != nil {
-		return []developer.EntityDeveloper{}, fmt.Errorf("unable to retrieve scene %s", sceneName)
-	}
-
-	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
-	if err != nil {
-		return []developer.EntityDeveloper{}, fmt.Errorf("unable to retrieve app %s linked to the scene %s", appName, sceneName)
-	}
-
-	return c.developer.QueryMainDevelopers(a.Id, before, after)
+func (c Core) QueryMainDevelopers(appId string, before time.Time, after time.Time) ([]developer.EntityDeveloper, error) {
+	return c.developer.QueryMainDevelopers(appId, before, after)
 }
 
-func (c Core) BuildKnowledgeMap(sceneName string, appName string, before time.Time, after time.Time) (developer.KnowledgeMapHierarchy, error) {
-	s, err := c.scene.QueryByName(sceneName)
-	if err != nil {
-		return developer.KnowledgeMapHierarchy{}, fmt.Errorf("unable to retrieve scene %s", sceneName)
-	}
-
-	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
-	if err != nil {
-		return developer.KnowledgeMapHierarchy{}, fmt.Errorf("unable to retrieve app %s linked to the scene %s", appName, sceneName)
-	}
-
+func (c Core) BuildKnowledgeMap(a app.App, before time.Time, after time.Time) (developer.KnowledgeMapHierarchy, error) {
 	md, err := c.developer.QueryMainDevelopers(a.Id, before, after)
 	if err != nil {
 		return developer.KnowledgeMapHierarchy{}, errors.Wrap(err, "Unable to fetch main developers")
@@ -54,7 +33,7 @@ func (c Core) BuildKnowledgeMap(sceneName string, appName string, before time.Ti
 		return developer.KnowledgeMapHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
 	}
 
-	return buildKnowledgeMap(appName, revs, md), nil
+	return buildKnowledgeMap(a.Name, revs, md), nil
 }
 
 func buildKnowledgeMap(appName string, revisions []revision.Revision, developers []developer.EntityDeveloper) developer.KnowledgeMapHierarchy {

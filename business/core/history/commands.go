@@ -1,6 +1,7 @@
 package history
 
 import (
+	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/foundation"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -21,8 +22,14 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 			}
 
 			ui.Say("Importing history...")
+
+			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
+			if err != nil {
+				return errors.Wrap(err, "Command failed")
+			}
+
 			h := NewCore(connection)
-			if err = h.Import(*ctx, args[0], sceneName, path); err != nil {
+			if err = h.Import(a.Id, path); err != nil {
 				return errors.Wrap(err, "History cannot be imported")
 			}
 

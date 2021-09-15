@@ -4,7 +4,6 @@ import (
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/business/data/store/scene"
-	context "com.fha.gocan/foundation"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"strings"
@@ -25,37 +24,17 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) GetRevisions(ctx context.Context, appName string, sceneName string, before time.Time, after time.Time) ([]revision.Revision, error) {
-	s, err := c.scene.QueryByName(sceneName)
-	if err != nil {
-		return []revision.Revision{}, errors.Wrap(err, "Scene not found")
-	}
-
-	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
-	if err != nil {
-		return []revision.Revision{}, errors.Wrap(err, "App not found")
-	}
-
-	return c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
+func (c Core) GetRevisions(appId string, before time.Time, after time.Time) ([]revision.Revision, error) {
+	return c.revision.QueryByAppIdAndDateRange(appId, before, after)
 }
 
-func (c Core) GetHotspots(ctx context.Context, appName string, sceneName string, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
-	s, err := c.scene.QueryByName(sceneName)
-	if err != nil {
-		return revision.HotspotHierarchy{}, errors.Wrap(err, "Scene not found")
-	}
-
-	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
-	if err != nil {
-		return revision.HotspotHierarchy{}, errors.Wrap(err, "App not found")
-	}
-
+func (c Core) GetHotspots(a app.App, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
 	revs, err := c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
 	if err != nil {
 		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
 	}
 
-	return buildHotspots(appName, revs), nil
+	return buildHotspots(a.Name, revs), nil
 }
 
 func buildHotspots(appName string, revisions []revision.Revision) revision.HotspotHierarchy {

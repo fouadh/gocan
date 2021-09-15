@@ -4,7 +4,6 @@ import (
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/business/data/store/scene"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"time"
 )
@@ -23,30 +22,10 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Query(sceneName string, appName string, before time.Time, after time.Time, minimalCoupling float64, minimalRevisionsAverage int) ([]coupling.Coupling, error) {
-	s, err := c.scene.QueryByName(sceneName)
-	if err != nil {
-		return []coupling.Coupling{}, fmt.Errorf("unable to retrieve scene %s", sceneName)
-	}
-
-	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
-	if err != nil {
-		return []coupling.Coupling{}, fmt.Errorf("unable to retrieve app %s linked to the scene %s", appName, sceneName)
-	}
-
-	return c.coupling.Query(a.Id, before, after, minimalCoupling, minimalRevisionsAverage)
+func (c Core) Query(appId string, before time.Time, after time.Time, minimalCoupling float64, minimalRevisionsAverage int) ([]coupling.Coupling, error) {
+	return c.coupling.Query(appId, before, after, minimalCoupling, minimalRevisionsAverage)
 }
 
-func (c Core) QuerySoc(sceneName string, appName string, before time.Time, after time.Time) ([]coupling.Soc, error) {
-	s, err := c.scene.QueryByName(sceneName)
-	if err != nil {
-		return []coupling.Soc{}, fmt.Errorf("unable to retrieve scene %s", sceneName)
-	}
-
-	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
-	if err != nil {
-		return []coupling.Soc{}, fmt.Errorf("unable to retrieve app %s linked to the scene %s", appName, sceneName)
-	}
-
-	return c.coupling.QuerySoc(a.Id, before, after)
+func (c Core) QuerySoc(appId string, before time.Time, after time.Time) ([]coupling.Soc, error) {
+	return c.coupling.QuerySoc(appId, before, after)
 }

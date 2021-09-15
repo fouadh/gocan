@@ -1,6 +1,7 @@
 package coupling
 
 import (
+	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"fmt"
@@ -39,7 +40,12 @@ func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Invalid after date")
 			}
 
-			data, err := c.Query(sceneName, args[0], beforeTime, afterTime, float64(minCoupling)/100, minRevsAvg)
+			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
+			if err != nil {
+				return errors.Wrap(err, "Coupling failed")
+			}
+
+			data, err := c.Query(a.Id, beforeTime, afterTime, float64(minCoupling)/100, minRevsAvg)
 
 			if err != nil {
 				return errors.Wrap(err, "Cannot retrieve couplings")
@@ -100,7 +106,12 @@ func NewSocCommand(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Invalid after date")
 			}
 
-			data, err := c.QuerySoc(sceneName, args[0], beforeTime, afterTime)
+			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
+			if err != nil {
+				return errors.Wrap(err, "Command failed")
+			}
+
+			data, err := c.QuerySoc(a.Id, beforeTime, afterTime)
 
 			if err != nil {
 				return errors.Wrap(err, "Cannot retrieve summary of coupling")

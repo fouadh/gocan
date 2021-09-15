@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/scene"
 	context "com.fha.gocan/foundation"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -43,4 +44,20 @@ func (c Core) QueryBySceneName(sceneName string) ([]app.App, error) {
 	}
 
 	return c.app.QueryBySceneId(s.Id)
+}
+
+func FindAppBySceneNameAndAppName(connection *sqlx.DB, appName string, sceneName string) (app.App, error) {
+	c := NewCore(connection)
+
+	s, err := c.scene.QueryByName(sceneName)
+	if err != nil {
+		return app.App{}, fmt.Errorf("unable to retrieve scene %s", sceneName)
+	}
+
+	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
+	if err != nil {
+		return app.App{}, fmt.Errorf("unable to retrieve app %s linked to the scene %s", appName, sceneName)
+	}
+
+	return a, nil
 }
