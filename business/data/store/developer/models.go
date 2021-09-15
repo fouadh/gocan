@@ -8,6 +8,13 @@ type EntityDeveloper struct {
 	Ownership  float64
 }
 
+type EntityEffort struct {
+	Entity          string
+	Author          string
+	AuthorRevisions int
+	TotalRevisions  int
+}
+
 type KnowledgeMapHierarchy struct {
 	Name          string                   `json:"name"`
 	Children      []*KnowledgeMapHierarchy `json:"children,omitempty"`

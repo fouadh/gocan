@@ -1,0 +1,1 @@
+drop function entity_efforts(app_id uuid, before timestamp, after timestamp);
