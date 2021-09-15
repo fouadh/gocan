@@ -1,0 +1,1 @@
+drop function app_summary(app_id uuid, before timestamp, after timestamp);

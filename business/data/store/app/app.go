@@ -5,6 +5,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
+	"time"
 )
 
 type Store struct {
@@ -99,4 +100,43 @@ func (s Store) QueryBySceneId(sceneId string) ([]App, error) {
 	}
 
 	return results, nil
+}
+
+func (s Store) QuerySummary(appId string, before time.Time, after time.Time) (Summary, error) {
+	const q = `
+	SELECT 
+		name,
+		id                      ,
+		numberOfCommits         ,
+		numberOfEntities        ,
+		numberOfEntitiesChanged ,
+		numberOfAuthors         
+	FROM
+		app_summary(:app_id, :before, :after)
+`
+	data := struct {
+		AppId string `db:"app_id"`
+		Before time.Time `db:"before"`
+		After  time.Time `db:"after"`
+	}{
+		AppId: appId,
+		Before: before,
+		After:  after,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return Summary{}, err
+	}
+
+	if !rows.Next() {
+		return Summary{}, errors.New("No data found for this app.")
+	}
+
+	var result Summary
+	if err := rows.StructScan(&result); err != nil {
+		return Summary{}, err
+	}
+
+	return result, nil
 }

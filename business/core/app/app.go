@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"time"
 )
 
 type Core struct {
@@ -46,9 +47,11 @@ func (c Core) QueryBySceneName(sceneName string) ([]app.App, error) {
 	return c.app.QueryBySceneId(s.Id)
 }
 
-func FindAppBySceneNameAndAppName(connection *sqlx.DB, appName string, sceneName string) (app.App, error) {
-	c := NewCore(connection)
+func (c Core) QuerySummary(appId string, before time.Time, after time.Time) (app.Summary, error) {
+	return c.app.QuerySummary(appId, before, after)
+}
 
+func (c Core) FindAppBySceneNameAndAppName(appName string, sceneName string) (app.App, error) {
 	s, err := c.scene.QueryByName(sceneName)
 	if err != nil {
 		return app.App{}, fmt.Errorf("unable to retrieve scene %s", sceneName)
@@ -60,4 +63,10 @@ func FindAppBySceneNameAndAppName(connection *sqlx.DB, appName string, sceneName
 	}
 
 	return a, nil
+}
+
+func FindAppBySceneNameAndAppName(connection *sqlx.DB, appName string, sceneName string) (app.App, error) {
+	c := NewCore(connection)
+
+	return c.FindAppBySceneNameAndAppName(appName, sceneName)
 }
