@@ -22,13 +22,13 @@ func (s Store) QueryMainDevelopers(appId string, before time.Time, after time.Ti
 `
 
 	data := struct {
-		AppId                   string    `db:"app_id"`
-		Before                  time.Time `db:"before"`
-		After                   time.Time `db:"after"`
+		AppId  string    `db:"app_id"`
+		Before time.Time `db:"before"`
+		After  time.Time `db:"after"`
 	}{
-		AppId:                   appId,
-		Before:                  before,
-		After:                   after,
+		AppId:  appId,
+		Before: before,
+		After:  after,
 	}
 
 	var results []EntityDeveloper
@@ -61,13 +61,13 @@ func (s Store) QueryEntityEfforts(appId string, before time.Time, after time.Tim
 `
 
 	data := struct {
-		AppId                   string    `db:"app_id"`
-		Before                  time.Time `db:"before"`
-		After                   time.Time `db:"after"`
+		AppId  string    `db:"app_id"`
+		Before time.Time `db:"before"`
+		After  time.Time `db:"after"`
 	}{
-		AppId:                   appId,
-		Before:                  before,
-		After:                   after,
+		AppId:  appId,
+		Before: before,
+		After:  after,
 	}
 
 	var results []EntityEffort
@@ -81,6 +81,44 @@ func (s Store) QueryEntityEfforts(appId string, before time.Time, after time.Tim
 		var item EntityEffort
 		if err := rows.StructScan(&item); err != nil {
 			return []EntityEffort{}, err
+		}
+		results = append(results, item)
+	}
+
+	return results, nil
+}
+
+func (s Store) QueryDevelopers(appId string, before time.Time, after time.Time) ([]Developer, error) {
+	const q = `
+	select author as name, count(1) as numberOfCommits
+from commits
+	where app_id=:app_id
+	and date between :after and :before
+	group by author
+order by name asc
+`
+
+	data := struct {
+		AppId  string    `db:"app_id"`
+		Before time.Time `db:"before"`
+		After  time.Time `db:"after"`
+	}{
+		AppId:  appId,
+		Before: before,
+		After:  after,
+	}
+
+	var results []Developer
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return []Developer{}, err
+	}
+
+	for rows.Next() {
+		var item Developer
+		if err := rows.StructScan(&item); err != nil {
+			return []Developer{}, err
 		}
 		results = append(results, item)
 	}

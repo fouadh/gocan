@@ -49,6 +49,7 @@ func main() {
 	rootCmd.AddCommand(developer.NewMainDevelopers(*ctx))
 	rootCmd.AddCommand(developer.NewEntityEfforts(*ctx))
 	rootCmd.AddCommand(developer.NewKnowledgeMapCommand(*ctx))
+	rootCmd.AddCommand(developer.NewDevsCommand(*ctx))
 	rootCmd.AddCommand(churn.NewCodeChurn(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {

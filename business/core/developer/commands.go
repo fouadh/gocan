@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"strconv"
 )
 
 func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
@@ -145,5 +146,48 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the main developers before this day")
 	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the main developers after this day")
 
+	return &cmd
+}
+
+func NewDevsCommand(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var before string
+	var after string
+
+	cmd := cobra.Command{
+		Use: "devs",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.Say("Getting app revisions...")
+
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			c := NewCore(connection)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+
+			devs, err := c.QueryDevelopers(a.Id, beforeTime, afterTime)
+
+			if err != nil {
+				return err
+			}
+			ui.Ok()
+
+			table := ui.Table([]string{"name","commits"})
+			for _, dev := range devs {
+				table.Add(dev.Name, strconv.Itoa(dev.NumberOfCommits))
+			}
+			table.Print()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the developers before this day")
+	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the developers after this day")
 	return &cmd
 }

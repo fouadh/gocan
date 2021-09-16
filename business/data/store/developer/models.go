@@ -8,6 +8,11 @@ type EntityDeveloper struct {
 	Ownership  float64
 }
 
+type Developer struct {
+	Name            string
+	NumberOfCommits int
+}
+
 type EntityEffort struct {
 	Entity          string
 	Author          string

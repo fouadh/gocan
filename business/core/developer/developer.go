@@ -40,6 +40,10 @@ func (c Core) QueryEntityEfforts(appId string, before time.Time, after time.Time
 	return c.developer.QueryEntityEfforts(appId, before, after)
 }
 
+func (c Core) QueryDevelopers(appId string, before time.Time, after time.Time) ([]developer.Developer, error) {
+	return c.developer.QueryDevelopers(appId, before, after)
+}
+
 func buildKnowledgeMap(appName string, revisions []revision.Revision, developers []developer.EntityDeveloper) developer.KnowledgeMapHierarchy {
 	app := developer.KnowledgeMapHierarchy{
 		Name:     appName,
