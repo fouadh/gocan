@@ -1,0 +1,1 @@
+drop function developers(app_id uuid, before timestamp, after timestamp);

@@ -90,12 +90,8 @@ func (s Store) QueryEntityEfforts(appId string, before time.Time, after time.Tim
 
 func (s Store) QueryDevelopers(appId string, before time.Time, after time.Time) ([]Developer, error) {
 	const q = `
-	select author as name, count(1) as numberOfCommits
-from commits
-	where app_id=:app_id
-	and date between :after and :before
-	group by author
-order by name asc
+	select name, numberOfCommits
+from developers(:app_id, :before, :after)
 `
 
 	data := struct {
