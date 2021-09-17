@@ -40,7 +40,12 @@ export const handlers = [
                 ]
             })
         )
-    })
+    }),
 
+    rest.get('/api/scenes/s123/apps/a1', (req, res, ctx) => {
+        return res(ctx.json({
+            name: "app 1"
+        }))
+    })
 ]
 

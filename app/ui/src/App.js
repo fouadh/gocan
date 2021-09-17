@@ -6,6 +6,7 @@ import {Menu} from "./Menu";
 import {Scenes} from "./screens/Scenes";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
 import {Scene} from "./screens/Scene";
+import {AppDetails} from "./screens/AppDetails";
 
 function App() {
   return (
@@ -14,6 +15,9 @@ function App() {
           <div className="layout-topbar">
             <Menu/>
             <Switch>
+              <Route path="/scenes/:sceneId/apps/:appId">
+                <AppDetails />
+              </Route>
               <Route path="/scenes/:sceneId">
                 <Scene />
               </Route>
