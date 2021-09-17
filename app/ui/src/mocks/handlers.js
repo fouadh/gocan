@@ -249,5 +249,18 @@ export const handlers = [
         }))
     }),
 
+    rest.get('/api/scenes/s123/apps/a1/modus-operandi', (req, res, ctx) => {
+        return res(ctx.json({
+            modusOperandi: [
+                {word: "the", count: 123},
+                {word: "quick", count: 42},
+                {word: "fox", count: 545},
+                {word: "jumped", count: 236},
+                {word: "over", count: 475},
+                {word: "lazy", count: 368},
+                {word: "dog", count: 742}
+            ]
+        }))
+    })
 ]
 

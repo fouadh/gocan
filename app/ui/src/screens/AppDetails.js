@@ -5,9 +5,9 @@ import {TabPanel, TabView} from 'primereact/tabview';
 import {Revisions} from "./Revisions";
 import {Coupling} from "./Coupling";
 import {CodeChurn} from "./CodeChurn";
+import {ModusOperandi} from "./ModusOperandi";
 
-/*import {ModusOperandi} from "./ModusOperandi";
-import {RevisionTrends} from "./RevisionTrends";
+/*import {RevisionTrends} from "./RevisionTrends";
 import "../components/Timeline.css";
 import {ActiveSet} from "./ActiveSet";*/
 
@@ -40,11 +40,10 @@ export function AppDetails() {
                 <TabPanel header="Code Churn">
                     <CodeChurn sceneId={sceneId} appId={appId}/>
                 </TabPanel>
+                <TabPanel header="Modus Operandi">
+                    <ModusOperandi sceneId={sceneId} appId={appId}/>
+                </TabPanel>
                 {/*
-
-        <TabPanel header="Modus Operandi">
-          <ModusOperandi sceneId={sceneId} appId={appId}/>
-        </TabPanel>
         <TabPanel header="Revisions Trends">
           <RevisionTrends sceneId={sceneId} appId={appId}/>
         </TabPanel>
