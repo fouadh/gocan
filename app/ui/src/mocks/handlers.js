@@ -261,6 +261,58 @@ export const handlers = [
                 {word: "dog", count: 742}
             ]
         }))
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/boundaries', (req, res, ctx) => {
+        return res(ctx.json({
+            boundaries: [
+                {id: "b123", name: "production/tests"}
+            ]
+        }))
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/revisions-trends?boundary=b123', (req, res, ctx) => {
+        return res(ctx.json({
+            trends: [
+                {
+                    date: "2021-09-10", revisions: [
+                        {entity: "tests", numberOfRevisions: 50},
+                        {entity: "production", numberOfRevisions: 100}
+                    ]
+                },{
+                    date: "2021-09-11", revisions: [
+                        {entity: "tests", numberOfRevisions: 35},
+                        {entity: "production", numberOfRevisions: 78}
+                    ]
+                },{
+                    date: "2021-09-12", revisions: [
+                        {entity: "tests", numberOfRevisions: 250},
+                        {entity: "production", numberOfRevisions: 210}
+                    ]
+                },{
+                    date: "2021-09-13", revisions: [
+                        {entity: "tests", numberOfRevisions: 198},
+                        {entity: "production", numberOfRevisions: 86}
+                    ]
+                },{
+                    date: "2021-09-14", revisions: [
+                        {entity: "tests", numberOfRevisions: 74},
+                        {entity: "production", numberOfRevisions: 210}
+                    ]
+                },{
+                    date: "2021-09-15", revisions: [
+                        {entity: "tests", numberOfRevisions: 36},
+                        {entity: "production", numberOfRevisions: 12}
+                    ]
+                },{
+                    date: "2021-09-16", revisions: [
+                        {entity: "tests", numberOfRevisions: 145},
+                        {entity: "production", numberOfRevisions: 432}
+                    ]
+                }
+            ]
+        }))
     })
+
 ]
 

@@ -6,8 +6,9 @@ import {Revisions} from "./Revisions";
 import {Coupling} from "./Coupling";
 import {CodeChurn} from "./CodeChurn";
 import {ModusOperandi} from "./ModusOperandi";
+import {RevisionTrends} from "./RevisionTrends";
 
-/*import {RevisionTrends} from "./RevisionTrends";
+/*
 import "../components/Timeline.css";
 import {ActiveSet} from "./ActiveSet";*/
 
@@ -43,10 +44,11 @@ export function AppDetails() {
                 <TabPanel header="Modus Operandi">
                     <ModusOperandi sceneId={sceneId} appId={appId}/>
                 </TabPanel>
+                <TabPanel header="Revisions Trends">
+                    <RevisionTrends sceneId={sceneId} appId={appId}/>
+                </TabPanel>
                 {/*
-        <TabPanel header="Revisions Trends">
-          <RevisionTrends sceneId={sceneId} appId={appId}/>
-        </TabPanel>
+
         <TabPanel header="Entities Active Set">
           <ActiveSet sceneId={sceneId} appId={appId}/>
         </TabPanel>*/}
