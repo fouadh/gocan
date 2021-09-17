@@ -1,7 +1,7 @@
 package churn
 
 type CodeChurn struct {
-	Date    string
-	Added   int
-	Deleted int
+	Date    string `json:"date"`
+	Added   int    `json:"added"`
+	Deleted int    `json:"deleted"`
 }

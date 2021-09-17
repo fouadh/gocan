@@ -13,7 +13,7 @@ type Handlers struct {
 	App app.Core
 }
 
-func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	beforeTime, err := date.ParseDay(date.Today())
