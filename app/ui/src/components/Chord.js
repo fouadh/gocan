@@ -69,7 +69,6 @@ ${d.incoming.length} incoming`));
       .join("path")
       .style("mix-blend-mode", "multiply")
       .attr("d", ([i, o]) => {
-        console.log("incoming:", i, "outgoing:", o);
         return line(i.path(o));
       })
       .each(function (d) {
