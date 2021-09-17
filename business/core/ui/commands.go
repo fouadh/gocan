@@ -26,7 +26,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			webapp := http.FileServer(http.FS(fsys))
 			r.HandleFunc("/api/scenes", func(w http.ResponseWriter, r *http.Request) {
 				w.Header().Set("Content-Type", "application/json")
-				fmt.Fprintf(w, "{\"test\": 123}")
+				fmt.Fprintf(w, "{\n  \"scenes\": [\n    {\n      \"id\": \"123\",\n      \"name\": \"scene 1\",\n      \"applications\": []\n    }]\n}")
 			})
 			r.Handle("/", webapp)
 			srv := &http.Server{
