@@ -5,6 +5,7 @@ import 'primeflex/primeflex.css';
 import {Menu} from "./Menu";
 import {Scenes} from "./screens/Scenes";
 import {BrowserRouter, Route, Switch} from "react-router-dom";
+import {Scene} from "./screens/Scene";
 
 function App() {
   return (
@@ -13,6 +14,9 @@ function App() {
           <div className="layout-topbar">
             <Menu/>
             <Switch>
+              <Route path="/scenes/:sceneId">
+                <Scene />
+              </Route>
               <Route path="/scenes">
                 <Scenes/>
               </Route>

@@ -1,0 +1,20 @@
+.p-panel-title {
+    width: 100%;
+    text-align: center;
+}
+
+h1 {
+    margin-left: 1em;
+}
+
+.data-title {
+    margin-top: 0.5em;
+    font-size: 1.3em;
+}
+
+.data-value {
+    margin-top: 1em;
+    font-size: 2em;
+    font-weight: bold;
+    color: #555;
+}
