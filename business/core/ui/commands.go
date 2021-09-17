@@ -2,10 +2,8 @@ package ui
 
 import (
 	"com.fha.gocan/business/core/scene"
-	scene2 "com.fha.gocan/business/data/store/scene"
 	context "com.fha.gocan/foundation"
 	"embed"
-	"encoding/json"
 	"expvar"
 	"github.com/spf13/cobra"
 	"io/fs"
@@ -38,27 +36,14 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			}
 
 			sceneCore := scene.NewCore(connection)
+			sceneHandlers := scene.Handlers{Scene: sceneCore}
 
-			mux.HandleFunc("/api/scenes", func(w http.ResponseWriter, r *http.Request) {
-				w.Header().Set("Content-Type", "application/json")
-				scenes, err := sceneCore.QueryAll()
+			mux.HandleFunc("/api/scenes", func(writer http.ResponseWriter, request *http.Request) {
+				err := sceneHandlers.QueryAll(writer, request)
 				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					return
+					writer.WriteHeader(http.StatusInternalServerError)
 				}
-				list := struct {
-					Scenes []scene2.Scene `json:"scenes"`
-				}{
-					Scenes: scenes,
-				}
-				payload, err := json.Marshal(list)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					return
-				}
-				w.Write(payload)
 			})
-
 
 			srv := &http.Server{
 				Handler:      mux,
