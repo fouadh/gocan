@@ -19,6 +19,7 @@ export function Revisions({sceneId, appId}) {
       .then(it => {
         if (subscribed) {
           setRevisions(it);
+
         }
       });
 

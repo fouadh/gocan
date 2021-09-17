@@ -1,8 +1,8 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import {Timeline} from "../components/Timeline";
 import * as d3 from "d3";
 import {BoundarySelector} from "./BoundarySelector";
+import {MultiLineChart} from "../components/MultiLineChart";
 
 export function RevisionTrends({sceneId, appId}) {
     const [boundary, setBoundary] = useState();
@@ -17,37 +17,42 @@ export function RevisionTrends({sceneId, appId}) {
                 .then(it => it.trends)
                 .then(it => {
                     if (subscribed) {
-                        console.log("it =>", it);
+                        const map = {};
                         const transformations = [];
-                        const data = [];
 
                         it.forEach(each => {
-                            const row = {date: each.date};
-                            each.revisions.forEach(rev => {
-                                if (transformations.indexOf(rev.entity) < 0) {
-                                    transformations.push(rev.entity);
-                                }
-                                row[rev.entity] = rev.numberOfRevisions;
-                            });
-                            data.push(row);
+                           const date = each.date;
+                           const revs = each.revisions;
+
+                           revs.forEach(rev => {
+                              if (!map[rev.entity]) {
+                                  map[rev.entity] = [];
+                              }
+
+                              map[rev.entity].push({ x: date, y: rev.numberOfRevisions });
+                           });
                         });
-                        setTransformations(transformations);
-                        setTrends(data);
+
+                        let keys = Object.keys(map);
+                        setTransformations(keys);
+                        const trends = keys.map(t => map[t]);
+                        setTrends(trends);
                     }
                 });
         } else {
-            setTrends([]);
+            setTrends({});
         }
         return () => subscribed = false;
     }, [boundary]);
 
     return <div>
         <BoundarySelector sceneId={sceneId} appId={appId} onChange={(e) => setBoundary(e.value)}/>
-        {
-            transformations.map((each) => {
-                return <Timeline label={`Revisions for ${each}`} data={trends}
-                                 xAccessor={(d) => d3.timeParse('%Y-%m-%d')(d.date)}
-                                 yAccessor={(d) => d[each]} xFormatter={d3.timeFormat("%Y-%m-%d")}/>
-            })}
+        <MultiLineChart label="Revisions Trends"
+                        data={Object.values(trends)}
+                        xAccessor={d => d3.timeParse('%Y-%m-%d')(d.x)}
+                        yAccessor={d => d.y}
+                        xFormatter={d3.timeFormat("%Y-%m-%d")}
+                        legend={transformations}
+        />
     </div>;
 }
