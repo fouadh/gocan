@@ -3,11 +3,11 @@ import {useParams} from 'react-router-dom'
 import {useEffect, useState} from "react";
 import {TabPanel, TabView} from 'primereact/tabview';
 import {Revisions} from "./Revisions";
+import {Coupling} from "./Coupling";
 import {CodeChurn} from "./CodeChurn";
 
 /*import {ModusOperandi} from "./ModusOperandi";
 import {RevisionTrends} from "./RevisionTrends";
-import {Coupling} from "./Coupling";
 import "../components/Timeline.css";
 import {ActiveSet} from "./ActiveSet";*/
 
@@ -34,12 +34,13 @@ export function AppDetails() {
                 <TabPanel header="Revisions">
                     <Revisions sceneId={sceneId} appId={appId}/>
                 </TabPanel>
+                <TabPanel header="Coupling">
+                    <Coupling sceneId={sceneId} appId={appId}/>
+                </TabPanel>
                 <TabPanel header="Code Churn">
                     <CodeChurn sceneId={sceneId} appId={appId}/>
                 </TabPanel>
-                {/*<TabPanel header="Coupling">
-          <Coupling sceneId={sceneId} appId={appId}/>
-        </TabPanel>
+                {/*
 
         <TabPanel header="Modus Operandi">
           <ModusOperandi sceneId={sceneId} appId={appId}/>

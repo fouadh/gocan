@@ -84,7 +84,170 @@ export const handlers = [
                 {date: "2021-09-16", added: 26, deleted: 41},
             ]
         }))
-    })
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/coupling-hierarchy', (req, res, ctx) => {
+        return res(ctx.json({
+            "name": "root",
+            "children": [
+                {
+                    "name": "business",
+                    "children": [
+                        {
+                            "name": "core",
+                            "children": [
+                                {
+                                    "name": "start-db",
+                                    "children": [
+                                        {
+                                            "name": "command.go",
+                                            "coupling": [
+                                                "root/business/core/stop-db/command.go"
+                                            ],
+                                            "relations": [
+                                                {
+                                                    "coupled": "root/business/core/stop-db/command.go",
+                                                    "degree": 0.8,
+                                                    "averageRevisions": 5
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "setup-db",
+                                    "children": [
+                                        {
+                                            "name": "command.go",
+                                            "coupling": [
+                                                "root/business/core/start-db/command.go"
+                                            ],
+                                            "relations": [
+                                                {
+                                                    "coupled": "root/business/core/start-db/command.go",
+                                                    "degree": 0.6,
+                                                    "averageRevisions": 5
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "create-scene",
+                                    "children": [
+                                        {
+                                            "name": "command.go",
+                                            "coupling": [
+                                                "root/business/core/start-db/command.go"
+                                            ],
+                                            "relations": [
+                                                {
+                                                    "coupled": "root/business/core/start-db/command.go",
+                                                    "degree": 0.6,
+                                                    "averageRevisions": 5
+                                                }
+                                            ]
+                                        },
+                                        {
+                                            "name": "usecase.go"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "stop-db",
+                                    "children": [
+                                        {
+                                            "name": "command.go"
+                                        }
+                                    ]
+                                },
+                                {
+                                    "name": "coupling",
+                                    "children": [
+                                        {
+                                            "name": "commands.go"
+                                        }
+                                    ]
+                                }
+                            ]
+                        },
+                        {
+                            "name": "platform",
+                            "children": [
+                                {
+                                    "name": "context.go"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "app",
+                    "children": [
+                        {
+                            "name": "cmd",
+                            "children": [
+                                {
+                                    "name": "gocan",
+                                    "children": [
+                                        {
+                                            "name": "main.go",
+                                            "coupling": [
+                                                "root/business/core/stop-db/command.go",
+                                                "root/business/core/create-scene/command.go",
+                                                "root/business/core/setup-db/command.go",
+                                                "root/business/core/start-db/command.go",
+                                                "root/business/platform/context.go",
+                                                "root/business/core/coupling/commands.go",
+                                                "root/business/core/create-scene/usecase.go"
+                                            ],
+                                            "relations": [
+                                                {
+                                                    "coupled": "root/business/core/stop-db/command.go",
+                                                    "degree": 0.4444444444444444,
+                                                    "averageRevisions": 9
+                                                },
+                                                {
+                                                    "coupled": "root/business/core/create-scene/command.go",
+                                                    "degree": 0.4444444444444444,
+                                                    "averageRevisions": 9
+                                                },
+                                                {
+                                                    "coupled": "root/business/core/setup-db/command.go",
+                                                    "degree": 0.4444444444444444,
+                                                    "averageRevisions": 9
+                                                },
+                                                {
+                                                    "coupled": "root/business/core/start-db/command.go",
+                                                    "degree": 0.4,
+                                                    "averageRevisions": 10
+                                                },
+                                                {
+                                                    "coupled": "root/business/platform/context.go",
+                                                    "degree": 0.35294117647058826,
+                                                    "averageRevisions": 8.5
+                                                },
+                                                {
+                                                    "coupled": "root/business/core/coupling/commands.go",
+                                                    "degree": 0.35294117647058826,
+                                                    "averageRevisions": 8.5
+                                                },
+                                                {
+                                                    "coupled": "root/business/core/create-scene/usecase.go",
+                                                    "degree": 0.35294117647058826,
+                                                    "averageRevisions": 8.5
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }))
+    }),
 
 ]
 
