@@ -3,7 +3,6 @@ package scene
 import (
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/scene"
-	app2 "com.fha.gocan/business/data/store/app"
 	scene2 "com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/foundation/web"
 	"net/http"
@@ -32,6 +31,10 @@ type ContextRouteData interface {
 	Params() map[string]string
 }
 
+type applicationDto struct {
+	Id string `json:"id"`
+}
+
 func (h *Handlers) QueryById(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	id := params["id"]
 	s, err := h.Scene.QueryById(id)
@@ -45,14 +48,20 @@ func (h *Handlers) QueryById(w http.ResponseWriter, r *http.Request, params map[
 		return err
 	}
 
+	appDtos := []applicationDto{}
+	for _, a := range apps {
+		appDtos = append(appDtos, applicationDto{
+			Id: a.Id,
+		})
+	}
 	data := struct {
-		Id string
-		Name string
-		Applications []app2.App
+		Id           string           `json:"id"`
+		Name         string           `json:"name"`
+		Applications []applicationDto `json:"applications"`
 	}{
-		Id: s.Id,
-		Name: s.Name,
-		Applications: apps,
+		Id:           s.Id,
+		Name:         s.Name,
+		Applications: appDtos,
 	}
 
 	return web.Respond(w, data, 200)
