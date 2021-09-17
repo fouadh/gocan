@@ -1,11 +1,11 @@
 package revision
 
 type Revision struct {
-	Entity                      string
-	NumberOfRevisions           int
-	NumberOfAuthors             int
-	NormalizedNumberOfRevisions float64
-	Code                        int
+	Entity                      string `json:"entity"`
+	NumberOfRevisions           int `json:"numberOfRevisions"`
+	NumberOfAuthors             int `json:"numberOfAuthors"`
+	NormalizedNumberOfRevisions float64 `json:"normalizedNumberOfRevisions"`
+	Code                        int `json:"code"`
 }
 
 type HotspotHierarchy struct {
