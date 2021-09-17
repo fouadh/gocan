@@ -1,6 +1,7 @@
 package ui
 
 import (
+	app3 "com.fha.gocan/app/api/app"
 	scene2 "com.fha.gocan/app/api/scene"
 	app2 "com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/scene"
@@ -11,6 +12,8 @@ import (
 	"io/fs"
 	"log"
 	"net/http"
+	"path"
+	"strings"
 	"time"
 )
 
@@ -35,14 +38,23 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 
 
 			fsys, _ := fs.Sub(app, "dist")
-			server := http.FileServer(http.FS(fsys))
-			mux.GET("/", func(writer http.ResponseWriter, request *http.Request, m map[string]string) {
-				server.ServeHTTP(writer, request)
+			fs := http.FS(fsys)
+			server := http.FileServer(fs)
+			mux.GET("/", func(w http.ResponseWriter, r *http.Request, m map[string]string) {
+				server.ServeHTTP(w, r)
 				return
 			})
 
-			mux.GET("/*path", func(writer http.ResponseWriter, request *http.Request, m map[string]string) {
-				server.ServeHTTP(writer, request)
+			mux.GET("/*path", func(w http.ResponseWriter, r *http.Request, m map[string]string) {
+				// todo not very nice approach: can we do simpler than opening the file to check if it exists ?
+				fullPath := strings.TrimPrefix(path.Clean(r.URL.Path), "/")
+				f, err := fs.Open(fullPath)
+				if err != nil {
+					r.URL.Path = "/"
+				} else {
+					f.Close()
+				}
+				server.ServeHTTP(w, r)
 				return
 			})
 
@@ -51,18 +63,29 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			appCore := app2.NewCore(connection)
 
 			sceneHandlers := scene2.Handlers{Scene: sceneCore, App: appCore}
+			appHandlers := app3.Handlers{App: appCore}
+
 			group.GET("/scenes",  func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := sceneHandlers.QueryAll(writer, request)
 				if err != nil {
 					writer.WriteHeader(http.StatusInternalServerError)
 				}
 			})
+
 			group.GET("/scenes/:id", func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := sceneHandlers.QueryById(writer, request, params)
 				if err != nil {
 					writer.WriteHeader(http.StatusInternalServerError)
 				}
 			})
+
+			group.GET("/scenes/:sceneId/apps", func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
+				err := appHandlers.QueryAll(writer, request, params)
+				if err != nil {
+					writer.WriteHeader(http.StatusInternalServerError)
+				}
+			})
+
 
 			srv := &http.Server{
 				Handler:      mux,

@@ -26,11 +26,6 @@ func (h *Handlers) QueryAll(w http.ResponseWriter, r *http.Request) error {
 	return web.Respond(w, list, 200)
 }
 
-type ContextRouteData interface {
-	Route() string
-	Params() map[string]string
-}
-
 type applicationDto struct {
 	Id string `json:"id"`
 }

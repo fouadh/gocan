@@ -65,6 +65,10 @@ func (c Core) FindAppBySceneNameAndAppName(appName string, sceneName string) (ap
 	return a, nil
 }
 
+func (c Core) QueryBySceneId(sceneId string) ([]app.App, error) {
+	return c.app.QueryBySceneId(sceneId)
+}
+
 func FindAppBySceneNameAndAppName(connection *sqlx.DB, appName string, sceneName string) (app.App, error) {
 	c := NewCore(connection)
 

@@ -12,10 +12,10 @@ type NewApp struct {
 }
 
 type Summary struct {
-	Id                      string
-	Name                    string
-	NumberOfCommits         int
-	NumberOfEntities        int
-	NumberOfEntitiesChanged int
-	NumberOfAuthors         int
+	Id                      string `json:"id"`
+	Name                    string `json:"name"`
+	NumberOfCommits         int    `json:"numberOfCommits"`
+	NumberOfEntities        int    `json:"numberOfEntities"`
+	NumberOfEntitiesChanged int    `json:"numberOfEntitiesChanged"`
+	NumberOfAuthors         int    `json:"numberOfAuthors"`
 }
