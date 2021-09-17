@@ -7,10 +7,7 @@ import {Coupling} from "./Coupling";
 import {CodeChurn} from "./CodeChurn";
 import {ModusOperandi} from "./ModusOperandi";
 import {RevisionTrends} from "./RevisionTrends";
-
-/*
-import "../components/Timeline.css";
-import {ActiveSet} from "./ActiveSet";*/
+import {ActiveSet} from "./ActiveSet";
 
 export function AppDetails() {
     const {sceneId, appId} = useParams();
@@ -47,11 +44,9 @@ export function AppDetails() {
                 <TabPanel header="Revisions Trends">
                     <RevisionTrends sceneId={sceneId} appId={appId}/>
                 </TabPanel>
-                {/*
-
-        <TabPanel header="Entities Active Set">
-          <ActiveSet sceneId={sceneId} appId={appId}/>
-        </TabPanel>*/}
+                <TabPanel header="Entities Active Set">
+                    <ActiveSet sceneId={sceneId} appId={appId}/>
+                </TabPanel>
             </TabView>
         </>
     );

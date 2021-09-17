@@ -312,7 +312,21 @@ export const handlers = [
                 }
             ]
         }))
-    })
+    }),
 
+    rest.get('/api/scenes/s123/apps/a1/active-set', (req, res, ctx) => {
+        return res(ctx.json({
+            activeSet: [
+                {date: '2021-09-10', opened: 123, closed: 362},
+                {date: '2021-09-11', opened: 86, closed: 10},
+                {date: '2021-09-12', opened: 89, closed: 50},
+                {date: '2021-09-13', opened: 133, closed: 25},
+                {date: '2021-09-14', opened: 75, closed: 63},
+                {date: '2021-09-15', opened: 68, closed: 45},
+                {date: '2021-09-16', opened: 85, closed: 47},
+                {date: '2021-09-17', opened: 124, closed: 23},
+            ]
+        }))
+    })
 ]
 

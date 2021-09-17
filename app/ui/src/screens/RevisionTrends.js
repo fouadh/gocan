@@ -18,7 +18,6 @@ export function RevisionTrends({sceneId, appId}) {
                 .then(it => {
                     if (subscribed) {
                         const map = {};
-                        const transformations = [];
 
                         it.forEach(each => {
                            const date = each.date;
@@ -43,7 +42,7 @@ export function RevisionTrends({sceneId, appId}) {
             setTrends({});
         }
         return () => subscribed = false;
-    }, [boundary]);
+    }, [boundary, sceneId, appId]);
 
     return <div>
         <BoundarySelector sceneId={sceneId} appId={appId} onChange={(e) => setBoundary(e.value)}/>
