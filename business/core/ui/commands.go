@@ -86,6 +86,14 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 				}
 			})
 
+			group.GET("/scenes/:sceneId/apps/:appId", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := appHandlers.QueryById(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+
+			})
+
 
 			srv := &http.Server{
 				Handler:      mux,

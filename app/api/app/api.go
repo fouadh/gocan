@@ -48,3 +48,13 @@ func (h *Handlers) QueryAll(w http.ResponseWriter, r *http.Request, params map[s
 
 	return web.Respond(w, result, 200)
 }
+
+func (h *Handlers) QueryById(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+	a, err := h.App.QueryById(appId)
+	if err != nil {
+		return err
+	}
+
+	return web.Respond(w, a, 200)
+}

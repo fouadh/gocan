@@ -140,3 +140,35 @@ func (s Store) QuerySummary(appId string, before time.Time, after time.Time) (Su
 
 	return result, nil
 }
+
+func (s Store) QueryById(appId string) (App, error) {
+	const q = `
+	SELECT 
+		id, name, scene_id
+	FROM
+		apps
+	WHERE
+		id = :app_id
+`
+	var result App
+
+	data := struct {
+		AppId string `db:"app_id"`
+	}{
+		AppId: appId,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return App{}, err
+	}
+	if !rows.Next() {
+		return App{}, errors.New("not found")
+	}
+
+	if err := rows.StructScan(&result); err != nil {
+		return App{}, err
+	}
+
+	return result, nil
+}
