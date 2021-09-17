@@ -2,8 +2,8 @@ import axios from "axios";
 import {useParams} from 'react-router-dom'
 import {useEffect, useState} from "react";
 import {TabPanel, TabView} from 'primereact/tabview';
-/*import {Revisions} from "./Revisions";
-import {CodeChurn} from "./CodeChurn";
+import {Revisions} from "./Revisions";
+/*import {CodeChurn} from "./CodeChurn";
 import {ModusOperandi} from "./ModusOperandi";
 import {RevisionTrends} from "./RevisionTrends";
 import {Coupling} from "./Coupling";
@@ -29,11 +29,11 @@ export function AppDetails() {
   return (
     <>
       <div><h3 className="p-ml-4">{application?.name}</h3></div>
-      {/*<TabView renderActiveOnly={true}>
+      <TabView renderActiveOnly={true}>
         <TabPanel header="Revisions">
           <Revisions sceneId={sceneId} appId={appId}/>
         </TabPanel>
-        <TabPanel header="Coupling">
+        {/*<TabPanel header="Coupling">
           <Coupling sceneId={sceneId} appId={appId}/>
         </TabPanel>
         <TabPanel header="Code Churn">
@@ -47,8 +47,8 @@ export function AppDetails() {
         </TabPanel>
         <TabPanel header="Entities Active Set">
           <ActiveSet sceneId={sceneId} appId={appId}/>
-        </TabPanel>
-      </TabView>*/}
+        </TabPanel>*/}
+      </TabView>
     </>
   );
 }
