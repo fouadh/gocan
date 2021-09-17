@@ -64,6 +64,26 @@ export const handlers = [
                 {entity: "file 11", numberOfRevisions: 1},
             ]
         }))
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/code-churn', (req, res, ctx) => {
+        return res(ctx.json({
+            codeChurn: [
+                {date: "2021-09-01", added: 10, deleted: 5},
+                {date: "2021-09-02", added: 100, deleted: 15},
+                {date: "2021-09-03", added: 37, deleted: 51},
+                {date: "2021-09-04", added: 48, deleted: 18},
+                {date: "2021-09-05", added: 89, deleted: 0},
+                {date: "2021-09-08", added: 250, deleted: 19},
+                {date: "2021-09-10", added: 101, deleted: 45},
+                {date: "2021-09-11", added: 36, deleted: 14},
+                {date: "2021-09-12", added: 8, deleted: 63},
+                {date: "2021-09-13", added: 123, deleted: 25},
+                {date: "2021-09-14", added: 89, deleted: 3},
+                {date: "2021-09-15", added: 21, deleted: 14},
+                {date: "2021-09-16", added: 26, deleted: 41},
+            ]
+        }))
     })
 
 ]
