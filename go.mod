@@ -6,6 +6,7 @@ require (
 	github.com/Boostport/migration v0.21.2
 	github.com/boyter/scc v2.12.0+incompatible // indirect
 	github.com/dbaggerman/cuba v0.3.2 // indirect
+	github.com/dimfeld/httptreemux/v5 v5.3.0 // indirect
 	github.com/fatih/color v1.12.0
 	github.com/fergusstrange/embedded-postgres v1.6.0
 	github.com/go-playground/universal-translator v0.17.0 // indirect

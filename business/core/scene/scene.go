@@ -30,3 +30,7 @@ func (c Core) Create(ctx context.Context, sceneName string) (scene.Scene, error)
 func (c Core) QueryAll() ([]scene.Scene, error) {
 	return c.scene.QueryAll()
 }
+
+func (c Core) QueryById(id string) (scene.Scene, error) {
+	return c.scene.QueryById(id)
+}

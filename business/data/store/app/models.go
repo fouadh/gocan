@@ -1,8 +1,8 @@
 package app
 
 type App struct {
-	Id      string `db:"id"`
-	Name    string `db:"name"`
+	Id      string `db:"id" json:"id"`
+	Name    string `db:"name" json:"name"`
 	SceneId string `db:"scene_id"`
 }
 

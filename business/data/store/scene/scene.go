@@ -80,3 +80,35 @@ func (s Store) QueryAll() ([]Scene, error) {
 
 	return scenes, nil
 }
+
+func (s Store) QueryById(id string) (Scene, error) {
+	const q = `
+	SELECT 
+		id, name
+	FROM
+		scenes
+	WHERE
+		id = :scene_id
+`
+	var result Scene
+
+	data := struct {
+		SceneId string `db:"scene_id"`
+	}{
+		SceneId: id,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return Scene{}, err
+	}
+	if !rows.Next() {
+		return Scene{}, errors.New("not found")
+	}
+
+	if err := rows.StructScan(&result); err != nil {
+		return Scene{}, err
+	}
+
+	return result, nil
+}
