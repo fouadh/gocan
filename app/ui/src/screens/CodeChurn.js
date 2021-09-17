@@ -16,7 +16,6 @@ export function CodeChurn({sceneId, appId}) {
                     const added = it.map((each) => ({x: each.date, y: each.added}));
                     const deleted = it.map((each) => ({x: each.date, y: each.deleted}));
                     const churn = [added, deleted];
-                    console.log({churn});
                     setCodeChurn(churn);
                 }
             });
