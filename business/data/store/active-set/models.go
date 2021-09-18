@@ -3,7 +3,7 @@ package active_set
 import "time"
 
 type ActiveSet struct {
-	Date   time.Time `json:"date"`
+	Date   string `json:"date"`
 	Opened int       `json:"opened"`
 	Closed int       `json:"closed"`
 }

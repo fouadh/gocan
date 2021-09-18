@@ -40,7 +40,7 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 
 			table := ctx.Ui.Table([]string{"Date", "Opened", "Closed"})
 			for _, item := range as {
-				table.Add(item.Date.Format("2006-01-02"), strconv.Itoa(item.Opened), strconv.Itoa(item.Closed))
+				table.Add(item.Date, strconv.Itoa(item.Opened), strconv.Itoa(item.Closed))
 			}
 			table.Print()
 

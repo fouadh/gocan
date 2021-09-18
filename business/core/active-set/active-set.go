@@ -22,20 +22,20 @@ func (c Core) Query(appId string, before time.Time, after time.Time) ([]active_s
 		return []active_set.ActiveSet{}, err
 	}
 
-	mergedResults := make(map[time.Time]active_set.ActiveSet)
+	mergedResults := make(map[string]active_set.ActiveSet)
 
 	for _, each := range opened {
 		item := active_set.ActiveSet{
-			Date:   each.Date,
+			Date:   each.Date.Format("2006-01-02"),
 			Opened: each.Count,
 		}
 		mergedResults[item.Date] = item
 	}
 
 	for _, each := range closed {
-		item := mergedResults[each.Date]
+		item := mergedResults[each.Date.Format("2006-01-02")]
 		item.Closed = each.Count
-		mergedResults[each.Date] = item
+		mergedResults[item.Date] = item
 	}
 
 	results := make([]active_set.ActiveSet, 0, len(mergedResults))
@@ -44,7 +44,7 @@ func (c Core) Query(appId string, before time.Time, after time.Time) ([]active_s
 	}
 
 	sort.Slice(results, func(i, j int) bool {
-		return results[i].Date.Before(results[j].Date)
+		return results[i].Date < results[j].Date
 	})
 
 	return results, nil
