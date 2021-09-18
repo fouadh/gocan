@@ -8,6 +8,7 @@ import {CodeChurn} from "./CodeChurn";
 import {ModusOperandi} from "./ModusOperandi";
 import {RevisionTrends} from "./RevisionTrends";
 import {ActiveSet} from "./ActiveSet";
+import {KnowledgeMap} from "./KnowledgeMap";
 
 export function AppDetails() {
     const {sceneId, appId} = useParams();
@@ -44,7 +45,9 @@ export function AppDetails() {
                 <TabPanel header="Revisions Trends">
                     <RevisionTrends sceneId={sceneId} appId={appId}/>
                 </TabPanel>
-                <TabPanel header="Entities Active Set">
+                <TabPanel header="Knowledge Map">
+                    <KnowledgeMap sceneId={sceneId} appId={appId}/>
+                </TabPanel><TabPanel header="Entities Active Set">
                     <ActiveSet sceneId={sceneId} appId={appId}/>
                 </TabPanel>
             </TabView>

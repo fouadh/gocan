@@ -327,6 +327,168 @@ export const handlers = [
                 {date: '2021-09-17', opened: 124, closed: 23},
             ]
         }))
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/authors', (req, res, ctx) => {
+        return res(ctx.json({
+            authors: [
+                {name: "Alice"},
+                {name: "Bob"},
+                {name: "Charlie"},
+            ]
+        }))
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/knowledge-map', (req, res, ctx) => {
+        return res(ctx.json({
+                "name": "gocan",
+                "children": [
+                    {
+                        "name": "app",
+                        "children": [
+                            {
+                                "name": "cmd",
+                                "children": [
+                                    {
+                                        "name": "gocan",
+                                        "children": [
+                                            {
+                                                "name": "main.go",
+                                                "weight": 1,
+                                                "size": 45,
+                                                "mainDeveloper": "Alice"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "business",
+                        "children": [
+                            {
+                                "name": "core",
+                                "children": [
+                                    {
+                                        "name": "coupling",
+                                        "children": [
+                                            {
+                                                "name": "commands.go",
+                                                "weight": 1,
+                                                "size": 99,
+                                                "mainDeveloper": "Bob"
+                                            },
+                                            {
+                                                "name": "coupling.go",
+                                                "weight": 1,
+                                                "size": 43,
+                                                "mainDeveloper": "Charlie"
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "developer",
+                                        "children": [
+                                            {
+                                                "name": "commands.go",
+                                                "weight": 1,
+                                                "size": 49,
+                                                "mainDeveloper": "Alice"
+                                            },
+                                            {
+                                                "name": "developer.go",
+                                                "weight": 1,
+                                                "size": 32,
+                                                "mainDeveloper": "Alice"
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "data",
+                                "children": [
+                                    {
+                                        "name": "schema",
+                                        "children": [
+                                            {
+                                                "name": "folder",
+                                                "children": [
+                                                    {
+                                                        "name": "file1",
+                                                        "weight": 1,
+                                                        "size": 1,
+                                                        "mainDeveloper": "Alice"
+                                                    },
+                                                    {
+                                                        "name": "file2",
+                                                        "weight": 1,
+                                                        "size": 24,
+                                                        "mainDeveloper": "Alice"
+                                                    },
+                                                    {
+                                                        "name": "file3",
+                                                        "weight": 1,
+                                                        "size": 1,
+                                                        "mainDeveloper": "Bob"
+                                                    },
+                                                    {
+                                                        "name": "file4",
+                                                        "weight": 1,
+                                                        "size": 41,
+                                                        "mainDeveloper": "Charlie"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "store",
+                                        "children": [
+                                            {
+                                                "name": "another_folder",
+                                                "children": [
+                                                    {
+                                                        "name": "file5",
+                                                        "weight": 1,
+                                                        "size": 79,
+                                                        "mainDeveloper": "Charlie"
+                                                    },
+                                                    {
+                                                        "name": "file6",
+                                                        "weight": 1,
+                                                        "size": 11,
+                                                        "mainDeveloper": "Alice"
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "name": "test",
+                                                "children": [
+                                                    {
+                                                        "name": "file7",
+                                                        "weight": 1,
+                                                        "size": 45,
+                                                        "mainDeveloper": "Alice"
+                                                    },
+                                                    {
+                                                        "name": "file8",
+                                                        "weight": 1,
+                                                        "size": 8,
+                                                        "mainDeveloper": "Bob"
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }
+        ))
     })
 ]
 
