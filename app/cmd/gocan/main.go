@@ -1,6 +1,7 @@
 package main
 
 import (
+	active_set "com.fha.gocan/business/core/active-set"
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/churn"
 	"com.fha.gocan/business/core/coupling"
@@ -53,6 +54,7 @@ func main() {
 	rootCmd.AddCommand(developer.NewDevsCommand(*ctx))
 	rootCmd.AddCommand(churn.NewCodeChurn(*ctx))
 	rootCmd.AddCommand(modus_operandi.NewModusOperandi(*ctx))
+	rootCmd.AddCommand(active_set.NewActiveSet(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

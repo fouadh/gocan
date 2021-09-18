@@ -77,6 +77,7 @@ func NewAppSummaryCommand(ctx foundation.Context) *cobra.Command {
 
 	cmd := cobra.Command{
 		Use: "app-summary",
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			connection, err := ctx.GetConnection()
 			if err != nil {
