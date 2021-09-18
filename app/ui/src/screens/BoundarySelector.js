@@ -12,8 +12,13 @@ export function BoundarySelector({sceneId, appId, onChange}) {
       .then(it => it.data)
       .then(it => it.boundaries)
       .then((it) => {
-        if (subscribed)
-          setBoundaries(it);
+        if (subscribed) {
+            setBoundaries(it);
+            if (it.length > 0) {
+                setBoundary(it[0]);
+                onChange({value: it[0]});
+            }
+        }
       });
     return () => subscribed = false;
   }, [sceneId, appId]);
