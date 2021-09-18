@@ -4,11 +4,13 @@ import (
 	app3 "com.fha.gocan/app/api/app"
 	churn2 "com.fha.gocan/app/api/churn"
 	"com.fha.gocan/app/api/coupling"
+	modus_operandi "com.fha.gocan/app/api/modus-operandi"
 	"com.fha.gocan/app/api/revision"
 	scene2 "com.fha.gocan/app/api/scene"
 	app2 "com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/churn"
 	coupling2 "com.fha.gocan/business/core/coupling"
+	modus_operandi2 "com.fha.gocan/business/core/modus-operandi"
 	revision2 "com.fha.gocan/business/core/revision"
 	"com.fha.gocan/business/core/scene"
 	context "com.fha.gocan/foundation"
@@ -69,12 +71,14 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			revisionCore := revision2.NewCore(connection)
 			couplingCore := coupling2.NewCore(connection)
 			churnCore := churn.NewCore(connection)
+			modusOperandiCore := modus_operandi2.NewCore(connection)
 
 			sceneHandlers := scene2.Handlers{Scene: sceneCore, App: appCore}
 			appHandlers := app3.Handlers{App: appCore}
 			revisionHandlers := revision.Handlers{Revision: revisionCore}
 			couplingHandlers := coupling.Handlers{Coupling: couplingCore, App: appCore}
 			churnHandlers := churn2.Handlers{Churn: churnCore}
+			modusOperandiHandlers := modus_operandi.Handlers{ModusOperandi: modusOperandiCore}
 
 			group.GET("/scenes",  func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := sceneHandlers.QueryAll(writer, request)
@@ -125,6 +129,14 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 					w.WriteHeader(http.StatusInternalServerError)
 				}
 			})
+
+			group.GET("/scenes/:sceneId/apps/:appId/modus-operandi", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := modusOperandiHandlers.Query(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+			})
+
 
 			srv := &http.Server{
 				Handler:      mux,
