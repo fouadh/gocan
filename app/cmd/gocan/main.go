@@ -7,6 +7,7 @@ import (
 	db2 "com.fha.gocan/business/core/db"
 	"com.fha.gocan/business/core/developer"
 	"com.fha.gocan/business/core/history"
+	modus_operandi "com.fha.gocan/business/core/modus-operandi"
 	"com.fha.gocan/business/core/revision"
 	"com.fha.gocan/business/core/scene"
 	web_ui "com.fha.gocan/business/core/ui"
@@ -51,6 +52,7 @@ func main() {
 	rootCmd.AddCommand(developer.NewKnowledgeMapCommand(*ctx))
 	rootCmd.AddCommand(developer.NewDevsCommand(*ctx))
 	rootCmd.AddCommand(churn.NewCodeChurn(*ctx))
+	rootCmd.AddCommand(modus_operandi.NewModusOperandi(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
