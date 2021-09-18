@@ -4,8 +4,8 @@ import "time"
 
 type ActiveSet struct {
 	Date   time.Time `json:"date"`
-	Opened int       `json:"opened,omitempty"`
-	Closed int       `json:"closed,omitempty"`
+	Opened int       `json:"opened"`
+	Closed int       `json:"closed"`
 }
 
 type ActiveSetStats struct {

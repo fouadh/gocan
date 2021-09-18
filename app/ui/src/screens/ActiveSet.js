@@ -22,7 +22,6 @@ export function ActiveSet({sceneId, appId}) {
                         closed.push({x: each.date, y: each.closed});
                     });
 
-                    console.log("active set", [opened, closed]);
                     setActiveSet([opened, closed]);
                 }
             });
