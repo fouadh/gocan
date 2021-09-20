@@ -9,8 +9,8 @@ type EntityDeveloper struct {
 }
 
 type Developer struct {
-	Name            string
-	NumberOfCommits int
+	Name            string `json:"name"`
+	NumberOfCommits int    `json:"number_of_commits"`
 }
 
 type EntityEffort struct {

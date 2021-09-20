@@ -26,7 +26,7 @@ export function KnowledgeMap({sceneId, appId}) {
   useEffect(() => {
     let subscribed = true;
 
-    axios.get(`/api/scenes/${sceneId}/apps/${appId}/authors`)
+    axios.get(`/api/scenes/${sceneId}/apps/${appId}/developers`)
       .then(it => it.data)
       .then(it => it.authors)
       .then(it => {

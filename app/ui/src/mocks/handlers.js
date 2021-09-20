@@ -329,7 +329,7 @@ export const handlers = [
         }))
     }),
 
-    rest.get('/api/scenes/s123/apps/a1/authors', (req, res, ctx) => {
+    rest.get('/api/scenes/s123/apps/a1/developers', (req, res, ctx) => {
         return res(ctx.json({
             authors: [
                 {name: "Alice"},

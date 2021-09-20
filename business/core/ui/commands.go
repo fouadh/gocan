@@ -152,6 +152,13 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 				}
 			})
 
+			group.GET("/scenes/:sceneId/apps/:appId/developers", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := developerHandlers.QueryDevelopers(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+			})
+
 			group.GET("/scenes/:sceneId/apps/:appId/knowledge-map", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 				err := developerHandlers.BuildKnowledgeMap(w, r, params)
 				if err != nil {
