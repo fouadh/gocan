@@ -17,8 +17,9 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 	var after string
 
 	cmd := cobra.Command{
-		Use: "main-developers",
-		Args: cobra.ExactArgs(1),
+		Use:     "main-developers",
+		Aliases: []string{"main_developers", "mainDevelopers", "md", "main-devs", "main_devs", "mainDevs"},
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
@@ -42,7 +43,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 
 			ui.Ok()
 
-			table := ui.Table([]string {"entity", "main-dev", "added", "total-added", "ownership"})
+			table := ui.Table([]string{"entity", "main-dev", "added", "total-added", "ownership"})
 			for _, dev := range data {
 				table.Add(dev.Entity, dev.Author, fmt.Sprint(dev.Added), fmt.Sprint(dev.TotalAdded), fmt.Sprintf("%.2f", dev.Ownership))
 			}
@@ -65,8 +66,9 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 	var after string
 
 	cmd := cobra.Command{
-		Use: "entity-efforts",
-		Args: cobra.ExactArgs(1),
+		Use:     "entity-efforts",
+		Aliases: []string{"entity_efforts", "entityEfforts", "ee"},
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
@@ -113,8 +115,9 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 	var after string
 
 	cmd := cobra.Command{
-		Use: "knowledge-map",
-		Args: cobra.ExactArgs(1),
+		Use:     "knowledge-map",
+		Aliases: []string{"knowledge_map", "knowledgeMap", "km"},
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
@@ -155,8 +158,9 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 	var after string
 
 	cmd := cobra.Command{
-		Use: "devs",
-		Args: cobra.ExactArgs(1),
+		Use:     "devs",
+		Aliases: []string{"developers"},
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.Say("Getting app revisions...")
@@ -176,7 +180,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 			}
 			ui.Ok()
 
-			table := ui.Table([]string{"name","commits"})
+			table := ui.Table([]string{"name", "commits"})
 			for _, dev := range devs {
 				table.Add(dev.Name, strconv.Itoa(dev.NumberOfCommits))
 			}
