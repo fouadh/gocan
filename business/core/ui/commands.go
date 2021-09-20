@@ -5,6 +5,7 @@ import (
 	app3 "com.fha.gocan/app/api/app"
 	churn2 "com.fha.gocan/app/api/churn"
 	"com.fha.gocan/app/api/coupling"
+	"com.fha.gocan/app/api/developer"
 	modus_operandi "com.fha.gocan/app/api/modus-operandi"
 	"com.fha.gocan/app/api/revision"
 	scene2 "com.fha.gocan/app/api/scene"
@@ -12,6 +13,7 @@ import (
 	app2 "com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/churn"
 	coupling2 "com.fha.gocan/business/core/coupling"
+	developer2 "com.fha.gocan/business/core/developer"
 	modus_operandi2 "com.fha.gocan/business/core/modus-operandi"
 	revision2 "com.fha.gocan/business/core/revision"
 	"com.fha.gocan/business/core/scene"
@@ -75,6 +77,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			churnCore := churn.NewCore(connection)
 			modusOperandiCore := modus_operandi2.NewCore(connection)
 			activeSetCore := active_set2.NewCore(connection)
+			developerCore := developer2.NewCore(connection)
 
 			sceneHandlers := scene2.Handlers{Scene: sceneCore, App: appCore}
 			appHandlers := app3.Handlers{App: appCore}
@@ -83,6 +86,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			churnHandlers := churn2.Handlers{Churn: churnCore}
 			modusOperandiHandlers := modus_operandi.Handlers{ModusOperandi: modusOperandiCore}
 			activeSetHandlers := active_set.Handlers{ActiveSet: activeSetCore}
+			developerHandlers := developer.Handlers{Developer: developerCore, App: appCore}
 
 			group.GET("/scenes",  func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := sceneHandlers.QueryAll(writer, request)
@@ -148,6 +152,13 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 				}
 			})
 
+			group.GET("/scenes/:sceneId/apps/:appId/knowledge-map", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := developerHandlers.BuildKnowledgeMap(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+			})
+
 
 			srv := &http.Server{
 				Handler:      mux,
@@ -159,6 +170,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 
 			ctx.Ui.Say("Application running on http://localhost:" + serverPort)
 			log.Fatal(srv.ListenAndServe())
+			connection.Close()
 			return nil
 		},
 	}
