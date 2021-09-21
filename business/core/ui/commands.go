@@ -81,7 +81,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 
 			sceneHandlers := scene2.Handlers{Scene: sceneCore, App: appCore}
 			appHandlers := app3.Handlers{App: appCore}
-			revisionHandlers := revision.Handlers{Revision: revisionCore}
+			revisionHandlers := revision.Handlers{Revision: revisionCore, App: appCore}
 			couplingHandlers := coupling.Handlers{Coupling: couplingCore, App: appCore}
 			churnHandlers := churn2.Handlers{Churn: churnCore}
 			modusOperandiHandlers := modus_operandi.Handlers{ModusOperandi: modusOperandiCore}
@@ -119,6 +119,13 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 
 			group.GET("/scenes/:sceneId/apps/:appId/revisions", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 				err := revisionHandlers.Query(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+			})
+
+			group.GET("/scenes/:sceneId/apps/:appId/hotspots", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := revisionHandlers.QueryHotspots(w, r, params)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 				}

@@ -30,7 +30,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 			c := NewCore(connection)
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 
-			revisions, err := c.GetRevisions(a.Id, beforeTime, afterTime)
+			revisions, err := c.Query(a.Id, beforeTime, afterTime)
 
 			if err != nil {
 				ui.Failed("Cannot fetch revisions: " + err.Error())
@@ -80,7 +80,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 				return errors.Wrap(err, "Command failed")
 			}
 
-			hotspots, err := c.GetHotspots(a, beforeTime, afterTime)
+			hotspots, err := c.QueryHotspots(a, beforeTime, afterTime)
 
 			ui.Ok()
 

@@ -1,6 +1,7 @@
 package revision
 
 import (
+	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/revision"
 	revision2 "com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/foundation/date"
@@ -9,7 +10,8 @@ import (
 )
 
 type Handlers struct {
-	Revision   revision.Core
+	Revision revision.Core
+	App      app.Core
 }
 
 func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
@@ -25,7 +27,7 @@ func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[stri
 		return err
 	}
 
-	revs, err := h.Revision.GetRevisions(appId, beforeTime, afterTime)
+	revs, err := h.Revision.Query(appId, beforeTime, afterTime)
 	if err != nil {
 		return err
 	}
@@ -37,4 +39,26 @@ func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[stri
 	}
 
 	return web.Respond(w, result, 200)
+}
+
+func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+	a, err := h.App.QueryById(appId)
+	if err != nil {
+		return err
+	}
+
+	beforeTime, err := date.ParseDay(date.Today())
+	if err != nil {
+		return err
+	}
+
+	afterTime, err := date.ParseDay(date.LongTimeAgo())
+	if err != nil {
+		return err
+	}
+
+	hotspots, err := h.Revision.QueryHotspots(a, beforeTime, afterTime)
+
+	return web.Respond(w, hotspots, 200)
 }

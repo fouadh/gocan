@@ -24,11 +24,11 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) GetRevisions(appId string, before time.Time, after time.Time) ([]revision.Revision, error) {
+func (c Core) Query(appId string, before time.Time, after time.Time) ([]revision.Revision, error) {
 	return c.revision.QueryByAppIdAndDateRange(appId, before, after)
 }
 
-func (c Core) GetHotspots(a app.App, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
+func (c Core) QueryHotspots(a app.App, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
 	revs, err := c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
 	if err != nil {
 		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
