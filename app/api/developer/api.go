@@ -10,7 +10,7 @@ import (
 )
 
 type Handlers struct {
-	App app.Core
+	App       app.Core
 	Developer developer.Core
 }
 
@@ -34,7 +34,15 @@ func (h *Handlers) BuildKnowledgeMap(w http.ResponseWriter, r *http.Request, par
 
 	km, err := h.Developer.BuildKnowledgeMap(a, beforeTime, afterTime)
 
-	return web.Respond(w, km, 200)
+	payload := struct {
+		Name     string                             `json:"name"`
+		Children []developer2.KnowledgeMapHierarchy `json:"children"`
+	}{
+		Name:     "root",
+		Children: []developer2.KnowledgeMapHierarchy{km},
+	}
+
+	return web.Respond(w, payload, 200)
 }
 
 func (h *Handlers) QueryDevelopers(w http.ResponseWriter, r *http.Request, params map[string]string) error {
