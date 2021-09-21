@@ -9,6 +9,7 @@ import {ModusOperandi} from "./ModusOperandi";
 import {RevisionTrends} from "./RevisionTrends";
 import {ActiveSet} from "./ActiveSet";
 import {KnowledgeMap} from "./KnowledgeMap";
+import {Hotspots} from "./Hotspots";
 
 export function AppDetails() {
     const {sceneId, appId} = useParams();
@@ -32,6 +33,9 @@ export function AppDetails() {
             <TabView renderActiveOnly={true}>
                 <TabPanel header="Revisions">
                     <Revisions sceneId={sceneId} appId={appId}/>
+                </TabPanel>
+                <TabPanel header="Hotspots">
+                    <Hotspots sceneId={sceneId} appId={appId}/>
                 </TabPanel>
                 <TabPanel header="Coupling">
                     <Coupling sceneId={sceneId} appId={appId}/>

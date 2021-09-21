@@ -60,5 +60,13 @@ func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params 
 
 	hotspots, err := h.Revision.QueryHotspots(a, beforeTime, afterTime)
 
-	return web.Respond(w, hotspots, 200)
+	payload := struct {
+		Name     string                       `json:"name"`
+		Children []revision2.HotspotHierarchy `json:"children"`
+	}{
+		Name:     "root",
+		Children: []revision2.HotspotHierarchy{hotspots},
+	}
+
+	return web.Respond(w, payload, 200)
 }
