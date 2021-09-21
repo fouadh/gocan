@@ -57,6 +57,7 @@ func main() {
 	rootCmd.AddCommand(modus_operandi.NewModusOperandi(*ctx))
 	rootCmd.AddCommand(active_set.NewActiveSet(*ctx))
 	rootCmd.AddCommand(boundary.NewCreateBoundary(*ctx))
+	rootCmd.AddCommand(boundary.NewBoundaries(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

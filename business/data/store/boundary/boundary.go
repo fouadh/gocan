@@ -1,6 +1,7 @@
 package boundary
 
 import (
+	"encoding/json"
 	"github.com/jmoiron/sqlx"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
@@ -47,6 +48,42 @@ func (s Store) buildBoundary(newBoundary NewBoundary) Boundary {
 		Transformations: transformations,
 	}
 	return b
+}
+
+func (s Store) Query(appId string) ([]Boundary, error) {
+	const q = `
+		select row_to_json(row) as row
+from (
+         select *
+         from boundaries_transformations
+         where app_id=:app_id
+     ) row;`
+
+	data := struct {
+		AppId string `db:"app_id"`
+	}{
+		AppId: appId,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return []Boundary{}, err
+	}
+
+	results := []Boundary{}
+	for rows.Next() {
+		var row struct{Row string `db:"row"`}
+		if err := rows.StructScan(&row); err != nil {
+			return []Boundary{}, err
+		}
+		var item Boundary
+		if err := json.Unmarshal([]byte(row.Row), &item); err != nil {
+			return []Boundary{}, err
+		}
+		results = append(results, item)
+	}
+
+	return results, nil
 }
 
 func NewStore(connection *sqlx.DB) Store {

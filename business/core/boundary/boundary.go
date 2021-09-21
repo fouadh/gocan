@@ -59,3 +59,7 @@ func (c Core) parseTransformation(a *regexp.Regexp, t string) (boundary.NewTrans
 	}
 	return transformation, nil
 }
+
+func (c Core) Query(appId string) ([]boundary.Boundary, error) {
+	return c.Boundary.Query(appId)
+}
