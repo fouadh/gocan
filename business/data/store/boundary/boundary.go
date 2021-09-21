@@ -1,0 +1,54 @@
+package boundary
+
+import (
+	"github.com/jmoiron/sqlx"
+	"github.com/pborman/uuid"
+	"github.com/pkg/errors"
+)
+
+type Store struct {
+	connection *sqlx.DB
+}
+
+func (s Store) Create(newBoundary NewBoundary) (Boundary, error) {
+	b := s.buildBoundary(newBoundary)
+
+	const q1 = `insert into boundaries(id, name, app_id) values(:id, :name, :app_id)`
+	if _, err := s.connection.NamedExec(q1, b); err != nil {
+		return Boundary{}, errors.Wrap(err, "Cannot insert a new boundary")
+	}
+
+	const q2 = `insert into transformations(boundary_id, name, path) values(:boundary_id, :name, :path)`
+	for _, t := range b.Transformations {
+		if _, err := s.connection.NamedExec(q2, t); err != nil {
+			return Boundary{}, errors.Wrap(err, "Cannot insert a new transformation")
+		}
+	}
+
+	return b, nil
+}
+
+func (s Store) buildBoundary(newBoundary NewBoundary) Boundary {
+	boundaryId := uuid.NewUUID().String()
+	transformations := []Transformation{}
+	for _, nt := range newBoundary.Transformations {
+		t := Transformation{
+			BoundaryId: boundaryId,
+			Name:       nt.Name,
+			Path:       nt.Path,
+		}
+		transformations = append(transformations, t)
+	}
+
+	b := Boundary{
+		Id:              boundaryId,
+		Name:            newBoundary.Name,
+		AppId:           newBoundary.AppId,
+		Transformations: transformations,
+	}
+	return b
+}
+
+func NewStore(connection *sqlx.DB) Store {
+	return Store{connection: connection}
+}

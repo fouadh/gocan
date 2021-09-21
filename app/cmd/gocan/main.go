@@ -3,6 +3,7 @@ package main
 import (
 	active_set "com.fha.gocan/business/core/active-set"
 	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/churn"
 	"com.fha.gocan/business/core/coupling"
 	db2 "com.fha.gocan/business/core/db"
@@ -55,6 +56,7 @@ func main() {
 	rootCmd.AddCommand(churn.NewCodeChurn(*ctx))
 	rootCmd.AddCommand(modus_operandi.NewModusOperandi(*ctx))
 	rootCmd.AddCommand(active_set.NewActiveSet(*ctx))
+	rootCmd.AddCommand(boundary.NewCreateBoundary(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
