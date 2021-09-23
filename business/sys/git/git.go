@@ -3,6 +3,7 @@ package git
 import (
 	"com.fha.gocan/business/data/store/commit"
 	"com.fha.gocan/business/data/store/stat"
+	"com.fha.gocan/foundation/date"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -12,8 +13,8 @@ import (
 	"time"
 )
 
-func GetCommits(path string) ([]commit.Commit, error) {
-	cmd := exec.Command("git", "log", "--date=iso", "--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},")
+func GetCommits(path string, before time.Time, after time.Time) ([]commit.Commit, error) {
+	cmd := exec.Command("git", "log", "--since", date.FormatDay(after), "--until", date.FormatDay(before), "--date=iso", "--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},")
 	cmd.Dir = path
 	out, err := cmd.Output()
 	if err != nil {
@@ -51,8 +52,8 @@ func GetCommits(path string) ([]commit.Commit, error) {
 	return commits, nil
 }
 
-func GetStats(path string) ([]stat.Stat, error) {
-	cmd := exec.Command("git", "log", "--numstat", "--format=%H")
+func GetStats(path string, before time.Time, after time.Time) ([]stat.Stat, error) {
+	cmd := exec.Command("git", "log", "--since", date.FormatDay(after), "--until", date.FormatDay(before), "--numstat", "--format=%H")
 	cmd.Dir = path
 	out, err := cmd.Output()
 	if err != nil {

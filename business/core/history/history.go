@@ -9,6 +9,7 @@ import (
 	"com.fha.gocan/business/sys/git"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"time"
 )
 
 type Core struct {
@@ -29,8 +30,8 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Import(appId string, path string) error {
-	commits, err := git.GetCommits(path)
+func (c Core) Import(appId string, path string, before time.Time, after time.Time) error {
+	commits, err := git.GetCommits(path, before, after)
 	if err != nil {
 		return errors.Wrap(err, "Unable to retrieve commits")
 	}
@@ -38,7 +39,7 @@ func (c Core) Import(appId string, path string) error {
 		return errors.Wrap(err, "Unable to save commits")
 	}
 
-	stats, err := git.GetStats(path)
+	stats, err := git.GetStats(path, before, after)
 	if err != nil {
 		return err
 	}

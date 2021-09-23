@@ -1,8 +1,9 @@
 package history
 
 import (
-	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
+	"com.fha.gocan/foundation/date"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
@@ -10,6 +11,8 @@ import (
 func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 	var sceneName string
 	var path string
+	var before string
+	var after string
 
 	cmd := cobra.Command{
 		Use:  "import-history",
@@ -23,13 +26,13 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 
 			ui.Say("Importing history...")
 
-			a, err := app.FindAppBySceneNameAndAppName(connection, sceneName, args[0])
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
 				return errors.Wrap(err, "Command failed")
 			}
 
 			h := NewCore(connection)
-			if err = h.Import(a.Id, path); err != nil {
+			if err = h.Import(a.Id, path, beforeTime, afterTime); err != nil {
 				return errors.Wrap(err, "History cannot be imported")
 			}
 
@@ -40,5 +43,7 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&path, "path", "d", ".", "App directory")
+	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
+	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the hotspots after this day")
 	return &cmd
 }
