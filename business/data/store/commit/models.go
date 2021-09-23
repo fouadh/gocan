@@ -10,3 +10,7 @@ type Commit struct {
 	AppId   string
 }
 
+type CommitRange struct {
+	MinDate time.Time `db:"min_date"`
+	MaxDate time.Time `db:"max_date"`
+}

@@ -3,6 +3,7 @@ package revision
 import (
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/boundary"
+	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/core/revision"
 	revision2 "com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/foundation/date"
@@ -15,6 +16,7 @@ type Handlers struct {
 	Revision revision.Core
 	App      app.Core
 	Boundary boundary.Core
+	Commit   commit.Core
 }
 
 func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
@@ -88,12 +90,25 @@ func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, 
 		return errors.Wrap(err, "Boundary not found")
 	}
 
-	beforeTime, err := date.ParseDay(query.Get("before"))
+	cr, err := h.Commit.QueryCommitRange(appId)
+	if err != nil {
+		return err
+	}
+
+	before := query.Get("before")
+	if before == "" {
+		before = date.FormatDay(cr.MaxDate)
+	}
+	beforeTime, err := date.ParseDay(before)
 	if err != nil {
 		return errors.Wrap(err, "Cannot parse before parameter")
 	}
 
-	afterTime, err := date.ParseDay(query.Get("after"))
+	after := query.Get("after")
+	if after == "" {
+		after = date.FormatDay(cr.MinDate)
+	}
+	afterTime, err := date.ParseDay(after)
 	if err != nil {
 		return errors.Wrap(err, "Cannot parse after parameter")
 	}

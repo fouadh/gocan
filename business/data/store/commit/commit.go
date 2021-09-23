@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/foundation/db"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"sync"
 	"time"
 )
@@ -50,6 +51,39 @@ func (s Store) BulkImport(appId string, data []Commit) error {
 	return txn.Commit()
 
 	return nil
+}
+
+func (s Store) QueryCommitRange(appId string) (CommitRange, error) {
+	const q = `
+    	select 
+			min(date) min_date, 
+			max(date) max_date 
+		from commits 
+		where app_id=:app_id
+	`
+
+	data := struct {
+		AppId string `db:"app_id"`
+	}{
+		AppId: appId,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return CommitRange{}, errors.Wrap(err, "Cannot query commit range")
+	}
+
+	if !rows.Next() {
+		return CommitRange{}, errors.Wrap(err, "No commit range available")
+	}
+
+	var result CommitRange
+	err = rows.StructScan(&result)
+	if err != nil {
+		return CommitRange{}, errors.Wrap(err, "Cannot read commit range from db")
+	}
+
+	return result, nil
 }
 
 func bulkInsert(list *[]Commit, appId string, txn *sqlx.Tx) error {

@@ -14,6 +14,7 @@ import (
 	app2 "com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/churn"
+	"com.fha.gocan/business/core/commit"
 	coupling2 "com.fha.gocan/business/core/coupling"
 	developer2 "com.fha.gocan/business/core/developer"
 	modus_operandi2 "com.fha.gocan/business/core/modus-operandi"
@@ -82,10 +83,11 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			activeSetCore := active_set2.NewCore(connection)
 			developerCore := developer2.NewCore(connection)
 			boundaryCore := boundary.NewCore(connection)
+			commitCore := commit.NewCore(connection)
 
 			sceneHandlers := scene2.Handlers{Scene: sceneCore, App: appCore}
 			appHandlers := app3.Handlers{App: appCore}
-			revisionHandlers := revision.Handlers{Revision: revisionCore, App: appCore, Boundary: boundaryCore}
+			revisionHandlers := revision.Handlers{Revision: revisionCore, App: appCore, Boundary: boundaryCore, Commit: commitCore}
 			couplingHandlers := coupling.Handlers{Coupling: couplingCore, App: appCore}
 			churnHandlers := churn2.Handlers{Churn: churnCore}
 			modusOperandiHandlers := modus_operandi.Handlers{ModusOperandi: modusOperandiCore}
