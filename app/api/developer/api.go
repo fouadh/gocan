@@ -2,9 +2,9 @@ package developer
 
 import (
 	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/core/developer"
 	developer2 "com.fha.gocan/business/data/store/developer"
-	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
 	"net/http"
@@ -13,12 +13,14 @@ import (
 type Handlers struct {
 	App       app.Core
 	Developer developer.Core
+	Commit    commit.Core
 }
 
 func NewHandlers(connection *sqlx.DB) Handlers {
 	return Handlers{
-		App: app.NewCore(connection),
+		App:       app.NewCore(connection),
 		Developer: developer.NewCore(connection),
+		Commit:    commit.NewCore(connection),
 	}
 }
 
@@ -30,12 +32,8 @@ func (h *Handlers) BuildKnowledgeMap(w http.ResponseWriter, r *http.Request, par
 		return err
 	}
 
-	beforeTime, err := date.ParseDay(date.Today())
-	if err != nil {
-		return err
-	}
-
-	afterTime, err := date.ParseDay(date.LongTimeAgo())
+	query := r.URL.Query()
+	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
 	if err != nil {
 		return err
 	}
@@ -56,12 +54,8 @@ func (h *Handlers) BuildKnowledgeMap(w http.ResponseWriter, r *http.Request, par
 func (h *Handlers) QueryDevelopers(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
-	beforeTime, err := date.ParseDay(date.Today())
-	if err != nil {
-		return err
-	}
-
-	afterTime, err := date.ParseDay(date.LongTimeAgo())
+	query := r.URL.Query()
+	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
 	if err != nil {
 		return err
 	}
