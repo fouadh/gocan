@@ -2,6 +2,7 @@ package revision
 
 import (
 	"com.fha.gocan/business/data/store/app"
+	"com.fha.gocan/business/data/store/boundary"
 	"com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/business/data/store/scene"
 	"github.com/jmoiron/sqlx"
@@ -12,15 +13,17 @@ import (
 
 type Core struct {
 	revision revision.Store
-	scene scene.Store
-	app   app.Store
+	scene    scene.Store
+	app      app.Store
+	boundary boundary.Store
 }
 
 func NewCore(connection *sqlx.DB) Core {
 	return Core{
 		revision: revision.NewStore(connection),
-		scene: scene.NewStore(connection),
-		app: app.NewStore(connection),
+		scene:    scene.NewStore(connection),
+		app:      app.NewStore(connection),
+		boundary: boundary.NewStore(connection),
 	}
 }
 
@@ -35,6 +38,31 @@ func (c Core) QueryHotspots(a app.App, before time.Time, after time.Time) (revis
 	}
 
 	return buildHotspots(a.Name, revs), nil
+}
+
+func (c Core) RevisionTrends(appId string, boundaryName string, before time.Time, after time.Time) ([]revision.RevisionTrend, boundary.Boundary, error) {
+	b, err := c.boundary.QueryByAppIdAndName(appId, boundaryName)
+	if err != nil {
+		return []revision.RevisionTrend{}, boundary.Boundary{}, err
+	}
+
+	daysInRange := before.Sub(after).Hours() / 24
+
+	results := []revision.RevisionTrend{}
+	for i := 0; i <= int(daysInRange); i++ {
+		day := after.AddDate(0, 0, i)
+		dayRevs, err := c.revision.QueryByBoundary(appId, b, day, after)
+		if err != nil {
+			return []revision.RevisionTrend{}, boundary.Boundary{}, err
+		}
+
+		results = append(results, revision.RevisionTrend{
+			Date:      day.Format("2006-01-02"),
+			Revisions: dayRevs,
+		})
+	}
+
+	return results, b, nil
 }
 
 func buildHotspots(appName string, revisions []revision.Revision) revision.HotspotHierarchy {
@@ -57,7 +85,7 @@ func buildNode(path []string, parent *revision.HotspotHierarchy, rev revision.Re
 		return buildNode(path[1:], existingNode, rev)
 	}
 	newNode := &revision.HotspotHierarchy{
-		Name:     path[0],
+		Name: path[0],
 	}
 	parent.Children = append(parent.Children, newNode)
 	if len(path) <= 1 {
@@ -77,5 +105,3 @@ func findNode(nodes []*revision.HotspotHierarchy, name string) *revision.Hotspot
 	}
 	return nil
 }
-
-

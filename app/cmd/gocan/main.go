@@ -46,6 +46,7 @@ func main() {
 	rootCmd.AddCommand(history.NewImportHistoryCommand(ctx))
 	rootCmd.AddCommand(revision.NewRevisionsCommand(*ctx))
 	rootCmd.AddCommand(revision.NewHotspotsCommand(*ctx))
+	rootCmd.AddCommand(revision.NewRevisionTrends(*ctx))
 	rootCmd.AddCommand(coupling.NewCouplingCommand(ctx))
 	rootCmd.AddCommand(coupling.NewSocCommand(*ctx))
 	rootCmd.AddCommand(coupling.NewCouplingHierarchyCommand(*ctx))

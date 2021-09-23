@@ -72,7 +72,9 @@ from (
 
 	results := []Boundary{}
 	for rows.Next() {
-		var row struct{Row string `db:"row"`}
+		var row struct {
+			Row string `db:"row"`
+		}
 		if err := rows.StructScan(&row); err != nil {
 			return []Boundary{}, err
 		}
@@ -84,6 +86,43 @@ from (
 	}
 
 	return results, nil
+}
+
+func (s Store) QueryByAppIdAndName(appId string, boundaryName string) (Boundary, error) {
+	const q = `
+		select row_to_json(row) as row
+from (
+         select *
+         from boundaries_transformations
+         where app_id=:app_id and name=:boundary_name
+     ) row;`
+
+	data := struct {
+		AppId        string `db:"app_id"`
+		BoundaryName string `db:"boundary_name"`
+	}{
+		AppId: appId,
+		BoundaryName: boundaryName,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil || !rows.Next() {
+		return Boundary{}, err
+	}
+
+	var row struct {
+		Row string `db:"row"`
+	}
+	if err := rows.StructScan(&row); err != nil {
+		return Boundary{}, err
+	}
+
+	var result Boundary
+	if err := json.Unmarshal([]byte(row.Row), &result); err != nil {
+		return Boundary{}, err
+	}
+
+	return result, nil
 }
 
 func NewStore(connection *sqlx.DB) Store {

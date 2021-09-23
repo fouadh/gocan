@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"strconv"
 )
 
 func NewRevisionsCommand(ctx context.Context) *cobra.Command {
@@ -94,5 +95,62 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the hotspots after this day")
+	return &cmd
+}
+
+func NewRevisionTrends(ctx context.Context) *cobra.Command {
+	var sceneName string
+	var boundaryName string
+	var before string
+	var after string
+
+	cmd := cobra.Command{
+		Use: "revision-trends",
+		Aliases: []string{"revisions-trends", "rt"},
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			c := NewCore(connection)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+			if err != nil {
+				return errors.Wrap(err, "Command failed")
+			}
+
+			ui.Say("Getting revisions trends...")
+			trends, b, err := c.RevisionTrends(a.Id, boundaryName, beforeTime, afterTime)
+			if err != nil {
+				return errors.Wrap(err, "Cannot get revisions trends")
+			}
+
+			ui.Ok()
+
+			headers := []string{"date"}
+			for _, t := range b.Transformations {
+				headers = append(headers, t.Name)
+			}
+			table := ui.Table(headers)
+			for _, rt := range trends {
+				cols := []string{rt.Date}
+				for _, t := range b.Transformations {
+					cols = append(cols, strconv.Itoa(rt.FindEntityRevision(t.Name).NumberOfRevisions))
+				}
+				table.Add(cols...)
+			}
+			table.Print()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
+	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the hotspots after this day")
+	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
 	return &cmd
 }
