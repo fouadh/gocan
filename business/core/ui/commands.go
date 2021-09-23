@@ -3,6 +3,7 @@ package ui
 import (
 	active_set "com.fha.gocan/app/api/active-set"
 	app3 "com.fha.gocan/app/api/app"
+	boundary2 "com.fha.gocan/app/api/boundary"
 	churn2 "com.fha.gocan/app/api/churn"
 	"com.fha.gocan/app/api/coupling"
 	"com.fha.gocan/app/api/developer"
@@ -90,6 +91,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			modusOperandiHandlers := modus_operandi.Handlers{ModusOperandi: modusOperandiCore}
 			activeSetHandlers := active_set.Handlers{ActiveSet: activeSetCore}
 			developerHandlers := developer.Handlers{Developer: developerCore, App: appCore}
+			boundaryHandlers := boundary2.Handlers{Boundary: boundaryCore}
 
 			group.GET("/scenes",  func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := sceneHandlers.QueryAll(writer, request)
@@ -139,6 +141,13 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					fmt.Println(err)
+				}
+			})
+
+			group.GET("/scenes/:sceneId/apps/:appId/boundaries", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := boundaryHandlers.QueryByAppId(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
 				}
 			})
 

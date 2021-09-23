@@ -35,8 +35,8 @@ func (c Core) Create(appId string, boundaryName string, transformations []string
 	return c.Boundary.Create(nb)
 }
 
-func (c Core) Query(appId string) ([]boundary.Boundary, error) {
-	return c.Boundary.Query(appId)
+func (c Core) QueryByAppId(appId string) ([]boundary.Boundary, error) {
+	return c.Boundary.QueryByAppId(appId)
 }
 
 func (c Core) QueryByBoundaryId(id string) (boundary.Boundary, error) {

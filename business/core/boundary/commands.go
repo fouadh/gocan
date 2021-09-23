@@ -87,7 +87,7 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 
 			ctx.Ui.Say("Retrieving boundaries...")
 
-			data, err := c.Query(a.Id)
+			data, err := c.QueryByAppId(a.Id)
 			if err != nil {
 				return errors.Wrap(err, "Unable to fetch the boundaries")
 			}

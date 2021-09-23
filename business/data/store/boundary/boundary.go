@@ -50,7 +50,7 @@ func (s Store) buildBoundary(newBoundary NewBoundary) Boundary {
 	return b
 }
 
-func (s Store) Query(appId string) ([]Boundary, error) {
+func (s Store) QueryByAppId(appId string) ([]Boundary, error) {
 	const q = `
 		select row_to_json(row) as row
 from (

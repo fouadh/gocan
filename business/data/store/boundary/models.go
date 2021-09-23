@@ -14,12 +14,12 @@ type NewBoundary struct {
 }
 
 type Transformation struct {
-	BoundaryId  string `db:"boundary_id" json:"boundary_id"`
-	Name        string `db:"name" json:"name"`
-	Path        string `db:"path" json:"path"`
+	BoundaryId string `db:"boundary_id" json:"boundary_id"`
+	Name       string `db:"name" json:"name"`
+	Path       string `db:"path" json:"path"`
 }
 
 type NewTransformation struct {
-	Name        string
-	Path        string
+	Name string
+	Path string
 }
