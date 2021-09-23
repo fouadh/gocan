@@ -6,12 +6,20 @@ import (
 	developer2 "com.fha.gocan/business/data/store/developer"
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
+	"github.com/jmoiron/sqlx"
 	"net/http"
 )
 
 type Handlers struct {
 	App       app.Core
 	Developer developer.Core
+}
+
+func NewHandlers(connection *sqlx.DB) Handlers {
+	return Handlers{
+		App: app.NewCore(connection),
+		Developer: developer.NewCore(connection),
+	}
 }
 
 func (h *Handlers) BuildKnowledgeMap(w http.ResponseWriter, r *http.Request, params map[string]string) error {

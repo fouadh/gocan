@@ -7,6 +7,7 @@ import (
 	"com.fha.gocan/business/core/revision"
 	revision2 "com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/foundation/web"
+	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"net/http"
 )
@@ -16,6 +17,15 @@ type Handlers struct {
 	App      app.Core
 	Boundary boundary.Core
 	Commit   commit.Core
+}
+
+func NewHandlers(connection *sqlx.DB) Handlers {
+	return Handlers{
+		Revision: revision.NewCore(connection),
+		App: app.NewCore(connection),
+		Boundary: boundary.NewCore(connection),
+		Commit: commit.NewCore(connection),
+	}
 }
 
 func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {

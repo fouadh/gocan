@@ -5,11 +5,18 @@ import (
 	modus_operandi2 "com.fha.gocan/business/data/store/modus-operandi"
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
+	"github.com/jmoiron/sqlx"
 	"net/http"
 )
 
 type Handlers struct {
 	ModusOperandi modus_operandi.Core
+}
+
+func NewHandlers(connection *sqlx.DB) Handlers {
+	return Handlers{
+		ModusOperandi: modus_operandi.NewCore(connection),
+	}
 }
 
 func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {

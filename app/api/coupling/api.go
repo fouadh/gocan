@@ -2,26 +2,32 @@ package coupling
 
 import (
 	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/core/coupling"
-	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
+	"github.com/jmoiron/sqlx"
 	"net/http"
 )
 
 type Handlers struct {
 	Coupling coupling.Core
-	App app.Core
+	App      app.Core
+	Commit   commit.Core
+}
+
+func NewHandlers(connection *sqlx.DB) Handlers {
+	return Handlers{
+		Coupling: coupling.NewCore(connection),
+		App:      app.NewCore(connection),
+		Commit:   commit.NewCore(connection),
+	}
 }
 
 func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
-	beforeTime, err := date.ParseDay(date.Today())
-	if err != nil {
-		return err
-	}
-
-	afterTime, err := date.ParseDay(date.LongTimeAgo())
+	query := r.URL.Query()
+	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
 	if err != nil {
 		return err
 	}

@@ -5,12 +5,20 @@ import (
 	"com.fha.gocan/business/core/scene"
 	scene2 "com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/foundation/web"
+	"github.com/jmoiron/sqlx"
 	"net/http"
 )
 
 type Handlers struct {
 	App   app.Core
 	Scene scene.Core
+}
+
+func NewHandlers(connection *sqlx.DB) Handlers {
+	return Handlers{
+		App: app.NewCore(connection),
+		Scene: scene.NewCore(connection),
+	}
 }
 
 func (h *Handlers) QueryAll(w http.ResponseWriter, r *http.Request) error {

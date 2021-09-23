@@ -10,16 +10,6 @@ import (
 	modus_operandi "com.fha.gocan/app/api/modus-operandi"
 	"com.fha.gocan/app/api/revision"
 	scene2 "com.fha.gocan/app/api/scene"
-	active_set2 "com.fha.gocan/business/core/active-set"
-	app2 "com.fha.gocan/business/core/app"
-	"com.fha.gocan/business/core/boundary"
-	"com.fha.gocan/business/core/churn"
-	"com.fha.gocan/business/core/commit"
-	coupling2 "com.fha.gocan/business/core/coupling"
-	developer2 "com.fha.gocan/business/core/developer"
-	modus_operandi2 "com.fha.gocan/business/core/modus-operandi"
-	revision2 "com.fha.gocan/business/core/revision"
-	"com.fha.gocan/business/core/scene"
 	context "com.fha.gocan/foundation"
 	"embed"
 	"fmt"
@@ -74,26 +64,16 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			})
 
 			group := mux.NewGroup("/api")
-			sceneCore := scene.NewCore(connection)
-			appCore := app2.NewCore(connection)
-			revisionCore := revision2.NewCore(connection)
-			couplingCore := coupling2.NewCore(connection)
-			churnCore := churn.NewCore(connection)
-			modusOperandiCore := modus_operandi2.NewCore(connection)
-			activeSetCore := active_set2.NewCore(connection)
-			developerCore := developer2.NewCore(connection)
-			boundaryCore := boundary.NewCore(connection)
-			commitCore := commit.NewCore(connection)
 
-			sceneHandlers := scene2.Handlers{Scene: sceneCore, App: appCore}
-			appHandlers := app3.Handlers{App: appCore}
-			revisionHandlers := revision.Handlers{Revision: revisionCore, App: appCore, Boundary: boundaryCore, Commit: commitCore}
-			couplingHandlers := coupling.Handlers{Coupling: couplingCore, App: appCore}
-			churnHandlers := churn2.Handlers{Churn: churnCore}
-			modusOperandiHandlers := modus_operandi.Handlers{ModusOperandi: modusOperandiCore}
-			activeSetHandlers := active_set.Handlers{ActiveSet: activeSetCore}
-			developerHandlers := developer.Handlers{Developer: developerCore, App: appCore}
-			boundaryHandlers := boundary2.Handlers{Boundary: boundaryCore}
+			sceneHandlers := scene2.NewHandlers(connection)
+			appHandlers := app3.NewHandlers(connection)
+			revisionHandlers := revision.NewHandlers(connection)
+			couplingHandlers := coupling.NewHandlers(connection)
+			churnHandlers := churn2.NewHandlers(connection)
+			modusOperandiHandlers := modus_operandi.NewHandlers(connection)
+			activeSetHandlers := active_set.NewHandlers(connection)
+			developerHandlers := developer.NewHandlers(connection)
+			boundaryHandlers := boundary2.NewHandlers(connection)
 
 			group.GET("/scenes",  func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := sceneHandlers.QueryAll(writer, request)

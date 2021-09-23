@@ -5,11 +5,18 @@ import (
 	app2 "com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
+	"github.com/jmoiron/sqlx"
 	"net/http"
 )
 
 type Handlers struct {
 	App   app.Core
+}
+
+func NewHandlers(connection *sqlx.DB) Handlers {
+	return Handlers{
+		App: app.NewCore(connection),
+	}
 }
 
 func (h *Handlers) QueryAll(w http.ResponseWriter, r *http.Request, params map[string]string) error {
