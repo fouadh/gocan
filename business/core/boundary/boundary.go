@@ -35,6 +35,14 @@ func (c Core) Create(appId string, boundaryName string, transformations []string
 	return c.Boundary.Create(nb)
 }
 
+func (c Core) Query(appId string) ([]boundary.Boundary, error) {
+	return c.Boundary.Query(appId)
+}
+
+func (c Core) QueryByBoundaryId(id string) (boundary.Boundary, error) {
+	return c.Boundary.QueryById(id)
+}
+
 func (c Core) parseTransformations(transformations []string) ([]boundary.NewTransformation, error) {
 	a := regexp.MustCompile(`:`)
 	ts := []boundary.NewTransformation{}
@@ -58,8 +66,4 @@ func (c Core) parseTransformation(a *regexp.Regexp, t string) (boundary.NewTrans
 		Path: cols[1],
 	}
 	return transformation, nil
-}
-
-func (c Core) Query(appId string) ([]boundary.Boundary, error) {
-	return c.Boundary.Query(appId)
 }

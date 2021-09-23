@@ -11,6 +11,7 @@ import (
 	scene2 "com.fha.gocan/app/api/scene"
 	active_set2 "com.fha.gocan/business/core/active-set"
 	app2 "com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/churn"
 	coupling2 "com.fha.gocan/business/core/coupling"
 	developer2 "com.fha.gocan/business/core/developer"
@@ -19,6 +20,7 @@ import (
 	"com.fha.gocan/business/core/scene"
 	context "com.fha.gocan/foundation"
 	"embed"
+	"fmt"
 	"github.com/dimfeld/httptreemux/v5"
 	"github.com/spf13/cobra"
 	"io/fs"
@@ -78,10 +80,11 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			modusOperandiCore := modus_operandi2.NewCore(connection)
 			activeSetCore := active_set2.NewCore(connection)
 			developerCore := developer2.NewCore(connection)
+			boundaryCore := boundary.NewCore(connection)
 
 			sceneHandlers := scene2.Handlers{Scene: sceneCore, App: appCore}
 			appHandlers := app3.Handlers{App: appCore}
-			revisionHandlers := revision.Handlers{Revision: revisionCore, App: appCore}
+			revisionHandlers := revision.Handlers{Revision: revisionCore, App: appCore, Boundary: boundaryCore}
 			couplingHandlers := coupling.Handlers{Coupling: couplingCore, App: appCore}
 			churnHandlers := churn2.Handlers{Churn: churnCore}
 			modusOperandiHandlers := modus_operandi.Handlers{ModusOperandi: modusOperandiCore}
@@ -128,6 +131,14 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 				err := revisionHandlers.QueryHotspots(w, r, params)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
+				}
+			})
+
+			group.GET("/scenes/:sceneId/apps/:appId/revisions-trends", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := revisionHandlers.QueryRevisionsTrends(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					fmt.Println(err)
 				}
 			})
 

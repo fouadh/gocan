@@ -122,8 +122,13 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 				return errors.Wrap(err, "Command failed")
 			}
 
+			b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
+			if err != nil {
+				return errors.Wrap(err, "Boundary not found")
+			}
+
 			ui.Say("Getting revisions trends...")
-			trends, b, err := c.RevisionTrends(a.Id, boundaryName, beforeTime, afterTime)
+			trends, err := c.RevisionTrends(a.Id, b, beforeTime, afterTime)
 			if err != nil {
 				return errors.Wrap(err, "Cannot get revisions trends")
 			}

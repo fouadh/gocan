@@ -88,6 +88,41 @@ from (
 	return results, nil
 }
 
+func (s Store) QueryById(boundaryId string) (Boundary, error) {
+	const q = `
+		select row_to_json(row) as row
+from (
+         select *
+         from boundaries_transformations
+         where id=:boundary_id
+     ) row;`
+
+	data := struct {
+		BoundaryId string `db:"boundary_id"`
+	}{
+		BoundaryId: boundaryId,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil || !rows.Next() {
+		return Boundary{}, err
+	}
+
+	var row struct {
+		Row string `db:"row"`
+	}
+	if err := rows.StructScan(&row); err != nil {
+		return Boundary{}, err
+	}
+
+	var result Boundary
+	if err := json.Unmarshal([]byte(row.Row), &result); err != nil {
+		return Boundary{}, err
+	}
+
+	return result, nil
+}
+
 func (s Store) QueryByAppIdAndName(appId string, boundaryName string) (Boundary, error) {
 	const q = `
 		select row_to_json(row) as row

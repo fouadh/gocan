@@ -2,16 +2,19 @@ package revision
 
 import (
 	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/revision"
 	revision2 "com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
 type Handlers struct {
 	Revision revision.Core
 	App      app.Core
+	Boundary boundary.Core
 }
 
 func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
@@ -66,6 +69,44 @@ func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params 
 	}{
 		Name:     "root",
 		Children: []revision2.HotspotHierarchy{hotspots},
+	}
+
+	return web.Respond(w, payload, 200)
+}
+
+func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+	a, err := h.App.QueryById(appId)
+	if err != nil {
+		return err
+	}
+
+	query := r.URL.Query()
+	boundaryId := query.Get("boundaryId")
+	b, err := h.Boundary.QueryByBoundaryId(boundaryId)
+	if err != nil {
+		return errors.Wrap(err, "Boundary not found")
+	}
+
+	beforeTime, err := date.ParseDay(query.Get("before"))
+	if err != nil {
+		return errors.Wrap(err, "Cannot parse before parameter")
+	}
+
+	afterTime, err := date.ParseDay(query.Get("after"))
+	if err != nil {
+		return errors.Wrap(err, "Cannot parse after parameter")
+	}
+
+	trends, err := h.Revision.RevisionTrends(a.Id, b, beforeTime, afterTime)
+	if err != nil {
+		return err
+	}
+
+	payload := struct {
+		Trends []revision2.RevisionTrend `json:"trends"`
+	}{
+		Trends: trends,
 	}
 
 	return web.Respond(w, payload, 200)
