@@ -48,7 +48,7 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 		return errors.Wrap(err, "Unable to save stats")
 	}
 
-	if err = c.cloc.ImportCloc(appId, path); err != nil {
+	if err = c.cloc.ImportCloc(appId, path, commits); err != nil {
 		return errors.Wrap(err, "Unable to save clocs")
 	}
 
