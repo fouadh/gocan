@@ -6,7 +6,6 @@ import (
 	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/core/revision"
 	revision2 "com.fha.gocan/business/data/store/revision"
-	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
 	"github.com/pkg/errors"
 	"net/http"
@@ -22,12 +21,8 @@ type Handlers struct {
 func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
-	beforeTime, err := date.ParseDay(date.Today())
-	if err != nil {
-		return err
-	}
-
-	afterTime, err := date.ParseDay(date.LongTimeAgo())
+	query := r.URL.Query()
+	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
 	if err != nil {
 		return err
 	}
@@ -53,12 +48,8 @@ func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params 
 		return err
 	}
 
-	beforeTime, err := date.ParseDay(date.Today())
-	if err != nil {
-		return err
-	}
-
-	afterTime, err := date.ParseDay(date.LongTimeAgo())
+	query := r.URL.Query()
+	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
 	if err != nil {
 		return err
 	}
@@ -84,33 +75,16 @@ func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, 
 	}
 
 	query := r.URL.Query()
-	boundaryId := query.Get("boundaryId")
-	b, err := h.Boundary.QueryByBoundaryId(boundaryId)
-	if err != nil {
-		return errors.Wrap(err, "Boundary not found")
-	}
-
-	cr, err := h.Commit.QueryCommitRange(appId)
+	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
 	if err != nil {
 		return err
 	}
 
-	before := query.Get("before")
-	if before == "" {
-		before = date.FormatDay(cr.MaxDate)
-	}
-	beforeTime, err := date.ParseDay(before)
+	query = r.URL.Query()
+	boundaryId := query.Get("boundaryId")
+	b, err := h.Boundary.QueryByBoundaryId(boundaryId)
 	if err != nil {
-		return errors.Wrap(err, "Cannot parse before parameter")
-	}
-
-	after := query.Get("after")
-	if after == "" {
-		after = date.FormatDay(cr.MinDate)
-	}
-	afterTime, err := date.ParseDay(after)
-	if err != nil {
-		return errors.Wrap(err, "Cannot parse after parameter")
+		return errors.Wrap(err, "Boundary not found")
 	}
 
 	trends, err := h.Revision.RevisionTrends(a.Id, b, beforeTime, afterTime)
