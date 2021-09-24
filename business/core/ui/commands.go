@@ -1,15 +1,15 @@
 package ui
 
 import (
-	active_set "com.fha.gocan/app/api/active-set"
-	app3 "com.fha.gocan/app/api/app"
-	boundary2 "com.fha.gocan/app/api/boundary"
-	churn2 "com.fha.gocan/app/api/churn"
-	"com.fha.gocan/app/api/coupling"
-	"com.fha.gocan/app/api/developer"
-	modus_operandi "com.fha.gocan/app/api/modus-operandi"
-	"com.fha.gocan/app/api/revision"
-	scene2 "com.fha.gocan/app/api/scene"
+	active_set "com.fha.gocan/business/api/active-set"
+	app2 "com.fha.gocan/business/api/app"
+	"com.fha.gocan/business/api/boundary"
+	"com.fha.gocan/business/api/churn"
+	"com.fha.gocan/business/api/coupling"
+	"com.fha.gocan/business/api/developer"
+	modus_operandi "com.fha.gocan/business/api/modus-operandi"
+	"com.fha.gocan/business/api/revision"
+	"com.fha.gocan/business/api/scene"
 	context "com.fha.gocan/foundation"
 	"embed"
 	"fmt"
@@ -65,15 +65,15 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 
 			group := mux.NewGroup("/api")
 
-			sceneHandlers := scene2.NewHandlers(connection)
-			appHandlers := app3.NewHandlers(connection)
+			sceneHandlers := scene.NewHandlers(connection)
+			appHandlers := app2.NewHandlers(connection)
 			revisionHandlers := revision.NewHandlers(connection)
 			couplingHandlers := coupling.NewHandlers(connection)
-			churnHandlers := churn2.NewHandlers(connection)
+			churnHandlers := churn.NewHandlers(connection)
 			modusOperandiHandlers := modus_operandi.NewHandlers(connection)
 			activeSetHandlers := active_set.NewHandlers(connection)
 			developerHandlers := developer.NewHandlers(connection)
-			boundaryHandlers := boundary2.NewHandlers(connection)
+			boundaryHandlers := boundary.NewHandlers(connection)
 
 			group.GET("/scenes",  func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := sceneHandlers.QueryAll(writer, request)
