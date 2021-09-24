@@ -16,5 +16,5 @@ func Today() string {
 }
 
 func LongTimeAgo() string {
-	return "1970-01-01"
+	return time.Now().AddDate(-1, 0, 0).Format("2006-01-02")
 }
