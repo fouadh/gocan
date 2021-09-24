@@ -271,7 +271,7 @@ export const handlers = [
         }))
     }),
 
-    rest.get('/api/scenes/s123/apps/a1/revisions-trends?boundary=b123', (req, res, ctx) => {
+    rest.get('/api/scenes/s123/apps/a1/revisions-trends?boundaryId=b123', (req, res, ctx) => {
         return res(ctx.json({
             trends: [
                 {

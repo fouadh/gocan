@@ -12,7 +12,8 @@ export function RevisionTrends({sceneId, appId}) {
     useEffect(() => {
         let subscribed = true;
         if (boundary) {
-            axios.get(`/api/scenes/${sceneId}/apps/${appId}/revisions-trends?boundary=${boundary}`)
+            console.log({boundary});
+            axios.get(`/api/scenes/${sceneId}/apps/${appId}/revisions-trends?boundaryId=${boundary}`)
                 .then(it => it.data)
                 .then(it => it.trends)
                 .then(it => {

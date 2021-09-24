@@ -16,7 +16,7 @@ export function BoundarySelector({sceneId, appId, onChange}) {
             setBoundaries(it);
             if (it.length > 0) {
                 setBoundary(it[0]);
-                onChange({value: it[0]});
+                onChange({value: it[0].id});
             }
         }
       });
