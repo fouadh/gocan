@@ -3,7 +3,6 @@ package modus_operandi
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
-	"com.fha.gocan/foundation/date"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"strconv"
@@ -49,8 +48,8 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the modus-operandi before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch the modus-operandi after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the modus-operandi before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch the modus-operandi after this day")
 
 	return &cmd
 }

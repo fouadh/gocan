@@ -3,7 +3,6 @@ package revision
 import (
 	"com.fha.gocan/business/core"
 	context "com.fha.gocan/foundation"
-	"com.fha.gocan/foundation/date"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -53,8 +52,8 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the revisions before this day")
-	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the revisions after this day")
+	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the revisions before this day")
+	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the revisions after this day")
 	return &cmd
 }
 
@@ -93,8 +92,8 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
-	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the hotspots after this day")
+	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the hotspots before this day")
+	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the hotspots after this day")
 	return &cmd
 }
 
@@ -154,7 +153,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
+	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the hotspots after this day")
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
 	return &cmd

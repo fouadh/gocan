@@ -3,7 +3,6 @@ package coupling
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
-	"com.fha.gocan/foundation/date"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -63,8 +62,8 @@ func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().IntVarP(&minCoupling, "min-degree", "d", 30, "minimal degree of coupling wanted (in percent)")
 	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch all the couplings before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the couplings after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the couplings before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the couplings after this day")
 
 	return &cmd
 }
@@ -112,8 +111,8 @@ func NewSocCommand(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the summary of coupling before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the summary of coupling after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the summary of coupling before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the summary of coupling after this day")
 
 	return &cmd
 }
@@ -156,8 +155,8 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the couplings before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the couplings after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the couplings before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the couplings after this day")
 	cmd.Flags().IntVarP(&minCoupling, "min-degree", "d", 30, "minimal degree of coupling wanted (in percent)")
 	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
 

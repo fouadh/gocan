@@ -3,7 +3,6 @@ package active_set
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
-	"com.fha.gocan/foundation/date"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"strconv"
@@ -49,7 +48,7 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the active set before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch active set after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the active set before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch active set after this day")
 	return &cmd
 }

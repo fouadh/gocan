@@ -3,7 +3,6 @@ package churn
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
-	"com.fha.gocan/foundation/date"
 	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -54,8 +53,8 @@ func NewCodeChurn(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the code churn before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the code churn after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the code churn before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the code churn after this day")
 
 	return &cmd
 }

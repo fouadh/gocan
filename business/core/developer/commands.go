@@ -3,7 +3,6 @@ package developer
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
-	"com.fha.gocan/foundation/date"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -54,8 +53,8 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the main developers before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the main developers after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the main developers before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the main developers after this day")
 
 	return &cmd
 }
@@ -103,8 +102,8 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the entity efforts before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the entity efforts after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the entity efforts before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the entity efforts after this day")
 
 	return &cmd
 }
@@ -146,8 +145,8 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the main developers before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the main developers after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the main developers before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the main developers after this day")
 
 	return &cmd
 }
@@ -191,7 +190,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the developers before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the developers after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the developers before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the developers after this day")
 	return &cmd
 }
