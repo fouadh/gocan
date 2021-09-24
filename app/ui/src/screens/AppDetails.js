@@ -7,7 +7,6 @@ import {Coupling} from "./Coupling";
 import {CodeChurn} from "./CodeChurn";
 import {ModusOperandi} from "./ModusOperandi";
 import {RevisionTrends} from "./RevisionTrends";
-import {ActiveSet} from "./ActiveSet";
 import {KnowledgeMap} from "./KnowledgeMap";
 import {Hotspots} from "./Hotspots";
 
@@ -51,8 +50,6 @@ export function AppDetails() {
                 </TabPanel>
                 <TabPanel header="Knowledge Map">
                     <KnowledgeMap sceneId={sceneId} appId={appId}/>
-                </TabPanel><TabPanel header="Entities Active Set">
-                    <ActiveSet sceneId={sceneId} appId={appId}/>
                 </TabPanel>
             </TabView>
         </>
