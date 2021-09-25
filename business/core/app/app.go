@@ -51,10 +51,10 @@ func (c Core) QuerySummary(appId string, before time.Time, after time.Time) (app
 	return c.app.QuerySummary(appId, before, after)
 }
 
-func (c Core) FindAppBySceneNameAndAppName(appName string, sceneName string) (app.App, error) {
+func (c Core) FindAppByAppNameAndSceneName(appName string, sceneName string) (app.App, error) {
 	s, err := c.scene.QueryByName(sceneName)
 	if err != nil {
-		return app.App{}, fmt.Errorf("unable to retrieve scene %s", sceneName)
+		return app.App{}, fmt.Errorf("unable to retrieve app %s", sceneName)
 	}
 
 	a, err := c.app.QueryBySceneIdAndName(s.Id, appName)
@@ -73,8 +73,8 @@ func (c Core) QueryById(appId string) (app.App, error) {
 	return c.app.QueryById(appId)
 }
 
-func FindAppBySceneNameAndAppName(connection *sqlx.DB, appName string, sceneName string) (app.App, error) {
+func FindAppByAppNameAndSceneName(connection *sqlx.DB, appName string, sceneName string) (app.App, error) {
 	c := NewCore(connection)
 
-	return c.FindAppBySceneNameAndAppName(appName, sceneName)
+	return c.FindAppByAppNameAndSceneName(appName, sceneName)
 }

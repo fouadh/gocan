@@ -48,3 +48,31 @@ func (c Core) ExtractDateRangeFromQueryParams(appId string, query url.Values) (t
 	}
 	return beforeTime, afterTime, nil
 }
+
+func (c Core) ExtractDateRangeFromArgs(appId string, before string, after string) (time.Time, time.Time, error) {
+	cr, rangeErr := c.QueryCommitRange(appId)
+
+	if before == "" {
+		if rangeErr != nil {
+			return time.Time{}, time.Time{}, errors.Wrap(rangeErr, "Commit range cannot be retrieved")
+		}
+		before = date.FormatDay(cr.MaxDate)
+	}
+	beforeTime, err := date.ParseDay(before)
+	if err != nil {
+		return time.Time{}, time.Time{}, errors.Wrap(err, "Invalid before date")
+	}
+
+	if after == "" {
+		if rangeErr != nil {
+			return time.Time{}, time.Time{}, errors.Wrap(rangeErr, "Commit range cannot be retrieved")
+		}
+		after = date.FormatDay(cr.MinDate)
+	}
+	afterTime, err := date.ParseDay(after)
+	if err != nil {
+		return time.Time{}, time.Time{}, errors.Wrap(err, "Invalid after date")
+	}
+
+	return beforeTime, afterTime, nil
+}

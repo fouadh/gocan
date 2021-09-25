@@ -1,6 +1,7 @@
 package app
 
 import (
+	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
@@ -86,25 +87,21 @@ func NewAppSummaryCommand(ctx foundation.Context) *cobra.Command {
 
 			ctx.Ui.Say("Retrieving the apps...")
 			c := NewCore(connection)
+			ct := commit.NewCore(connection)
 
-			beforeTime, err := date.ParseDay(before)
+			a, err := c.FindAppByAppNameAndSceneName(args[0], sceneName)
 			if err != nil {
-				return err
+				return errors.Wrap(err, "Invalid app")
 			}
 
-			afterTime, err := date.ParseDay(after)
+			beforeTime, afterTime, err := ct.ExtractDateRangeFromArgs(a.Id, before, after)
 			if err != nil {
-				return err
-			}
-
-			a, err := c.FindAppBySceneNameAndAppName(sceneName, args[0])
-			if err != nil {
-				return errors.Wrap(err, "Invalid argument(s)")
+				return errors.Wrap(err, "Invalid date range")
 			}
 
 			summary, err := c.QuerySummary(a.Id, beforeTime, afterTime)
 			if err != nil {
-				return errors.Wrap(err, fmt.Sprintf("Unable to get summary: %s", err.Error()))
+				return errors.Wrap(err, "No summary found for app " + a.Id + " between " + date.FormatDay(beforeTime) + " and " + date.FormatDay(afterTime))
 			}
 
 			ctx.Ui.Ok()
@@ -118,8 +115,8 @@ func NewAppSummaryCommand(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch the summary of coupling before this day")
-	cmd.Flags().StringVarP(&after, "after", "", date.LongTimeAgo(), "Fetch all the summary of coupling after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the summary of coupling before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the summary of coupling after this day")
 	return &cmd
 }
 

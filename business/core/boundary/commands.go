@@ -35,7 +35,7 @@ func NewCreateBoundary(ctx foundation.Context) *cobra.Command {
 
 			c := NewCore(connection)
 
-			a, err := app.FindAppBySceneNameAndAppName(connection, appName, sceneName)
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
 			if err != nil {
 				return errors.Wrap(err, "Application not found")
 			}
@@ -80,7 +80,7 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 
 			c := NewCore(connection)
 
-			a, err := app.FindAppBySceneNameAndAppName(connection, appName, sceneName)
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
 			if err != nil {
 				return errors.Wrap(err, "Application not found")
 			}

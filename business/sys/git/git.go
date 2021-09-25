@@ -14,7 +14,9 @@ import (
 )
 
 func GetCommits(path string, before time.Time, after time.Time) ([]commit.Commit, error) {
-	cmd := exec.Command("git", "log", "--since", date.FormatDay(after), "--until", date.FormatDay(before), "--date=iso", "--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},")
+	fmt.Println("looking for commits between " + date.FormatDay(after) + " and " + date.FormatDay(before))
+	cmd := exec.Command("git", "log", "--after", date.FormatDay(after), "--before", date.FormatDay(before),
+		"--date=iso", "--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},")
 	cmd.Dir = path
 	out, err := cmd.Output()
 	if err != nil {
@@ -43,7 +45,7 @@ func GetCommits(path string, before time.Time, after time.Time) ([]commit.Commit
 		date, _ := time.Parse("2006-01-02 15:04:05 -0700", gc.Date)
 		commits = append(commits, commit.Commit{
 			Id:      gc.Id,
-			Author:  string(gc.Author),
+			Author:  gc.Author,
 			Date:    date,
 			Message: gc.Message,
 		})
@@ -53,7 +55,7 @@ func GetCommits(path string, before time.Time, after time.Time) ([]commit.Commit
 }
 
 func GetStats(path string, before time.Time, after time.Time) ([]stat.Stat, error) {
-	cmd := exec.Command("git", "log", "--since", date.FormatDay(after), "--until", date.FormatDay(before), "--numstat", "--format=%H")
+	cmd := exec.Command("git", "log", "--after", date.FormatDay(after), "--before", date.FormatDay(before), "--numstat", "--format=%H")
 	cmd.Dir = path
 	out, err := cmd.Output()
 	if err != nil {

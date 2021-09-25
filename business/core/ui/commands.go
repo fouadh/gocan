@@ -92,6 +92,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			group.GET("/scenes/:sceneId/apps", func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := appHandlers.QueryAll(writer, request, params)
 				if err != nil {
+					fmt.Println(err)
 					writer.WriteHeader(http.StatusInternalServerError)
 				}
 			})

@@ -1,10 +1,12 @@
 package commit
 
 import (
+	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/db"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"strconv"
 	"sync"
 	"time"
 )
@@ -18,7 +20,6 @@ func NewStore(connection *sqlx.DB) Store {
 }
 
 func (s Store) BulkImport(appId string, data []Commit) error {
-	txn := s.connection.MustBegin()
 
 	chunkSize := 1000
 
@@ -34,21 +35,27 @@ func (s Store) BulkImport(appId string, data []Commit) error {
 	}
 
 	var wg sync.WaitGroup
+	fmt.Println("Number of chunks is " + strconv.Itoa(len(divided)))
 	wg.Add(len(divided))
 
 	for _, set := range divided {
 		go func(data []Commit) {
 			defer wg.Done()
-			err := bulkInsert(&data, appId, txn)
-			if err != nil {
+			txn := s.connection.MustBegin()
+			if err := bulkInsert(data, appId, txn); err != nil {
 				// todo better than that
 				fmt.Printf("Bulk Insert Error: %s", err.Error())
+			}
+			if err := txn.Commit(); err != nil {
+				// todo better than that
+				fmt.Printf("Commit Error: %s", err.Error())
 			}
 		}(set)
 	}
 	wg.Wait()
+	fmt.Println("done")
 
-	return txn.Commit()
+
 
 	return nil
 }
@@ -86,21 +93,25 @@ func (s Store) QueryCommitRange(appId string) (CommitRange, error) {
 	return result, nil
 }
 
-func bulkInsert(list *[]Commit, appId string, txn *sqlx.Tx) error {
-	sql := db.GetBulkInsertSQL("commits", []string{"id", "author", "date", "message", "app_id"}, len(*list))
+func bulkInsert(list []Commit, appId string, txn *sqlx.Tx) error {
+	fmt.Println("starting bulk insert of", len(list), "commits")
+
+	sql := db.GetBulkInsertSQL("commits", []string{"id", "author", "date", "message", "app_id"}, len(list))
 	stmt, err := txn.Prepare(sql)
 	if err != nil {
 		return err
 	}
 
 	var args []interface{}
-	for _, c := range *list {
+	for _, c := range list {
 		args = append(args, c.Id)
 		args = append(args, c.Author)
 		args = append(args, c.Date.Format(time.RFC3339))
 		args = append(args, c.Message)
 		args = append(args, appId)
 	}
+
+	fmt.Println("last commit of array is " + date.FormatDay(list[len(list) - 1].Date))
 
 	_, err = stmt.Exec(args...)
 	if err != nil {
@@ -111,6 +122,8 @@ func bulkInsert(list *[]Commit, appId string, txn *sqlx.Tx) error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("ending bulk insert")
 	return err
 }
 

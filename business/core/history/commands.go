@@ -24,13 +24,13 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 				return err
 			}
 
-			ui.Say("Importing history...")
 
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
 				return errors.Wrap(err, "Command failed")
 			}
 
+			ui.Say("Importing history...")
 			h := NewCore(connection)
 			if err = h.Import(a.Id, path, beforeTime, afterTime); err != nil {
 				return errors.Wrap(err, "History cannot be imported")
@@ -42,7 +42,7 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&path, "path", "d", ".", "App directory")
+	cmd.Flags().StringVarP(&path, "path", "p", ".", "App directory")
 	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the hotspots after this day")
 	return &cmd

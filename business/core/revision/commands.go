@@ -4,7 +4,6 @@ import (
 	"com.fha.gocan/business/core"
 	context "com.fha.gocan/foundation"
 	"encoding/json"
-	"fmt"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"strconv"
@@ -42,9 +41,10 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 			table := ui.Table([]string{
 				"entity",
 				"n-revs",
+				"code",
 			})
 			for _, revision := range revisions {
-				table.Add(revision.Entity, fmt.Sprint(revision.NumberOfRevisions))
+				table.Add(revision.Entity, strconv.Itoa(revision.NumberOfRevisions), strconv.Itoa(revision.Code))
 			}
 			table.Print()
 			return nil
