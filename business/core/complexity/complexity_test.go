@@ -1,13 +1,13 @@
 package complexity
 
 import (
-	"fmt"
 	"io/ioutil"
-	"strings"
 	"testing"
 )
 
 func TestCountLinesIndentations(t *testing.T) {
+	c := Core{}
+
 	tests := []struct {
 		name string
 		line string
@@ -22,7 +22,7 @@ func TestCountLinesIndentations(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			got := CountLineIndentations(test.line, 2)
+			got := c.CountLineIndentations(test.line, 2)
 			if got != test.want {
 				t.Errorf("Want %d, Got %d", test.want, got)
 			}
@@ -46,7 +46,8 @@ func TestComplexityAnalysis(t *testing.T) {
 	file.WriteString(s)
 	file.Close()
 
-	got, err := AnalyzeComplexity(file.Name())
+	c := Core{}
+	got, err := c.AnalyzeComplexity(file.Name())
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("Cannot analyze complexity")
@@ -61,26 +62,3 @@ func TestComplexityAnalysis(t *testing.T) {
 	}
 }
 
-type Complexity struct {
-	Indentations int
-}
-
-func AnalyzeComplexity(filename string) (Complexity, error) {
-	bytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return Complexity{}, err
-	}
-
-	contents := string(bytes)
-	indentations := 0
-
-	lines := strings.Split(contents, "\n")
-	for _, line := range lines {
-		fmt.Println("read line", line)
-		indentations += CountLineIndentations(line, 2)
-	}
-
-	return Complexity{
-		Indentations: indentations,
-	}, nil
-}

@@ -5,6 +5,7 @@ import (
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/churn"
+	"com.fha.gocan/business/core/complexity"
 	"com.fha.gocan/business/core/coupling"
 	db2 "com.fha.gocan/business/core/db"
 	"com.fha.gocan/business/core/developer"
@@ -59,6 +60,7 @@ func main() {
 	rootCmd.AddCommand(active_set.NewActiveSet(*ctx))
 	rootCmd.AddCommand(boundary.NewCreateBoundary(*ctx))
 	rootCmd.AddCommand(boundary.NewBoundaries(*ctx))
+	rootCmd.AddCommand(complexity.NewComplexityAnalysis(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
