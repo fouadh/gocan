@@ -8,11 +8,13 @@ import (
 	"strconv"
 )
 
-func NewComplexityAnalysis(ctx foundation.Context) *cobra.Command {
+func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	var sceneName string
+	var appName string
 	var before string
 	var after string
 	var filename string
+	var directory string
 
 	cmd := cobra.Command{
 		Use: "complexity-analysis",
@@ -24,23 +26,26 @@ func NewComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 				return err
 			}
 
-			ui.Say("Retrieving summary...")
 
 			c := NewCore()
 
-			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, appName, before, after)
 			if err != nil {
 				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
-			data, err := c.Analyze(a.Id, beforeTime, afterTime, filename)
+			ui.Say("Analyzing the file revisions...")
+
+			data, err := c.CreateComplexityAnalysis(args[0], a.Id, beforeTime, afterTime, filename, directory)
 
 			if err != nil {
 				return errors.Wrap(err, "Error when analyzing complexity")
 			}
 
-			table := ui.Table([]string{"Indentations"})
-			table.Add(strconv.Itoa(data.Indentations))
+			table := ui.Table([]string{"Date", "Indentations"})
+			for _, cy := range data {
+				table.Add(cy.Date.String(), strconv.Itoa(cy.Indentations))
+			}
 			table.Print()
 
 			return nil
@@ -48,9 +53,11 @@ func NewComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Analyze the complexity before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Analyze the complexity after this day")
-	cmd.Flags().StringVarP(&filename, "filename", "f", "", "The file to analyze")
+	cmd.Flags().StringVarP(&filename, "filename", "f", "", "The file to analyze relative to the directory argument")
+	cmd.Flags().StringVarP(&directory, "directory", "d", "", "The directory of the git repo")
 
 	return &cmd
 }

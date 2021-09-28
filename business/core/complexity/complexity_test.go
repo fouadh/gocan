@@ -3,6 +3,7 @@ package complexity
 import (
 	"io/ioutil"
 	"testing"
+	"time"
 )
 
 func TestCountLinesIndentations(t *testing.T) {
@@ -47,7 +48,8 @@ func TestComplexityAnalysis(t *testing.T) {
 	file.Close()
 
 	c := Core{}
-	got, err := c.AnalyzeComplexity(file.Name())
+	now := time.Now()
+	got, err := c.AnalyzeComplexity(file.Name(), now)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("Cannot analyze complexity")
@@ -55,6 +57,7 @@ func TestComplexityAnalysis(t *testing.T) {
 
 	want := Complexity{
 		Indentations: 6,
+		Date: now,
 	}
 
 	if got != want {
