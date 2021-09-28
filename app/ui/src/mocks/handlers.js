@@ -279,32 +279,32 @@ export const handlers = [
                         {entity: "tests", numberOfRevisions: 50},
                         {entity: "production", numberOfRevisions: 100}
                     ]
-                },{
+                }, {
                     date: "2021-09-11", revisions: [
                         {entity: "tests", numberOfRevisions: 35},
                         {entity: "production", numberOfRevisions: 78}
                     ]
-                },{
+                }, {
                     date: "2021-09-12", revisions: [
                         {entity: "tests", numberOfRevisions: 250},
                         {entity: "production", numberOfRevisions: 210}
                     ]
-                },{
+                }, {
                     date: "2021-09-13", revisions: [
                         {entity: "tests", numberOfRevisions: 198},
                         {entity: "production", numberOfRevisions: 86}
                     ]
-                },{
+                }, {
                     date: "2021-09-14", revisions: [
                         {entity: "tests", numberOfRevisions: 74},
                         {entity: "production", numberOfRevisions: 210}
                     ]
-                },{
+                }, {
                     date: "2021-09-15", revisions: [
                         {entity: "tests", numberOfRevisions: 36},
                         {entity: "production", numberOfRevisions: 12}
                     ]
-                },{
+                }, {
                     date: "2021-09-16", revisions: [
                         {entity: "tests", numberOfRevisions: 145},
                         {entity: "production", numberOfRevisions: 432}
@@ -335,6 +335,32 @@ export const handlers = [
                 {name: "Alice"},
                 {name: "Bob"},
                 {name: "Charlie"},
+            ]
+        }))
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/complexity-analysis/analysis-1', (req, res, ctx) => {
+        return res(ctx.json({
+            entries: [
+                {
+                    indentations: 10,
+                    date: '2021-09-14T20:02:55.564Z'
+                }, {
+                    indentations: 20,
+                    date: '2021-09-13T20:02:55.564Z'
+                }, {
+                    indentations: 30,
+                    date: '2021-09-12T20:02:55.564Z'
+                }, {
+                    indentations: 40,
+                    date: '2021-09-11T20:02:55.564Z'
+                }, {
+                    indentations: 50,
+                    date: '2021-09-10T20:02:55.564Z'
+                }, {
+                    indentations: 60,
+                    date: '2021-09-09T20:02:55.564Z'
+                },
             ]
         }))
     }),

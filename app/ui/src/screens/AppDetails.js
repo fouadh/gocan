@@ -9,6 +9,7 @@ import {ModusOperandi} from "./ModusOperandi";
 import {RevisionTrends} from "./RevisionTrends";
 import {KnowledgeMap} from "./KnowledgeMap";
 import {Hotspots} from "./Hotspots";
+import {ComplexityAnalysis} from "./ComplexityAnalysis";
 
 export function AppDetails() {
     const {sceneId, appId} = useParams();
@@ -35,6 +36,9 @@ export function AppDetails() {
                 </TabPanel>
                 <TabPanel header="Hotspots">
                     <Hotspots sceneId={sceneId} appId={appId}/>
+                </TabPanel>
+                <TabPanel header="Complexity">
+                    <ComplexityAnalysis sceneId={sceneId} appId={appId}/>
                 </TabPanel>
                 <TabPanel header="Coupling">
                     <Coupling sceneId={sceneId} appId={appId}/>
