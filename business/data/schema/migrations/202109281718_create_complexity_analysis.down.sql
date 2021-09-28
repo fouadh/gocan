@@ -1,1 +1,2 @@
+drop table complexity_analysis_app_id_idx;
 drop table complexity_analysis;

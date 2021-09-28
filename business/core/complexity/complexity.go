@@ -1,8 +1,10 @@
 package complexity
 
 import (
+	"com.fha.gocan/business/data/store/complexity"
 	"com.fha.gocan/foundation/date"
 	"fmt"
+	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"math"
@@ -29,10 +31,10 @@ func (c Core) CountLineIndentations(line string, size int) int {
 	return (len(line) - len(tline)) / 2
 }
 
-func (c Core) AnalyzeComplexity(filename string, date time.Time) (Complexity, error) {
+func (c Core) AnalyzeComplexity(filename string, date time.Time) (complexity.ComplexityEntry, error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
-		return Complexity{}, err
+		return complexity.ComplexityEntry{}, err
 	}
 
 	contents := string(bytes)
@@ -57,11 +59,11 @@ func (c Core) AnalyzeComplexity(filename string, date time.Time) (Complexity, er
 	mean := float64(indentationsCounter) / float64(linesCounter)
 	stdev := 0.
 	for _, i := range indentations {
-		stdev += (float64(i)-mean) * (float64(i)-mean)
+		stdev += (float64(i) - mean) * (float64(i) - mean)
 	}
 	stdev = math.Sqrt(stdev / float64(len(indentations)))
 
-	return Complexity{
+	return complexity.ComplexityEntry{
 		Indentations: indentationsCounter,
 		Lines:        linesCounter,
 		Mean:         mean,
@@ -71,28 +73,28 @@ func (c Core) AnalyzeComplexity(filename string, date time.Time) (Complexity, er
 	}, nil
 }
 
-func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before time.Time, after time.Time, filename string, directory string) ([]Complexity, error) {
+func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before time.Time, after time.Time, filename string, directory string) (complexity.Complexity, error) {
 	cmd := exec.Command("git", "log", "--oneline", "--pretty=format:%h;%ad", "--after", date.FormatDay(after), "--before", date.FormatDay(before), "--date=iso")
 	cmd.Dir = directory
 	cmd.Stderr = os.Stderr
 	out, err := cmd.Output()
 	if err != nil {
-		return []Complexity{}, errors.Wrap(err, "Unable to get the revisions")
+		return complexity.Complexity{}, errors.Wrap(err, "Unable to get the revisions")
 	}
 
 	outStr := string(out)
 	if len(outStr) == 0 {
-		return []Complexity{}, errors.New("No output returned by the git command")
+		return complexity.Complexity{}, errors.New("No output returned by the git command")
 	}
 
-	complexities := []Complexity{}
+	complexities := []complexity.ComplexityEntry{}
 	lines := strings.Split(outStr, "\n")
 	for _, line := range lines {
 		cols := strings.Split(line, ";")
 		rev := cols[0]
 		revDate, err := time.Parse("2006-01-02 15:04:05 -0700", cols[1])
 		if err != nil {
-			return []Complexity{}, errors.Wrap(err, "Unable to parse date")
+			return complexity.Complexity{}, errors.Wrap(err, "Unable to parse date")
 		}
 
 		cmd := exec.Command("git", "checkout", rev)
@@ -100,27 +102,24 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 		cmd.Stderr = os.Stderr
 		out, err = cmd.Output()
 		if err != nil {
-			return []Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
+			return complexity.Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
 		}
 
 		c, err := c.AnalyzeComplexity(directory+filename, revDate)
 		if err != nil {
 			// in case of error, we consider that the file's complexity is 0 for every field
 			fmt.Println("File cannot be analyzed for revision " + rev)
-			return []Complexity{}, nil
+			return complexity.Complexity{}, nil
 		}
 
 		complexities = append(complexities, c)
 	}
 
-	return complexities, nil
-}
-
-type Complexity struct {
-	Lines        int
-	Indentations int
-	Mean         float64
-	Max          int
-	Stdev        float64
-	Date         time.Time
+	return complexity.Complexity{
+		Id:      uuid.New(),
+		Name:    analysisName,
+		Entity:  filename,
+		AppId:   appId,
+		Entries: complexities,
+	}, nil
 }
