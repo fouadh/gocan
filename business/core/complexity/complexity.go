@@ -37,18 +37,25 @@ func (c Core) AnalyzeComplexity(filename string, date time.Time) (Complexity, er
 	contents := string(bytes)
 	indentations := 0
 	linesCounter := 0
+	max := 0
 
 	lines := strings.Split(contents, "\n")
 	for _, line := range lines {
 		if line != "" {
 			linesCounter++
-			indentations += c.CountLineIndentations(line, 2)
+			lineIndentations := c.CountLineIndentations(line, 2)
+			indentations += lineIndentations
+			if max < lineIndentations {
+				max = lineIndentations
+			}
 		}
 	}
 
 	return Complexity{
 		Indentations: indentations,
-		Lines: linesCounter,
+		Lines:        linesCounter,
+		Mean:         float64(indentations) / float64(linesCounter),
+		Max:          max,
 		Date:         date,
 	}, nil
 }
@@ -101,5 +108,7 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 type Complexity struct {
 	Lines        int
 	Indentations int
+	Mean         float64
+	Max          int
 	Date         time.Time
 }

@@ -3,6 +3,7 @@ package complexity
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
+	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"strconv"
@@ -41,9 +42,12 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Error when analyzing complexity")
 			}
 
-			table := ui.Table([]string{"Date", "Lines", "Indentations"})
+			table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Max"})
 			for _, cy := range data {
-				table.Add(cy.Date.String(), strconv.Itoa(cy.Lines), strconv.Itoa(cy.Indentations))
+				table.Add(cy.Date.String(), strconv.Itoa(cy.Lines),
+					strconv.Itoa(cy.Indentations),
+					humanize.FtoaWithDigits(cy.Mean, 2),
+					strconv.Itoa(cy.Max))
 			}
 			table.Print()
 
