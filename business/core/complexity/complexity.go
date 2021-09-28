@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/pkg/errors"
 	"io/ioutil"
+	"math"
 	"os"
 	"os/exec"
 	"strings"
@@ -35,7 +36,8 @@ func (c Core) AnalyzeComplexity(filename string, date time.Time) (Complexity, er
 	}
 
 	contents := string(bytes)
-	indentations := 0
+	indentations := []int{}
+	indentationsCounter := 0
 	linesCounter := 0
 	max := 0
 
@@ -44,18 +46,27 @@ func (c Core) AnalyzeComplexity(filename string, date time.Time) (Complexity, er
 		if line != "" {
 			linesCounter++
 			lineIndentations := c.CountLineIndentations(line, 2)
-			indentations += lineIndentations
+			indentations = append(indentations, lineIndentations)
+			indentationsCounter += lineIndentations
 			if max < lineIndentations {
 				max = lineIndentations
 			}
 		}
 	}
 
+	mean := float64(indentationsCounter) / float64(linesCounter)
+	stdev := 0.
+	for _, i := range indentations {
+		stdev += (float64(i)-mean) * (float64(i)-mean)
+	}
+	stdev = math.Sqrt(stdev / float64(len(indentations)))
+
 	return Complexity{
-		Indentations: indentations,
+		Indentations: indentationsCounter,
 		Lines:        linesCounter,
-		Mean:         float64(indentations) / float64(linesCounter),
+		Mean:         mean,
 		Max:          max,
+		Stdev:        stdev,
 		Date:         date,
 	}, nil
 }
@@ -110,5 +121,6 @@ type Complexity struct {
 	Indentations int
 	Mean         float64
 	Max          int
+	Stdev        float64
 	Date         time.Time
 }

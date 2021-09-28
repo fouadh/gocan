@@ -42,11 +42,14 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Error when analyzing complexity")
 			}
 
-			table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Max"})
+			ui.Ok()
+
+			table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Stdev", "Max"})
 			for _, cy := range data {
 				table.Add(cy.Date.String(), strconv.Itoa(cy.Lines),
 					strconv.Itoa(cy.Indentations),
 					humanize.FtoaWithDigits(cy.Mean, 2),
+					humanize.FtoaWithDigits(cy.Stdev, 2),
 					strconv.Itoa(cy.Max))
 			}
 			table.Print()

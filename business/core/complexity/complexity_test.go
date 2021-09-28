@@ -60,6 +60,7 @@ func TestComplexityAnalysis(t *testing.T) {
 		Lines: 4,
 		Mean: 1.5,
 		Max: 2,
+		Stdev: 0.5,
 		Date: now,
 	}
 
