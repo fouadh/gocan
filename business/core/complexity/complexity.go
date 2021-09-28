@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/data/store/complexity"
 	"com.fha.gocan/foundation/date"
 	"fmt"
+	"github.com/jmoiron/sqlx"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
 	"io/ioutil"
@@ -15,10 +16,13 @@ import (
 )
 
 type Core struct {
+	complexity complexity.Store
 }
 
-func NewCore() Core {
-	return Core{}
+func NewCore(connection *sqlx.DB) Core {
+	return Core{
+		complexity: complexity.NewStore(connection),
+	}
 }
 
 func (c Core) CountLineIndentations(line string, size int) int {
@@ -31,7 +35,7 @@ func (c Core) CountLineIndentations(line string, size int) int {
 	return (len(line) - len(tline)) / 2
 }
 
-func (c Core) AnalyzeComplexity(filename string, date time.Time) (complexity.ComplexityEntry, error) {
+func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.Time) (complexity.ComplexityEntry, error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return complexity.ComplexityEntry{}, err
@@ -64,6 +68,7 @@ func (c Core) AnalyzeComplexity(filename string, date time.Time) (complexity.Com
 	stdev = math.Sqrt(stdev / float64(len(indentations)))
 
 	return complexity.ComplexityEntry{
+		ComplexityId: complexityId,
 		Indentations: indentationsCounter,
 		Lines:        linesCounter,
 		Mean:         mean,
@@ -88,6 +93,7 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 	}
 
 	complexities := []complexity.ComplexityEntry{}
+	complexityId := uuid.New()
 	lines := strings.Split(outStr, "\n")
 	for _, line := range lines {
 		cols := strings.Split(line, ";")
@@ -105,7 +111,7 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 			return complexity.Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
 		}
 
-		c, err := c.AnalyzeComplexity(directory+filename, revDate)
+		c, err := c.AnalyzeComplexity(complexityId, directory + filename, revDate)
 		if err != nil {
 			// in case of error, we consider that the file's complexity is 0 for every field
 			fmt.Println("File cannot be analyzed for revision " + rev)
@@ -115,11 +121,13 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 		complexities = append(complexities, c)
 	}
 
-	return complexity.Complexity{
-		Id:      uuid.New(),
+	result := complexity.Complexity{
+		Id:      complexityId,
 		Name:    analysisName,
 		Entity:  filename,
 		AppId:   appId,
 		Entries: complexities,
-	}, nil
+	}
+
+	return c.complexity.Create(result)
 }

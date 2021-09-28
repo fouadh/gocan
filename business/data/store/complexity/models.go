@@ -3,18 +3,19 @@ package complexity
 import "time"
 
 type Complexity struct {
-	Id      string
-	Name    string
-	Entity  string
-	AppId   string
+	Id      string `db:"id"`
+	Name    string `db:"name"`
+	Entity  string `db:"entity"`
+	AppId   string `db:"app_id"`
 	Entries []ComplexityEntry
 }
 
 type ComplexityEntry struct {
-	Lines        int
-	Indentations int
-	Mean         float64
-	Max          int
-	Stdev        float64
-	Date         time.Time
+	ComplexityId string    `db:"complexity_analysis_id"`
+	Lines        int       `db:"lines"`
+	Indentations int       `db:"indentations"`
+	Mean         float64   `db:"mean"`
+	Max          int       `db:"max"`
+	Stdev        float64   `db:"stdev"`
+	Date         time.Time `db:"date"`
 }

@@ -27,7 +27,7 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 				return err
 			}
 
-			c := NewCore()
+			c := NewCore(connection)
 
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, appName, before, after)
 			if err != nil {
