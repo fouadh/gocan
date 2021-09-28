@@ -17,7 +17,7 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	var directory string
 
 	cmd := cobra.Command{
-		Use: "complexity-analysis",
+		Use:  "complexity-analysis",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -25,7 +25,6 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-
 
 			c := NewCore()
 
@@ -42,9 +41,9 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Error when analyzing complexity")
 			}
 
-			table := ui.Table([]string{"Date", "Indentations"})
+			table := ui.Table([]string{"Date", "Lines", "Indentations"})
 			for _, cy := range data {
-				table.Add(cy.Date.String(), strconv.Itoa(cy.Indentations))
+				table.Add(cy.Date.String(), strconv.Itoa(cy.Lines), strconv.Itoa(cy.Indentations))
 			}
 			table.Print()
 

@@ -36,15 +36,20 @@ func (c Core) AnalyzeComplexity(filename string, date time.Time) (Complexity, er
 
 	contents := string(bytes)
 	indentations := 0
+	linesCounter := 0
 
 	lines := strings.Split(contents, "\n")
 	for _, line := range lines {
-		indentations += c.CountLineIndentations(line, 2)
+		if line != "" {
+			linesCounter++
+			indentations += c.CountLineIndentations(line, 2)
+		}
 	}
 
 	return Complexity{
 		Indentations: indentations,
-		Date: date,
+		Lines: linesCounter,
+		Date:         date,
 	}, nil
 }
 
@@ -77,10 +82,10 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 		cmd.Stderr = os.Stderr
 		out, err = cmd.Output()
 		if err != nil {
-			return []Complexity{}, errors.Wrap(err, "Fail to checkout revision " + rev)
+			return []Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
 		}
 
-		c, err := c.AnalyzeComplexity(directory + filename, revDate)
+		c, err := c.AnalyzeComplexity(directory+filename, revDate)
 		if err != nil {
 			// in case of error, we consider that the file's complexity is 0 for every field
 			fmt.Println("File cannot be analyzed for revision " + rev)
@@ -94,6 +99,7 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 }
 
 type Complexity struct {
+	Lines        int
 	Indentations int
 	Date         time.Time
 }

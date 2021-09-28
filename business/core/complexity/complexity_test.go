@@ -57,6 +57,7 @@ func TestComplexityAnalysis(t *testing.T) {
 
 	want := Complexity{
 		Indentations: 6,
+		Lines: 4,
 		Date: now,
 	}
 
