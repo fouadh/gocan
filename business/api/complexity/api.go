@@ -35,3 +35,20 @@ func (h *Handlers) QueryAnalyses(w http.ResponseWriter, r *http.Request, params 
 
 	return web.Respond(w, payload, 200)
 }
+
+func (h *Handlers) QueryAnalysisEntriesById(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	complexityId := params["complexityId"]
+
+	data, err := h.Complexity.QueryAnalysisEntriesById(complexityId)
+	if err != nil {
+		return errors.Wrap(err, "Unable to query analyses by name")
+	}
+
+	payload := struct {
+		Entries []complexity2.ComplexityEntry `json:"entries"`
+	}{
+		Entries: data,
+	}
+
+	return web.Respond(w, payload, 200)
+}

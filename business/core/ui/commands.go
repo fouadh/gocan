@@ -185,6 +185,13 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 				}
 			})
 
+			group.GET("/scenes/:sceneId/apps/:appId/complexity-analyses/:complexityId", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := complexityHandlers.QueryAnalysisEntriesById(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+			})
+
 
 			srv := &http.Server{
 				Handler:      mux,

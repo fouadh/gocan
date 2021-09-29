@@ -84,3 +84,41 @@ func (s Store) QueryAnalyses(appId string) ([]ComplexityAnalysisSummary, error) 
 
 	return results, nil
 }
+
+func (s Store) QueryAnalysisEntriesById(complexityId string) ([]ComplexityEntry, error) {
+	const q = `
+	SELECT
+		date,
+		lines,
+		indentations,
+		mean,
+		stdev,
+		max
+	FROM complexity_analyses_entries
+	WHERE
+		complexity_analysis_id = :complexity_id
+	`
+
+	data := struct {
+		ComplexityId string `db:"complexity_id"`
+	}{
+		ComplexityId: complexityId,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return []ComplexityEntry{}, nil
+	}
+
+	results := []ComplexityEntry{}
+
+	for rows.Next() {
+		var item ComplexityEntry
+		if err := rows.StructScan(&item); err != nil {
+			return []ComplexityEntry{}, err
+		}
+		results = append(results, item)
+	}
+
+	return results, nil
+}
