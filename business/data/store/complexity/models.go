@@ -19,3 +19,8 @@ type ComplexityEntry struct {
 	Stdev        float64   `db:"stdev"`
 	Date         time.Time `db:"date"`
 }
+
+type ComplexityAnalysisSummary struct {
+	Id   string `db:"id"`
+	Name string `db:"name"`
+}

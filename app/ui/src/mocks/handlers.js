@@ -339,7 +339,17 @@ export const handlers = [
         }))
     }),
 
-    rest.get('/api/scenes/s123/apps/a1/complexity-analysis/analysis-1', (req, res, ctx) => {
+    rest.get('/api/scenes/s123/apps/a1/complexity-analyses', (req, res, ctx) => {
+        return res(ctx.json({
+            analyses: [
+                { id: "analysis-1", name: "Analysis 1" },
+                { id: "analysis-2", name: "Analysis 2" },
+                { id: "analysis-3", name: "Analysis 3" }
+            ]
+        }));
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/complexity-analyses/analysis-1', (req, res, ctx) => {
         return res(ctx.json({
             entries: [
                 {

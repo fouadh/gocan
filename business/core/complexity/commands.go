@@ -3,6 +3,7 @@ package complexity
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
+	"com.fha.gocan/foundation/date"
 	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -18,8 +19,9 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	var directory string
 
 	cmd := cobra.Command{
-		Use:  "complexity-analysis",
-		Args: cobra.ExactArgs(1),
+		Use:     "create-complexity-analysis",
+		Aliases: []string{"cca"},
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
@@ -34,7 +36,7 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
-			ui.Say("Analyzing the file revisions...")
+			ui.Say("Analyzing the file revisions between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
 
 			data, err := c.CreateComplexityAnalysis(args[0], a.Id, beforeTime, afterTime, filename, directory)
 

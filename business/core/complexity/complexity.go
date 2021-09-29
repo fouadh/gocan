@@ -131,3 +131,7 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 
 	return c.complexity.Create(result)
 }
+
+func (c Core) QueryAnalyses(appId string) ([]complexity.ComplexityAnalysisSummary, error) {
+	return c.complexity.QueryAnalyses(appId)
+}

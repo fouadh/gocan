@@ -5,6 +5,7 @@ import (
 	app2 "com.fha.gocan/business/api/app"
 	"com.fha.gocan/business/api/boundary"
 	"com.fha.gocan/business/api/churn"
+	"com.fha.gocan/business/api/complexity"
 	"com.fha.gocan/business/api/coupling"
 	"com.fha.gocan/business/api/developer"
 	modus_operandi "com.fha.gocan/business/api/modus-operandi"
@@ -74,6 +75,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			activeSetHandlers := active_set.NewHandlers(connection)
 			developerHandlers := developer.NewHandlers(connection)
 			boundaryHandlers := boundary.NewHandlers(connection)
+			complexityHandlers := complexity.NewHandlers(connection)
 
 			group.GET("/scenes",  func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
 				err := sceneHandlers.QueryAll(writer, request)
@@ -171,6 +173,13 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 
 			group.GET("/scenes/:sceneId/apps/:appId/knowledge-map", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
 				err := developerHandlers.BuildKnowledgeMap(w, r, params)
+				if err != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+				}
+			})
+
+			group.GET("/scenes/:sceneId/apps/:appId/complexity-analyses", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
+				err := complexityHandlers.QueryAnalyses(w, r, params)
 				if err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 				}

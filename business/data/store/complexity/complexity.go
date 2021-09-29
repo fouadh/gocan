@@ -16,7 +16,7 @@ func NewStore(connection *sqlx.DB) Store {
 func (s Store) Create(c Complexity) (Complexity, error) {
 	tx := s.connection.MustBegin()
 
-	const q1 = `insert into complexity_analysis(id, name, entity, app_id)
+	const q1 = `insert into complexity_analyses(id, name, entity, app_id)
   values(:id, :name, :entity, :app_id)`
 
 	if _, err := tx.NamedExec(q1, c); err != nil {
@@ -24,7 +24,7 @@ func (s Store) Create(c Complexity) (Complexity, error) {
 		return Complexity{}, errors.Wrap(err, "Unable to insert complexity analysis")
 	}
 
-	const q2 = `insert into complexity_analysis_entries(
+	const q2 = `insert into complexity_analyses_entries(
 complexity_analysis_id, 
 date,
 lines,
@@ -50,4 +50,37 @@ max
 
 	tx.Commit()
 	return c, nil
+}
+
+func (s Store) QueryAnalyses(appId string) ([]ComplexityAnalysisSummary, error) {
+	const q = `
+	SELECT 
+		id, name
+	FROM
+		complexity_analyses
+	WHERE
+		app_id = :app_id
+`
+	data := struct {
+		AppId string `db:"app_id"`
+	}{
+		AppId: appId,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return []ComplexityAnalysisSummary{}, nil
+	}
+
+	results := []ComplexityAnalysisSummary{}
+
+	for rows.Next() {
+		var item ComplexityAnalysisSummary
+		if err := rows.StructScan(&item); err != nil {
+			return []ComplexityAnalysisSummary{}, err
+		}
+		results = append(results, item)
+	}
+
+	return results, nil
 }
