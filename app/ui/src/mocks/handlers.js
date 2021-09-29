@@ -354,21 +354,39 @@ export const handlers = [
             entries: [
                 {
                     indentations: 10,
+                    lines: 10,
+                    max: 8,
+                    stdev: 1.4,
                     date: '2021-09-14T20:02:55.564Z'
                 }, {
                     indentations: 20,
+                    lines: 20,
+                    max: 14,
+                    stdev: 1.4,
                     date: '2021-09-13T20:02:55.564Z'
                 }, {
                     indentations: 30,
+                    lines: 30,
+                    max: 14,
+                    stdev: 1.0,
                     date: '2021-09-12T20:02:55.564Z'
                 }, {
                     indentations: 40,
+                    lines: 40,
+                    max: 6,
+                    stdev: 0.98,
                     date: '2021-09-11T20:02:55.564Z'
                 }, {
                     indentations: 50,
+                    lines: 50,
+                    max: 6,
+                    stdev: 0.90,
                     date: '2021-09-10T20:02:55.564Z'
                 }, {
                     indentations: 60,
+                    lines: 60,
+                    max: 6,
+                    stdev: 0.76,
                     date: '2021-09-09T20:02:55.564Z'
                 },
             ]

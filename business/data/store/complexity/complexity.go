@@ -97,6 +97,7 @@ func (s Store) QueryAnalysisEntriesById(complexityId string) ([]ComplexityEntry,
 	FROM complexity_analyses_entries
 	WHERE
 		complexity_analysis_id = :complexity_id
+    ORDER BY date ASC
 	`
 
 	data := struct {

@@ -18,6 +18,7 @@ export function ComplexityAnalysis({sceneId, appId}) {
                 .then(it => {
                     if (subscribed) {
                         const indentations = it.map((each) => ({x: each.date, y: each.indentations}));
+                        const lines = it.map((each) => ({x: each.date, y: each.lines}));
                         const complexity = [indentations];
                         setComplexity(complexity);
                     }
@@ -58,7 +59,7 @@ export function ComplexityAnalysis({sceneId, appId}) {
                             xAccessor={d => d3.isoParse(d.x)}
                             yAccessor={d => d.y}
                             xFormatter={d3.timeFormat("%Y-%m-%d")}
-                            legend={["Complexity"]}
+                            legend={["Indentations"]}
             />
         </>
     )
