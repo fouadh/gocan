@@ -45,14 +45,21 @@ export function RevisionTrends({sceneId, appId}) {
         return () => subscribed = false;
     }, [boundary, sceneId, appId]);
 
+    let chart;
+    if (trends && trends.length > 0) {
+        chart = <MultiLineChart label="Revisions Trends"
+                                data={Object.values(trends)}
+                                xAccessor={d => d3.timeParse('%Y-%m-%d')(d.x)}
+                                yAccessor={d => d.y}
+                                xFormatter={d3.timeFormat("%Y-%m-%d")}
+                                legend={transformations}
+        />;
+    } else {
+        chart = <></>;
+    }
+
     return <div>
         <BoundarySelector sceneId={sceneId} appId={appId} onChange={(e) => setBoundary(e.value)}/>
-        <MultiLineChart label="Revisions Trends"
-                        data={Object.values(trends)}
-                        xAccessor={d => d3.timeParse('%Y-%m-%d')(d.x)}
-                        yAccessor={d => d.y}
-                        xFormatter={d3.timeFormat("%Y-%m-%d")}
-                        legend={transformations}
-        />
+        { chart }
     </div>;
 }
