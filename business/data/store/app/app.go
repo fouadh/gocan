@@ -78,6 +78,7 @@ func (s Store) QueryBySceneId(sceneId string) ([]App, error) {
 		apps
 	WHERE
 		scene_id = :scene_id
+	ORDER BY name
 `
 	data := struct {
 		SceneId string `db:"scene_id"`
@@ -171,4 +172,17 @@ func (s Store) QueryById(appId string) (App, error) {
 	}
 
 	return result, nil
+}
+
+func (s Store) Delete(appId string) error {
+	const q = `DELETE FROM apps WHERE id=:app_id`
+
+	data := struct {
+		AppId string `db:"app_id"`
+	}{
+		AppId: appId,
+	}
+
+	_, err := s.connection.NamedExec(q, data)
+	return err
 }

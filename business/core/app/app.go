@@ -73,6 +73,10 @@ func (c Core) QueryById(appId string) (app.App, error) {
 	return c.app.QueryById(appId)
 }
 
+func (c Core) Delete(appId string) error {
+	return c.app.Delete(appId)
+}
+
 func FindAppByAppNameAndSceneName(connection *sqlx.DB, appName string, sceneName string) (app.App, error) {
 	c := NewCore(connection)
 

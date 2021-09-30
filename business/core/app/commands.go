@@ -66,7 +66,11 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 
 			ctx.Ui.Ok()
 
-			printApps(ctx, apps)
+			if len(apps) > 0 {
+				printApps(ctx, apps)
+			} else {
+				ctx.Ui.Say("There is no application in this scene.")
+			}
 
 			return nil
 		},
@@ -76,7 +80,44 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewAppSummaryCommand(ctx foundation.Context) *cobra.Command {
+func NewDeleteApp(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+
+	cmd := cobra.Command{
+		Use: "delete-app",
+		Aliases: []string{"da"},
+		Short: "Delete an application",
+		Example: "gocan delete-app myapp -s myscene",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			c := NewCore(connection)
+
+			a, err := c.FindAppByAppNameAndSceneName(args[0], sceneName)
+			if err != nil {
+				return errors.Wrap(err, "Unable to retrieve the app")
+			}
+
+			ctx.Ui.Say("Deleting the app...")
+			if err := c.Delete(a.Id); err != nil {
+				return errors.Wrap(err, "Unable to delete the app")
+			}
+			ctx.Ui.Say("OK")
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+
+	return &cmd
+}
+
+func NewAppSummary(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
