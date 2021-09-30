@@ -61,6 +61,7 @@ func main() {
 	rootCmd.AddCommand(boundary.NewCreateBoundary(*ctx))
 	rootCmd.AddCommand(boundary.NewBoundaries(*ctx))
 	rootCmd.AddCommand(complexity.NewCreateComplexityAnalysis(*ctx))
+	rootCmd.AddCommand(complexity.NewDeleteComplexityAnalysis(*ctx))
 
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)

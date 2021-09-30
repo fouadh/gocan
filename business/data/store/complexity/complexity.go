@@ -123,3 +123,21 @@ func (s Store) QueryAnalysisEntriesById(complexityId string) ([]ComplexityEntry,
 
 	return results, nil
 }
+
+func (s Store) DeleteAnalysisByName(appId string, name string) error {
+	const q = `
+	DELETE FROM complexity_analyses
+	WHERE app_id=:app_id AND name=:complexity_name
+`
+
+	data := struct {
+		AppId        string `db:"app_id"`
+		ComplexityName string `db:"complexity_name"`
+	}{
+		AppId: appId,
+		ComplexityName: name,
+	}
+
+	_, err := s.connection.NamedExec(q, data)
+	return err
+}

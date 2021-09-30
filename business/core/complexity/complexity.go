@@ -140,3 +140,7 @@ func (c Core) QueryAnalyses(appId string) ([]complexity.ComplexityAnalysisSummar
 func (c Core) QueryAnalysisEntriesById(complexityId string) ([]complexity.ComplexityEntry, error) {
 	return c.complexity.QueryAnalysisEntriesById(complexityId)
 }
+
+func (c Core) DeleteAnalysisByName(appId string, analysisName string) error {
+	return c.complexity.DeleteAnalysisByName(appId, analysisName)
+}

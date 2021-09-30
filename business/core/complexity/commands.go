@@ -2,6 +2,7 @@ package complexity
 
 import (
 	"com.fha.gocan/business/core"
+	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"github.com/dustin/go-humanize"
@@ -68,6 +69,46 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&filename, "filename", "f", "", "The file to analyze relative to the directory argument")
 	cmd.Flags().StringVarP(&directory, "directory", "d", "", "The directory of the git repo")
 	cmd.Flags().IntVarP(&spaces, "spaces", "", 4, "The number of spaces defining an indentation")
+
+	return &cmd
+}
+
+func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var appName string
+
+	cmd := cobra.Command{
+		Use: "delete-complexity-analysis",
+		Aliases: []string{"dca"},
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			c := NewCore(connection)
+
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
+			if err != nil {
+				return errors.Wrap(err, "Unable to find the app")
+			}
+
+			ui.Say("Deleting the analysis...")
+
+			if err := c.DeleteAnalysisByName(a.Id, args[0]); err != nil {
+				return errors.Wrap(err, "Unable to delete the analysis")
+			}
+
+			ui.Ok()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
 
 	return &cmd
 }
