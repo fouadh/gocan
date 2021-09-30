@@ -117,23 +117,32 @@ export function ComplexityAnalysis({sceneId, appId}) {
         chart = <></>;
         options = <></>;
     }
-
+    let analysisSelector;
+    if (analyses && analyses.length > 0) {
+        analysisSelector = <div className="chart-form">
+            <label className="p-mr-2">Select an analysis:</label>
+            <Dropdown optionLabel="name"
+                      optionValue="id"
+                      options={analyses}
+                      placeholder="Select an analysis"
+                      value={analysis}
+                      showClear={true}
+                      onChange={(e) => {
+                          setAnalysis(e.value);
+                      }}/>
+        </div>
+    } else {
+        analysisSelector = <>
+            <p>
+                To create complexity analyses, please use the <strong> gocan create-complexity-analysis </strong> command.
+            </p>
+        </>
+    }
 
     return (
         <>
-            <div className="chart-form">
-                <label className="p-mr-2">Select an analysis:</label>
-                <Dropdown optionLabel="name"
-                          optionValue="id"
-                          options={analyses}
-                          placeholder="Select an analysis"
-                          value={analysis}
-                          showClear={true}
-                          onChange={(e) => {
-                              setAnalysis(e.value);
-                          }}/>
-                {options}
-            </div>
+            {analysisSelector}
+            {options}
             {chart}
         </>
     )
