@@ -35,7 +35,7 @@ func (c Core) CountLineIndentations(line string, size int) int {
 	return (len(line) - len(tline)) / 2
 }
 
-func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.Time) (complexity.ComplexityEntry, error) {
+func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.Time, spaces int) (complexity.ComplexityEntry, error) {
 	bytes, err := ioutil.ReadFile(filename)
 	if err != nil {
 		return complexity.ComplexityEntry{}, err
@@ -51,7 +51,7 @@ func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.
 	for _, line := range lines {
 		if line != "" {
 			linesCounter++
-			lineIndentations := c.CountLineIndentations(line, 2)
+			lineIndentations := c.CountLineIndentations(line, spaces)
 			indentations = append(indentations, lineIndentations)
 			indentationsCounter += lineIndentations
 			if max < lineIndentations {
@@ -78,7 +78,7 @@ func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.
 	}, nil
 }
 
-func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before time.Time, after time.Time, filename string, directory string) (complexity.Complexity, error) {
+func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before time.Time, after time.Time, filename string, directory string, spaces int) (complexity.Complexity, error) {
 	cmd := exec.Command("git", "log", "--oneline", "--pretty=format:%h;%ad", "--after", date.FormatDay(after), "--before", date.FormatDay(before), "--date=iso")
 	cmd.Dir = directory
 	cmd.Stderr = os.Stderr
@@ -111,7 +111,7 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 			return complexity.Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
 		}
 
-		c, err := c.AnalyzeComplexity(complexityId, directory + filename, revDate)
+		c, err := c.AnalyzeComplexity(complexityId, directory + filename, revDate, spaces)
 		if err != nil {
 			// in case of error, we consider that the file's complexity is 0 for every field
 			fmt.Println("File cannot be analyzed for revision " + rev)

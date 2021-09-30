@@ -17,6 +17,7 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	var after string
 	var filename string
 	var directory string
+	var spaces int
 
 	cmd := cobra.Command{
 		Use:     "create-complexity-analysis",
@@ -38,7 +39,7 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 
 			ui.Say("Analyzing the file revisions between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
 
-			data, err := c.CreateComplexityAnalysis(args[0], a.Id, beforeTime, afterTime, filename, directory)
+			data, err := c.CreateComplexityAnalysis(args[0], a.Id, beforeTime, afterTime, filename, directory, spaces)
 
 			if err != nil {
 				return errors.Wrap(err, "Error when analyzing complexity")
@@ -66,6 +67,7 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&after, "after", "", "", "Analyze the complexity after this day")
 	cmd.Flags().StringVarP(&filename, "filename", "f", "", "The file to analyze relative to the directory argument")
 	cmd.Flags().StringVarP(&directory, "directory", "d", "", "The directory of the git repo")
+	cmd.Flags().IntVarP(&spaces, "spaces", "", 4, "The number of spaces defining an indentation")
 
 	return &cmd
 }

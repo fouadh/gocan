@@ -1,6 +1,7 @@
 package complexity
 
 import (
+	"com.fha.gocan/business/data/store/complexity"
 	"io/ioutil"
 	"testing"
 	"time"
@@ -14,12 +15,11 @@ func TestCountLinesIndentations(t *testing.T) {
 		line string
 		want int
 	}{
-		{name: "empty string", line: "", want: 0,},
-		{name: "one line with no indentation", line: "some string", want: 0,},
-		{name: "one line with one space indentation", line: "  some string", want: 1,},
-		{name: "one line with two spaces indentations", line: "    some string", want: 2,},
-		{name: "one line with one tab indentation", line: "\tsome string", want: 1,},
-
+		{name: "empty string", line: "", want: 0},
+		{name: "one line with no indentation", line: "some string", want: 0},
+		{name: "one line with one space indentation", line: "  some string", want: 1},
+		{name: "one line with two spaces indentations", line: "    some string", want: 2},
+		{name: "one line with one tab indentation", line: "\tsome string", want: 1},
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
@@ -49,23 +49,23 @@ func TestComplexityAnalysis(t *testing.T) {
 
 	c := Core{}
 	now := time.Now()
-	got, err := c.AnalyzeComplexity(file.Name(), now)
+	got, err := c.AnalyzeComplexity("123", file.Name(), now, 2)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("Cannot analyze complexity")
 	}
 
-	want := Complexity{
+	want := complexity.ComplexityEntry{
+		ComplexityId: "123",
+		Lines:        4,
 		Indentations: 6,
-		Lines: 4,
-		Mean: 1.5,
-		Max: 2,
-		Stdev: 0.5,
-		Date: now,
+		Mean:         1.5,
+		Max:          2,
+		Stdev:        0.5,
+		Date:         now,
 	}
 
 	if got != want {
 		t.Errorf("Want %v, Got %v", want, got)
 	}
 }
-
