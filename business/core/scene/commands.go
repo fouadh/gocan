@@ -9,10 +9,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCreateSceneCommand(ctx *foundation.Context) *cobra.Command {
+func NewCreateScene(ctx foundation.Context) *cobra.Command {
 	return &cobra.Command{
 		Use:  "create-scene",
 		Short: "Create a scene",
+		Example: "gocan create-scene myscene",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -24,7 +25,7 @@ func NewCreateSceneCommand(ctx *foundation.Context) *cobra.Command {
 			}
 
 			core := NewCore(connection)
-			s, err := core.Create(*ctx, args[0])
+			s, err := core.Create(ctx, args[0])
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("Unable to create the scene: %s", err.Error()))
 			}
@@ -36,10 +37,11 @@ func NewCreateSceneCommand(ctx *foundation.Context) *cobra.Command {
 	}
 }
 
-func NewScenesCommand(ctx *foundation.Context) *cobra.Command {
+func NewScenes(ctx foundation.Context) *cobra.Command {
 	return &cobra.Command{
 		Use: "scenes",
 		Short: "List the scenes",
+		Example: "gocan scenes",
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -63,6 +65,34 @@ func NewScenesCommand(ctx *foundation.Context) *cobra.Command {
 			ui.Ok()
 
 			printScenes(ui, scenes)
+
+			return nil
+		},
+	}
+}
+
+func NewDeleteScene(ctx foundation.Context) *cobra.Command {
+	return &cobra.Command{
+		Use: "delete-scene",
+		Short: "Delete the specified scene",
+		Args: cobra.ExactArgs(1),
+		Example: "gocan delete-scene myscene",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			ui.Say("Deleting scene...")
+			c := NewCore(connection)
+
+			if err := c.DeleteSceneByName(args[0]); err != nil {
+				return errors.Wrap(err, "Unable to delete the scene")
+			}
+
+			ui.Ok()
 
 			return nil
 		},

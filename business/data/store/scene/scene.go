@@ -112,3 +112,15 @@ func (s Store) QueryById(id string) (Scene, error) {
 
 	return result, nil
 }
+
+func (s Store) DeleteByName(name string) error {
+	const q = `DELETE FROM scenes WHERE name=:scene_name`
+	data := struct {
+		SceneName string `db:"scene_name"`
+	}{
+		SceneName: name,
+	}
+
+	_, err := s.connection.NamedExec(q, data)
+	return err
+}

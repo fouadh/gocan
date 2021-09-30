@@ -12,7 +12,7 @@ type Core struct {
 }
 
 func NewCore(connection *sqlx.DB) Core {
-	return Core {
+	return Core{
 		scene: scene.NewStore(connection),
 	}
 }
@@ -33,4 +33,8 @@ func (c Core) QueryAll() ([]scene.Scene, error) {
 
 func (c Core) QueryById(id string) (scene.Scene, error) {
 	return c.scene.QueryById(id)
+}
+
+func (c Core) DeleteSceneByName(name string) error {
+	return c.scene.DeleteByName(name)
 }
