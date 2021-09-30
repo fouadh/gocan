@@ -25,7 +25,7 @@ export function CodeChurn({sceneId, appId}) {
 
     return (
         <>
-            <MultiLineChart label="Code Churn"
+            <MultiLineChart yLabel="Code Churn"
                             data={codeChurn}
                             xAccessor={d => d3.timeParse('%Y-%m-%d')(d.x)}
                             yAccessor={d => d.y}

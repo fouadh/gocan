@@ -47,7 +47,7 @@ export function RevisionTrends({sceneId, appId}) {
 
     let chart;
     if (trends && trends.length > 0) {
-        chart = <MultiLineChart label="Revisions Trends"
+        chart = <MultiLineChart yLabel="Revisions Trends"
                                 data={Object.values(trends)}
                                 xAccessor={d => d3.timeParse('%Y-%m-%d')(d.x)}
                                 yAccessor={d => d.y}

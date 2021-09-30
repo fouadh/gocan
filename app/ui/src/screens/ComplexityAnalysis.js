@@ -62,27 +62,24 @@ export function ComplexityAnalysis({sceneId, appId}) {
 
     useEffect(() => {
         if (!complexity) return;
-        console.log({complexity});
-        console.log({complexityTypes});
-
         const data = [];
         complexityTypes.forEach(type => {
             data.push(complexity[type]);
         });
-        console.log({data});
-
         setDisplayedComplexities(data)
     }, [complexity, complexityTypes])
 
     let chart;
     let options;
     if (displayedComplexities && displayedComplexities.length > 0) {
-        chart = <MultiLineChart label="Complexity"
+        chart = <MultiLineChart yLabel="Complexity"
+                                xLabel={"Revisions"}
                                 data={displayedComplexities}
-                                xAccessor={d => d3.isoParse(d.x)}
+                                xAccessor={(d,i) => i}
                                 yAccessor={d => d.y}
-                                xFormatter={d3.timeFormat("%Y-%m-%d")}
+                                xFormatter={(d, i) => ""}
                                 legend={complexityTypes}
+                                type={"linear"}
         />;
         options = <>
             <div className="chart-options">

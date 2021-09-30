@@ -34,6 +34,6 @@ export function ActiveSet({sceneId, appId}) {
                                                          xFormatter={d3.timeFormat("%Y-%m-%d")}
                                                          xAccessor={(d) => d3.utcParse("%Y-%m-%d")(d.x)}
                                                          yAccessor={(d) => d.y ? d.y : 0}
-                                                         label="Active Set Entities"/> : <></>
+                                                         yLabel="Active Set Entities"/> : <></>
         ;
 }
