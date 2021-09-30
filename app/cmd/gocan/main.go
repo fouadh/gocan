@@ -60,6 +60,7 @@ func main() {
 	rootCmd.AddCommand(modus_operandi.NewModusOperandi(*ctx))
 	rootCmd.AddCommand(active_set.NewActiveSet(*ctx))
 	rootCmd.AddCommand(boundary.NewCreateBoundary(*ctx))
+	rootCmd.AddCommand(boundary.NewDeleteBoundary(*ctx))
 	rootCmd.AddCommand(boundary.NewBoundaries(*ctx))
 	rootCmd.AddCommand(complexity.NewCreateComplexityAnalysis(*ctx))
 	rootCmd.AddCommand(complexity.NewDeleteComplexityAnalysis(*ctx))

@@ -67,3 +67,7 @@ func (c Core) parseTransformation(a *regexp.Regexp, t string) (boundary.NewTrans
 	}
 	return transformation, nil
 }
+
+func (c Core) DeleteBoundaryByName(appId string, boundaryName string) error {
+	return c.Boundary.DeleteByName(appId, boundaryName)
+}

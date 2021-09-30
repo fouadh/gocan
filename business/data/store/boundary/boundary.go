@@ -136,7 +136,7 @@ from (
 		AppId        string `db:"app_id"`
 		BoundaryName string `db:"boundary_name"`
 	}{
-		AppId: appId,
+		AppId:        appId,
 		BoundaryName: boundaryName,
 	}
 
@@ -158,6 +158,25 @@ from (
 	}
 
 	return result, nil
+}
+
+func (s Store) DeleteByName(appId string, boundaryName string) error {
+	const q = `
+	DELETE FROM boundaries
+	WHERE
+	app_id=:app_id AND name=:boundary_name
+	`
+
+	data := struct {
+		AppId        string `db:"app_id"`
+		BoundaryName string `db:"boundary_name"`
+	}{
+		AppId:        appId,
+		BoundaryName: boundaryName,
+	}
+
+	_, err := s.connection.NamedExec(q, data)
+	return err
 }
 
 func NewStore(connection *sqlx.DB) Store {

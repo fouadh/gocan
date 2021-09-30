@@ -14,7 +14,7 @@ func NewCreateBoundary(ctx foundation.Context) *cobra.Command {
 	var transformations []string
 
 	cmd := &cobra.Command{
-		Use:     "create-boundary",
+		Use:   "create-boundary",
 		Short: "Create a boundary with its transformations",
 		Long: `
 A boundary allows to map code folders with tags. 
@@ -66,15 +66,62 @@ the different layers of an application. Or you can define a boundary for product
 	return cmd
 }
 
+func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var appName string
+
+	cmd := &cobra.Command{
+		Use:     "delete-boundary",
+		Aliases: []string{"db"},
+		Short: "Delete an application boundary",
+		Example: "gocan delete-boundary myboundary --app myapp --scene myscene",
+		Args: cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if appName == "" {
+				return fmt.Errorf("No application provided")
+			}
+			if sceneName == "" {
+				return fmt.Errorf("No scene provided")
+			}
+
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			c := NewCore(connection)
+
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
+			if err != nil {
+				return errors.Wrap(err, "Application not found")
+			}
+
+			ctx.Ui.Say("Deleting boundary...")
+
+			if err := c.DeleteBoundaryByName(a.Id, args[0]); err != nil {
+				return errors.Wrap(err, "Unable to delete boundary")
+			}
+
+			ctx.Ui.Ok()
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
+
+	return cmd
+}
+
 func NewBoundaries(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 
 	cmd := &cobra.Command{
-		Use: "boundaries",
-		Short: "List the boundaries defined for an application",
+		Use:     "boundaries",
+		Short:   "List the boundaries defined for an application",
 		Example: "gocan boundaries --app myapp --scene myscene",
-		Args: cobra.NoArgs,
+		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if appName == "" {
 				return fmt.Errorf("No application provided")

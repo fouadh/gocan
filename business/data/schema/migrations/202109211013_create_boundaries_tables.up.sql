@@ -6,7 +6,8 @@ create table boundaries
     name varchar(255) not null,
     app_id uuid not null
         constraint fk_boundaries_app
-            references apps,
+            references apps
+            on delete cascade,
     constraint unique_boundaries_name
         unique (app_id, name)
 );
@@ -18,6 +19,7 @@ create table transformations
     boundary_id uuid not null
         constraint fk_transformations_boundary
             references boundaries
+            on delete cascade
 );
 
 
