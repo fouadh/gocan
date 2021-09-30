@@ -16,6 +16,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use: "modus-operandi",
 		Args: cobra.ExactArgs(1),
+		Short: "Get the most used terms in git messages of an application",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()

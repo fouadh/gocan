@@ -12,6 +12,7 @@ import (
 func NewCreateSceneCommand(ctx *foundation.Context) *cobra.Command {
 	return &cobra.Command{
 		Use:  "create-scene",
+		Short: "Create a scene",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -38,6 +39,8 @@ func NewCreateSceneCommand(ctx *foundation.Context) *cobra.Command {
 func NewScenesCommand(ctx *foundation.Context) *cobra.Command {
 	return &cobra.Command{
 		Use: "scenes",
+		Short: "List the scenes",
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 

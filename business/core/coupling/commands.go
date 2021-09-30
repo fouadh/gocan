@@ -20,6 +20,15 @@ func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:  "coupling",
 		Args: cobra.ExactArgs(1),
+		Short: "Get the coupling relationships between entities for a given application",
+		Example: `
+gocan coupling myapp --scene myscene --min-degree 30 --min-revisions-average 10 --after 2021-01-01 --before 2021-02-01
+gocan coupling myapp --scene myscene --min-degree 30 --min-revisions-average 10 --after 2021-01-01
+gocan coupling myapp --scene myscene --min-degree 30 --min-revisions-average 10 --before 2021-02-01
+gocan coupling myapp --scene myscene --min-degree 30 --min-revisions-average 10
+gocan coupling myapp --scene myscene --min-degree 30
+gocan coupling myapp --scene myscene
+`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
@@ -74,8 +83,15 @@ func NewSocCommand(ctx foundation.Context) *cobra.Command {
 	var after string
 
 	cmd := cobra.Command{
-		Use:  "soc",
+		Use:  "summary-of-coupling",
+		Aliases: []string{"soc"},
 		Args: cobra.ExactArgs(1),
+		Short: "Get a summary of coupling for an application",
+		Example: `
+gocan summary-of-coupling myapp --scene myscene --after 2021-01-01 --before 2021-02-01
+gocan summary-of-coupling myapp --scene myscene --after 2021-01-01
+gocan summary-of-coupling myapp --scene myscene
+`,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
@@ -127,6 +143,7 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use: "coupling-hierarchy",
 		Args: cobra.ExactArgs(1),
+		Short: "Get the coupling information about an app in JSON formatted to be used with d3.js",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()

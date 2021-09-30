@@ -18,6 +18,7 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use: "setup-db",
+		Short: "Configure the database options",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.Say("Configuring the database...")
@@ -62,7 +63,7 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 func NewStartDbCommand(ctx *foundation.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start-db",
-		Short: "Start en embedded database",
+		Short: "Start an embedded database",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			database := db.EmbeddedDatabase{Config: ctx.Config}

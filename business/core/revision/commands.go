@@ -17,6 +17,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:  "revisions",
 		Args: cobra.ExactArgs(1),
+		Short: "Get the entities of an application ordered by their number of revisions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.Say("Getting app revisions...")
@@ -65,6 +66,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use: "hotspots",
 		Args: cobra.ExactArgs(1),
+		Short: "Get the hotspots of an application in JSON formatted for d3.js",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.Say("Getting app hotspots...")
@@ -106,6 +108,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use: "revision-trends",
 		Aliases: []string{"revisions-trends", "rt"},
+		Short: "Get the revision trends for a boundary",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui

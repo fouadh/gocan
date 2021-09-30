@@ -15,6 +15,13 @@ func NewCodeChurn(ctx foundation.Context) *cobra.Command {
 
 	cmd := cobra.Command{
 		Use:  "code-churn",
+		Short: "Get the code churn of an application",
+		Example: `
+gocan code-churn myapp --scene myscene --after 2021-01-01 --before 2021-02-01
+gocan code-churn myapp --scene myscene --before 2021-02-01
+gocan code-churn myapp --scene myscene --after 2021-01-01
+gocan code-churn myapp --scene myscene
+`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui

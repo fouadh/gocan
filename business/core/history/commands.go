@@ -17,6 +17,7 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:  "import-history",
 		Args: cobra.ExactArgs(1),
+		Short: "Import the commits of an application",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()

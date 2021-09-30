@@ -18,6 +18,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "main-developers",
 		Aliases: []string{"main_developers", "mainDevelopers", "md", "main-devs", "main_devs", "mainDevs"},
+		Short: "Get the main developers of an application entities",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -67,6 +68,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "entity-efforts",
 		Aliases: []string{"entity_efforts", "entityEfforts", "ee"},
+		Short: "Get the efforts associated with entities of an application",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -116,6 +118,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "knowledge-map",
 		Aliases: []string{"knowledge_map", "knowledgeMap", "km"},
+		Short: "Get the knowledge map",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -159,6 +162,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "devs",
 		Aliases: []string{"developers"},
+		Short: "Get the developers of an application",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui

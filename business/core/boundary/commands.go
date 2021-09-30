@@ -15,6 +15,14 @@ func NewCreateBoundary(ctx foundation.Context) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use:     "create-boundary",
+		Short: "Create a boundary with its transformations",
+		Long: `
+A boundary allows to map code folders with tags. 
+
+You can use it to categorize an application. For example, you can define an architectural boundary with
+the different layers of an application. Or you can define a boundary for production code vs test code.
+`,
+		Example: "gocan create-boundary myboundary --scene myscene --app myapp --transformation src:src/main/ --transformation test:src/test/",
 		Aliases: []string{"cb"},
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -64,7 +72,9 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 
 	cmd := &cobra.Command{
 		Use: "boundaries",
-		Args: cobra.ExactArgs(0),
+		Short: "List the boundaries defined for an application",
+		Example: "gocan boundaries --app myapp --scene myscene",
+		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if appName == "" {
 				return fmt.Errorf("No application provided")
@@ -94,16 +104,19 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 
 			ctx.Ui.Ok()
 
-			table := ctx.Ui.Table([]string{"id", "name", "transformations"})
-			for _, b := range data {
-				transformations := ""
-				for _, t := range b.Transformations {
-					transformations += t.Name + ":" + t.Path + " | "
+			if len(data) > 0 {
+				table := ctx.Ui.Table([]string{"id", "name", "transformations"})
+				for _, b := range data {
+					transformations := ""
+					for _, t := range b.Transformations {
+						transformations += t.Name + ":" + t.Path + " | "
+					}
+					table.Add(b.Id, b.Name, transformations)
 				}
-				table.Add(b.Id, b.Name, transformations)
+				table.Print()
+			} else {
+				ctx.Ui.Say("No boundaries found.")
 			}
-			table.Print()
-
 			return nil
 		},
 	}

@@ -16,7 +16,9 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 
 	cmd := cobra.Command{
 		Use:  "create-app",
+		Short: "Create an application in a scene",
 		Args: cobra.ExactArgs(1),
+		Example: "gocan create-app myapp --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			connection, err := ctx.GetConnection()
 			if err != nil {
@@ -45,6 +47,9 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 
 	cmd := cobra.Command{
 		Use: "apps",
+		Short: "List the applications associated with a scene",
+		Args: cobra.NoArgs,
+		Example: "gocan apps --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			connection, err := ctx.GetConnection()
 			if err != nil {
@@ -78,6 +83,13 @@ func NewAppSummaryCommand(ctx foundation.Context) *cobra.Command {
 
 	cmd := cobra.Command{
 		Use: "app-summary",
+		Short: "Get an application summary information",
+		Example: `
+gocan app-summary myapp --scene myscene --after 2021-01-01 --before 2021-02-01
+gocan app-summary myapp --scene myscene --before 2021-02-01
+gocan app-summary myapp --scene myscene --after 2021-01-01
+gocan app-summary myapp --scene myscene
+`,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			connection, err := ctx.GetConnection()

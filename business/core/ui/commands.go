@@ -32,6 +32,8 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 
 	cmd := cobra.Command{
 		Use: "ui",
+		Args: cobra.NoArgs,
+		Short: "Start the gocan ui",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx.Ui.Say("Starting the UI...")
 			connection, err := ctx.GetConnection()

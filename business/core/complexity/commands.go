@@ -23,7 +23,19 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "create-complexity-analysis",
 		Aliases: []string{"cca"},
-		Args:    cobra.ExactArgs(1),
+		Short:   "Create a complexity analysis",
+		Long: `
+A complexity analysis is built by computing the number of lines and indentations in
+the specified entity.
+`,
+		Example: `
+gocan create-complexity-analysis myanalysis --app myapp --scene myscene --directory /code/project/ --filename src/main/File.java --after 2021-01-01 --before 2021-02-01 --spaces 2
+gocan create-complexity-analysis myanalysis --app myapp --scene myscene --directory /code/project/ --filename src/main/File.java --after 2021-01-01 --spaces 2
+gocan create-complexity-analysis myanalysis --app myapp --scene myscene --directory /code/project/ --filename src/main/File.java --before 2021-02-01 --spaces 2
+gocan create-complexity-analysis myanalysis --app myapp --scene myscene --directory /code/project/ --filename src/main/File.java --spaces 2
+gocan create-complexity-analysis myanalysis --app myapp --scene myscene --directory /code/project/ --filename src/main/File.java
+`,
+		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
@@ -80,6 +92,8 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "delete-complexity-analysis",
 		Aliases: []string{"dca"},
+		Short: "Delete a complexity analysis",
+		Example: "gocan delete-complexity-analysis myanalysis --app myapp --scene myscene",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -118,8 +132,11 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 	var appName string
 
 	cmd := cobra.Command{
-		Use: "complexity-analyses",
+		Use:     "complexity-analyses",
 		Aliases: []string{"ca"},
+		Args: cobra.NoArgs,
+		Short: "List the complexity analyses associated with an app",
+		Example: "gocan complexity-analyses --app myapp --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
