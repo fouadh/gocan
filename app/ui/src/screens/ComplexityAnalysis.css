@@ -1,0 +1,12 @@
+.chart-form {
+    margin-bottom: 1em;
+}
+
+.chart-options {
+    display: inline-flex;
+}
+
+.chart-option {
+    margin-right: 1em;
+    margin-left: 1em;
+}

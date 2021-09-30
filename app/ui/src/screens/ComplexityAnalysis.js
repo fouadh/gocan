@@ -4,6 +4,7 @@ import * as d3 from "d3";
 import {MultiLineChart} from "../components/MultiLineChart";
 import {Dropdown} from "primereact/dropdown";
 import {Checkbox} from 'primereact/checkbox';
+import './ComplexityAnalysis.css';
 
 export function ComplexityAnalysis({sceneId, appId}) {
     const [complexity, setComplexity] = useState();
@@ -52,9 +53,9 @@ export function ComplexityAnalysis({sceneId, appId}) {
             .then(it => it.data)
             .then(it => it.analyses)
             .then(it => {
-               if (subscribed) {
-                   setAnalyses(it);
-               }
+                if (subscribed) {
+                    setAnalyses(it);
+                }
             });
         return () => subscribed = false;
     }, []);
@@ -84,25 +85,32 @@ export function ComplexityAnalysis({sceneId, appId}) {
                                 legend={complexityTypes}
         />;
         options = <>
-            <div className="p-col-12">
-                <Checkbox inputId="cb1" value="lines" onChange={onComplexityTypeChange} checked={complexityTypes.includes('lines')}></Checkbox>
-                <label htmlFor="cb1" className="p-checkbox-label">Lines</label>
-            </div>
-            <div className="p-col-12">
-                <Checkbox inputId="cb2" value="indentations" onChange={onComplexityTypeChange} checked={complexityTypes.includes('indentations')}></Checkbox>
-                <label htmlFor="cb2" className="p-checkbox-label">Indentations</label>
-            </div>
-            <div className="p-col-12">
-                <Checkbox inputId="cb3" value="mean" onChange={onComplexityTypeChange} checked={complexityTypes.includes('mean')}></Checkbox>
-                <label htmlFor="cb3" className="p-checkbox-label">Mean</label>
-            </div>
-            <div className="p-col-12">
-                <Checkbox inputId="cb3" value="stdev" onChange={onComplexityTypeChange} checked={complexityTypes.includes('stdev')}></Checkbox>
-                <label htmlFor="cb3" className="p-checkbox-label">Stdev</label>
-            </div>
-            <div className="p-col-12">
-                <Checkbox inputId="cb3" value="max" onChange={onComplexityTypeChange} checked={complexityTypes.includes('max')}></Checkbox>
-                <label htmlFor="cb3" className="p-checkbox-label">Max</label>
+            <div className="chart-options">
+                <div className="p-col-12 chart-option">
+                    <Checkbox inputId="cb1" value="lines" onChange={onComplexityTypeChange}
+                              checked={complexityTypes.includes('lines')}></Checkbox>
+                    <label htmlFor="cb1" className="p-checkbox-label">Lines</label>
+                </div>
+                <div className="p-col-12 chart-option">
+                    <Checkbox inputId="cb2" value="indentations" onChange={onComplexityTypeChange}
+                              checked={complexityTypes.includes('indentations')}></Checkbox>
+                    <label htmlFor="cb2" className="p-checkbox-label">Indentations</label>
+                </div>
+                <div className="p-col-12 chart-option">
+                    <Checkbox inputId="cb3" value="mean" onChange={onComplexityTypeChange}
+                              checked={complexityTypes.includes('mean')}></Checkbox>
+                    <label htmlFor="cb3" className="p-checkbox-label">Mean</label>
+                </div>
+                <div className="p-col-12 chart-option">
+                    <Checkbox inputId="cb3" value="stdev" onChange={onComplexityTypeChange}
+                              checked={complexityTypes.includes('stdev')}></Checkbox>
+                    <label htmlFor="cb3" className="p-checkbox-label">Stdev</label>
+                </div>
+                <div className="p-col-12 chart-option">
+                    <Checkbox inputId="cb3" value="max" onChange={onComplexityTypeChange}
+                              checked={complexityTypes.includes('max')}></Checkbox>
+                    <label htmlFor="cb3" className="p-checkbox-label">Max</label>
+                </div>
             </div>
         </>
     } else {
@@ -113,18 +121,20 @@ export function ComplexityAnalysis({sceneId, appId}) {
 
     return (
         <>
-            <label className="p-mr-2">Analysis:</label>
-            <Dropdown optionLabel="name"
-                      optionValue="id"
-                      options={analyses}
-                      placeholder="Select an analysis"
-                      value={analysis}
-                      showClear={true}
-                      onChange={(e) => {
-                          setAnalysis(e.value);
-                      }}/>
-            { options }
-            { chart }
+            <div className="chart-form">
+                <label className="p-mr-2">Select an analysis:</label>
+                <Dropdown optionLabel="name"
+                          optionValue="id"
+                          options={analyses}
+                          placeholder="Select an analysis"
+                          value={analysis}
+                          showClear={true}
+                          onChange={(e) => {
+                              setAnalysis(e.value);
+                          }}/>
+                {options}
+            </div>
+            {chart}
         </>
     )
         ;
