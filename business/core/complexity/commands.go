@@ -78,9 +78,9 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	var appName string
 
 	cmd := cobra.Command{
-		Use: "delete-complexity-analysis",
+		Use:     "delete-complexity-analysis",
 		Aliases: []string{"dca"},
-		Args: cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			connection, err := ctx.GetConnection()
@@ -102,6 +102,50 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 			}
 
 			ui.Ok()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
+
+	return &cmd
+}
+
+func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var appName string
+
+	cmd := cobra.Command{
+		Use: "complexity-analyses",
+		Aliases: []string{"ca"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+
+			c := NewCore(connection)
+
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
+			if err != nil {
+				return errors.Wrap(err, "Unable to find the app")
+			}
+
+			ui.Say("Fetching the analyses...")
+
+			data, err := c.QueryAnalyses(a.Id)
+			if err != nil {
+				return errors.Wrap(err, "Unable to fetch analyses")
+			}
+
+			table := ui.Table([]string{"id", "name"})
+			for _, a := range data {
+				table.Add(a.Id, a.Name)
+			}
+			table.Print()
 
 			return nil
 		},

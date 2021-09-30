@@ -60,6 +60,8 @@ func (s Store) QueryAnalyses(appId string) ([]ComplexityAnalysisSummary, error) 
 		complexity_analyses
 	WHERE
 		app_id = :app_id
+	ORDER BY 
+		name ASC
 `
 	data := struct {
 		AppId string `db:"app_id"`
