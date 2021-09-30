@@ -1,6 +1,6 @@
 # Introduction
 
-Project heavily inspired from the book [Your Code as a Crime Scene]() from Adam Tornhill.
+Pet project heavily inspired from the book [Your Code as a Crime Scene]() from Adam Tornhill.
 
 This cli tool will allow you to build some of the charts described in that book in order to start conversations regarding the design or organisation of some application.
 
@@ -59,7 +59,7 @@ Let's use one of the examples in the book.
 gocan create-scene hibernate
 gocan create-app orm -s hibernate
 git clone https://github.com/hibernate/hibernate-orm.git
-gocan import-history orm -s hibernate --after 2012-01-01 --before 2013-09-05 --path ./hibernate-orm
+gocan import-history orm -s hibernate --after 2011-12-31 --before 2013-09-05 --path ./hibernate-orm
 
 ```
 
