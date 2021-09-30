@@ -43,18 +43,20 @@ func GetCommits(path string, before time.Time, after time.Time) ([]commit.Commit
 	commits := []commit.Commit{}
 	for _, gc := range gitCommits {
 		date, _ := time.Parse("2006-01-02 15:04:05 -0700", gc.Date)
-		commits = append(commits, commit.Commit{
-			Id:      gc.Id,
-			Author:  gc.Author,
-			Date:    date,
-			Message: gc.Message,
-		})
+		if date.After(after) && date.Before(before) {
+			commits = append(commits, commit.Commit{
+				Id:      gc.Id,
+				Author:  gc.Author,
+				Date:    date,
+				Message: gc.Message,
+			})
+		}
 	}
 
 	return commits, nil
 }
 
-func GetStats(path string, before time.Time, after time.Time) ([]stat.Stat, error) {
+func GetStats(path string, before time.Time, after time.Time, commitsMap map[string]commit.Commit) ([]stat.Stat, error) {
 	cmd := exec.Command("git", "log", "--after", date.FormatDay(after), "--before", date.FormatDay(before), "--numstat", "--format=%H")
 	cmd.Dir = path
 	out, err := cmd.Output()
@@ -67,7 +69,9 @@ func GetStats(path string, before time.Time, after time.Time) ([]stat.Stat, erro
 	var currentCommit string
 	for _, row := range rows {
 		if len(strings.Split(row, "\t")) > 1 {
-			stats = append(stats, buildStat(currentCommit, row))
+			if _, ok := commitsMap[currentCommit]; ok {
+				stats = append(stats, buildStat(currentCommit, row))
+			}
 		} else if row != "" {
 			currentCommit = row
 		}

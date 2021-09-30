@@ -39,7 +39,11 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 		return errors.Wrap(err, "Unable to save commits")
 	}
 
-	stats, err := git.GetStats(path, before, after)
+	commitsMap := make(map[string]commit.Commit)
+	for _, ct := range commits {
+		commitsMap[ct.Id] = ct
+	}
+	stats, err := git.GetStats(path, before, after, commitsMap)
 	if err != nil {
 		return err
 	}
