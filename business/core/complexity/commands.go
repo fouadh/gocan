@@ -158,11 +158,15 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to fetch analyses")
 			}
 
-			table := ui.Table([]string{"id", "name"})
-			for _, a := range data {
-				table.Add(a.Id, a.Name)
+			if len(data) > 0 {
+				table := ui.Table([]string{"id", "name"})
+				for _, a := range data {
+					table.Add(a.Id, a.Name)
+				}
+				table.Print()
+			} else {
+				ui.Say("No analysis found.")
 			}
-			table.Print()
 
 			return nil
 		},
