@@ -39,17 +39,17 @@ func TestComplexityAnalysis(t *testing.T) {
 	}
 
 	const s = `
-  line 1
-    line 2
-    line 3
-  line 4
+    line 1
+        line 2
+        line 3
+    line 4
 `
 	file.WriteString(s)
 	file.Close()
 
 	c := Core{}
 	now := time.Now()
-	got, err := c.AnalyzeComplexity("123", file.Name(), now, 2)
+	got, err := c.AnalyzeComplexity("123", file.Name(), now, 4)
 	if err != nil {
 		t.Log(err)
 		t.Fatalf("Cannot analyze complexity")

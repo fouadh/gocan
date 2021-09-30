@@ -32,7 +32,7 @@ func (c Core) CountLineIndentations(line string, size int) int {
 	}
 	line = strings.ReplaceAll(line, "\t", indentation)
 	tline := strings.TrimLeft(line, indentation)
-	return (len(line) - len(tline)) / 2
+	return (len(line) - len(tline)) / size
 }
 
 func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.Time, spaces int) (complexity.ComplexityEntry, error) {
@@ -103,22 +103,23 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 			return complexity.Complexity{}, errors.Wrap(err, "Unable to parse date")
 		}
 
-		cmd := exec.Command("git", "checkout", rev)
-		cmd.Dir = directory
-		cmd.Stderr = os.Stderr
-		out, err = cmd.Output()
-		if err != nil {
-			return complexity.Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
-		}
+		if revDate.After(after) && revDate.Before(before) {
+			cmd := exec.Command("git", "checkout", rev)
+			cmd.Dir = directory
+			cmd.Stderr = os.Stderr
+			out, err = cmd.Output()
+			if err != nil {
+				return complexity.Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
+			}
 
-		c, err := c.AnalyzeComplexity(complexityId, directory + filename, revDate, spaces)
-		if err != nil {
-			// in case of error, we consider that the file's complexity is 0 for every field
-			fmt.Println("File cannot be analyzed for revision " + rev)
-			return complexity.Complexity{}, nil
+			c, err := c.AnalyzeComplexity(complexityId, directory + filename, revDate, spaces)
+			if err != nil {
+				// in case of error, we consider that the file's complexity is 0 for every field
+				fmt.Println("File cannot be analyzed for revision " + rev)
+				return complexity.Complexity{}, nil
+			}
+			complexities = append(complexities, c)
 		}
-
-		complexities = append(complexities, c)
 	}
 
 	result := complexity.Complexity{
