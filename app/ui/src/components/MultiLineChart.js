@@ -19,7 +19,7 @@ export function MultiLineChart({data, xAccessor, yAccessor, xFormatter, label, l
 
   const xAccessorScaled = d => xScale(xAccessor(d))
   const yAccessorScaled = d => yScale(yAccessor(d))
-  const colorScale = d3.scaleSequential(d3.schemeTableau10);
+  const colorScale = d3.scaleOrdinal(d3.schemeSet1);
 
   return (
     <div className="Timeline" ref={ref}>

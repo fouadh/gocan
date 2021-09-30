@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import {Dropdown} from "primereact/dropdown";
+import './BoundarySelector.css';
 
 export function BoundarySelector({sceneId, appId, onChange}) {
     const [boundary, setBoundary] = useState();
@@ -23,6 +24,7 @@ export function BoundarySelector({sceneId, appId, onChange}) {
     if (boundaries && boundaries.length > 0) {
         selector = <>
             <>
+                <div className={"selector"}>
                 <label className="p-mr-2">Boundary:</label>
                 <Dropdown optionLabel="name"
                           optionValue="id"
@@ -34,6 +36,7 @@ export function BoundarySelector({sceneId, appId, onChange}) {
                               setBoundary(e.value);
                               onChange(e);
                           }}/>
+                </div>
             </>
         </>
     } else {

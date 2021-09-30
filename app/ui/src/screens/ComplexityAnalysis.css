@@ -4,6 +4,7 @@
 
 .chart-options {
     display: inline-flex;
+    margin-bottom: 1em;
 }
 
 .chart-option {
