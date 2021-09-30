@@ -2,6 +2,7 @@ package complexity
 
 import (
 	"com.fha.gocan/business/data/store/complexity"
+	"com.fha.gocan/business/sys/git"
 	"com.fha.gocan/foundation/date"
 	"fmt"
 	"github.com/jmoiron/sqlx"
@@ -95,6 +96,12 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 	complexities := []complexity.ComplexityEntry{}
 	complexityId := uuid.New()
 	lines := strings.Split(outStr, "\n")
+
+	initialBranch, err := git.GetCurrentBranch(directory)
+	if err != nil {
+		return complexity.Complexity{}, errors.Wrap(err, "Unable to get current branch info")
+	}
+
 	for _, line := range lines {
 		cols := strings.Split(line, ";")
 		rev := cols[0]
@@ -120,6 +127,11 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 			}
 			complexities = append(complexities, c)
 		}
+	}
+
+	err = git.Checkout(initialBranch, directory)
+	if err != nil {
+		return complexity.Complexity{}, errors.Wrap(err, "Unable to reinitialize initial branch")
 	}
 
 	result := complexity.Complexity{

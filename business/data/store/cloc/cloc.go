@@ -2,6 +2,7 @@ package cloc
 
 import (
 	"com.fha.gocan/business/data/store/commit"
+	"com.fha.gocan/business/sys/git"
 	"encoding/json"
 	"fmt"
 	"github.com/boyter/scc/processor"
@@ -9,8 +10,6 @@ import (
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
-	"os/exec"
-	"strings"
 )
 
 type Store struct {
@@ -26,13 +25,10 @@ func (s Store) ImportCloc(appId string, directory string, commits []commit.Commi
 		return fmt.Errorf("No commit provided !")
 	}
 
-	out, err := ExecuteCommand("git", []string{"rev-parse", "--abbrev-ref", "HEAD"}, directory)
+	initialBranch, err := git.GetCurrentBranch(directory)
 	if err != nil {
-		return errors.Wrap(err, "Cannot get git info")
+		return err
 	}
-
-	initialBranch := strings.TrimRight(string(out), "\n")
-	fmt.Println("initial branch is", initialBranch)
 
 	processor.DirFilePaths = []string{
 		directory,
@@ -46,13 +42,9 @@ func (s Store) ImportCloc(appId string, directory string, commits []commit.Commi
 
 	ct := commits[0]
 
-	_, err = ExecuteCommand("git", []string{"checkout", ct.Id}, directory)
-	if err != nil {
-		return errors.Wrap(err, fmt.Sprintf("git checkout %s failed", ct.Id))
+	if err := git.Checkout(ct.Id, directory); err != nil {
+		return err
 	}
-
-	fmt.Println("git checkout", ct.Id)
-
 
 	file, _ := ioutil.TempFile(os.TempDir(), "gocan*.txt")
 	defer os.Remove(file.Name())
@@ -85,20 +77,10 @@ func (s Store) ImportCloc(appId string, directory string, commits []commit.Commi
 	}
 
 	fmt.Println("reinitialising repo to initial branch")
-	_, err = ExecuteCommand("git", []string{"checkout", initialBranch}, directory)
-	if err != nil {
+	if err := git.Checkout(initialBranch, directory); err != nil {
 		return errors.Wrap(err, "Cannot reinitialize initial branch")
 	}
 
 	return nil
 }
 
-func ExecuteCommand(command string, args []string, directory string) ([]byte, error) {
-	cmd := exec.Command(command, args...)
-	cmd.Dir = directory
-	out, err := cmd.Output()
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}

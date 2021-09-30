@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/data/store/commit"
 	"com.fha.gocan/business/data/store/stat"
 	"com.fha.gocan/foundation/date"
+	"com.fha.gocan/foundation/shell"
 	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
@@ -77,6 +78,25 @@ func GetStats(path string, before time.Time, after time.Time, commitsMap map[str
 		}
 	}
 	return stats, nil
+}
+
+func Checkout(commitId string, directory string) (error) {
+	_, err := shell.ExecuteCommand("git", []string{"checkout", commitId}, directory)
+	if err != nil {
+		return errors.Wrap(err, fmt.Sprintf("git checkout %s failed", commitId))
+	}
+	fmt.Println("git checkout", commitId)
+	return nil
+}
+
+func GetCurrentBranch(directory string) (string, error) {
+	out, err := shell.ExecuteCommand("git", []string{"rev-parse", "--abbrev-ref", "HEAD"}, directory)
+	if err != nil {
+		return "", errors.Wrap(err, "Cannot get git info")
+	}
+
+	initialBranch := strings.TrimRight(string(out), "\n")
+	return initialBranch, nil
 }
 
 func buildStat(commitId string, line string) stat.Stat {
