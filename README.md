@@ -4,12 +4,14 @@ Pet project heavily inspired from the book [Your Code as a Crime Scene](https://
 
 This cli tool will allow you to build some of the charts described in that book in order to start conversations regarding the design or organisation of some application.
 
-It has very similar interface to [code-maat](), the tool created by Adam Tornhill. The differences are mainly:
+It has very similar interface to [code-maat](https://github.com/adamtornhill/code-maat), the tool created by Adam Tornhill. Here are the main differences:
 
 - written in golang
-- only git support
-- usage of a database to store the data
-- ui section to get the charts
+- only support git
+- use a database to store the information
+- include the visualisations
+
+gocan was an opportunity for me to learn the Go language so don't be too harsh with the source code :-)
 
 # Using the app
 
