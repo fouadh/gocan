@@ -40,6 +40,7 @@ func main() {
 	rootCmd.AddCommand(db2.NewSetupDbCommand(ctx))
 	rootCmd.AddCommand(db2.NewStartDbCommand(ctx))
 	rootCmd.AddCommand(db2.NewStopDbCommand(ctx))
+	rootCmd.AddCommand(db2.NewMigrateDb(ctx))
 	rootCmd.AddCommand(scene.NewCreateScene(*ctx))
 	rootCmd.AddCommand(scene.NewDeleteScene(*ctx))
 	rootCmd.AddCommand(scene.NewScenes(*ctx))
