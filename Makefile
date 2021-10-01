@@ -1,5 +1,5 @@
 build:
-	cd app/ui && yarn build
+	cd app/ui && yarn install && yarn build
 	go build -o bin/gocan ./app/cmd/gocan/main.go
 
 run:
