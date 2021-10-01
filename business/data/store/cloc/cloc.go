@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"io/ioutil"
 	"os"
+	"strings"
 )
 
 type Store struct {
@@ -59,8 +60,17 @@ func (s Store) ImportCloc(appId string, directory string, commits []commit.Commi
 	info := []Info{}
 	for _, c := range clocs {
 		for _, fi := range c.Files {
+			var path string
+			if directory != "." {
+				path = strings.Replace(fi.Location, directory, "", 1)
+				if strings.Index(path, "/") == 0 {
+					path = strings.Replace(path, "/", "", 1)
+				}
+			} else {
+				path = fi.Location
+			}
 			info = append(info, Info{
-				File:  fi.Location,
+				File:  path,
 				Lines: fi.Code,
 			})
 		}
