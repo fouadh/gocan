@@ -13,6 +13,17 @@ It has very similar interface to [code-maat](https://github.com/adamtornhill/cod
 
 gocan was an opportunity for me to learn the Go language so don't be too harsh with the source code :-)
 
+# Installation
+
+For MacOS & Linux users, you can use [homebrew](https://brew.sh) to install the application:
+
+```
+brew tap fouadh/tap
+brew install gocan
+```
+
+For other platforms, you will have to build the binary from the source code (see the section below).
+
 # Using the app
 
 ## Start the embedded database
