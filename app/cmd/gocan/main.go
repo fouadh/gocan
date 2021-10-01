@@ -24,7 +24,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use: "gocan",
-	Version: "0.1",
+	Version: "0.1.0",
 }
 
 func main() {
