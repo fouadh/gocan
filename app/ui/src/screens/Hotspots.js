@@ -3,7 +3,7 @@ import axios from "axios";
 import {CirclePacking} from "../components/CirclePacking";
 
 export function Hotspots({sceneId, appId}) {
-  const [hospots, setHotspots] = useState([]);
+  const [hospots, setHotspots] = useState();
 
   useEffect(() => {
     let subscribed = true;
@@ -16,7 +16,17 @@ export function Hotspots({sceneId, appId}) {
     return () => subscribed = false;
   }, [sceneId, appId]);
 
-  return <div>
-    <CirclePacking width={975} height={975} data={hospots}/>
-  </div>;
+  let chart;
+
+  if (hospots) {
+    chart = <div>
+      <CirclePacking width={975} height={975} data={hospots}/>
+    </div>;
+  } else {
+    return <></>;
+  }
+
+  return <>
+    { chart }
+  </>
 }
