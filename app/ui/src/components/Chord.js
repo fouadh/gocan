@@ -8,8 +8,6 @@ export function Chord({data}) {
     const width = 954;
     const radius = width / 2;
 
-    let subscribe = true;
-
     const tree = d3.cluster()
       .size([2 * Math.PI, radius - 100]);
 
@@ -27,12 +25,11 @@ export function Chord({data}) {
       .map(i => i.relations)
       .flatMap(i => i)
       .map(i => i.degree);
+      d3.scaleLinear()
+          .domain(degrees)
+          .range([0, 10]);
 
-    const thicknessScale = d3.scaleLinear()
-      .domain(degrees)
-      .range([0, 10])
-
-    const node = svg.append("g")
+      svg.append("g")
       .attr("font-family", "sans-serif")
       .attr("font-size", 10)
       .selectAll("g")
@@ -112,8 +109,6 @@ ${d.incoming.length} incoming`));
       d3.selectAll(d.outgoing.map(d => d.path)).attr("stroke", null);
       d3.selectAll(d.outgoing.map(([, d]) => d.text)).attr("fill", null).attr("font-weight", null);
     }
-
-    return () => subscribe = false;
   }, [data]);
 
   return <svg ref={container}/>;

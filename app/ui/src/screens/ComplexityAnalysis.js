@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
-import * as d3 from "d3";
 import {MultiLineChart} from "../components/MultiLineChart";
 import {Dropdown} from "primereact/dropdown";
 import {Checkbox} from 'primereact/checkbox';
@@ -58,7 +57,7 @@ export function ComplexityAnalysis({sceneId, appId}) {
                 }
             });
         return () => subscribed = false;
-    }, []);
+    }, [appId, sceneId]);
 
     useEffect(() => {
         if (!complexity) return;

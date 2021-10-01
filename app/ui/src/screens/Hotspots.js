@@ -10,7 +10,11 @@ export function Hotspots({sceneId, appId}) {
 
     axios.get(`/api/scenes/${sceneId}/apps/${appId}/hotspots`)
       .then(it => it.data)
-      .then(setHotspots)
+      .then(it => {
+        if (subscribed) {
+          setHotspots(it);
+        }
+      })
     ;
 
     return () => subscribed = false;

@@ -161,7 +161,7 @@ export function CirclePacking({
       )
       node.attr('r', (d) => d.r * k)
     }
-  }, [container.current, height, width, data])
+  }, [height, width, data, fillColor, fillOpacity, setTitle])
 
   return <svg ref={container} />
 }
