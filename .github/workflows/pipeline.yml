@@ -24,6 +24,8 @@ jobs:
       run: make build
 
     - name: Build all versions
+      run: make release
+      if: startsWith(github.ref, 'refs/tags/')
 
     - name: Release
       uses: softprops/action-gh-release@v1
