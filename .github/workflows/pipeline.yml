@@ -1,15 +1,17 @@
-name: Go
+name: Pipeline
 
 on:
   push:
     branches: [ main ]
+    tags:
+      - 'v[0-9]+.*'
   pull_request:
     branches: [ main ]
 
 jobs:
 
   build:
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
 
