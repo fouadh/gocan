@@ -3,7 +3,6 @@ package db
 import (
 	"com.fha.gocan/foundation/terminal"
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 	"strconv"
 	"strings"
 )
@@ -21,7 +20,7 @@ func (ds *SqlxDataSource) GetConnection() (*sqlx.DB, error) {
 	ds.Ui.Say("Connecting to the database...")
 	db, err := sqlx.Connect("postgres", ds.Dsn)
 	if err != nil {
-		return nil, errors.Wrap(err, "Cannot connect to the database")
+		return nil, err
 	}
 	ds.Ui.Ok()
 	return db, nil

@@ -3,7 +3,6 @@ package foundation
 import (
 	"com.fha.gocan/foundation/db"
 	"com.fha.gocan/foundation/terminal"
-	"fmt"
 	"github.com/go-playground/validator"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -33,7 +32,7 @@ func New(ui terminal.UI, config *db.Config) *Context {
 func (c Context) GetConnection() (*sqlx.DB, error)  {
 	connection, err := c.DataSource.GetConnection()
 	if err != nil {
-		return nil, errors.Wrap(err, fmt.Sprintf("The connection to the dabase could not be established: %v", err.Error()))
+		return nil, errors.Wrap(err, "Unable to connect to the database. Did you start it ?")
 	}
 
 	return connection, nil
