@@ -31,4 +31,6 @@ jobs:
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
-        files: ./bin/gocan
+        files: |
+          ./bin/gocan-linux-amd64
+          ./bin/gocan-darwin-amd64
