@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/cloc"
 	"com.fha.gocan/business/data/store/commit"
+	"com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/business/data/store/stat"
 	"com.fha.gocan/business/sys/git"
@@ -59,4 +60,18 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 	return nil
 }
 
-
+func BuildCoupling(stats []stat.Stat) []coupling.Coupling {
+	s1 := stats[0]
+	s1Revs := 1
+	s2 := stats[1]
+	s2Revs := 1
+	degree := 1.
+	return []coupling.Coupling{
+		{
+			Entity:           s1.File,
+			Coupled:          s2.File,
+			Degree:           degree,
+			AverageRevisions: float64(s1Revs + s2Revs) / 2,
+		},
+	}
+}
