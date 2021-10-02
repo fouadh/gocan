@@ -7,18 +7,19 @@ import (
 	"testing"
 )
 
-func TestCouplingForOnePair(t *testing.T) {
+func TestCouplingForTwoFiles(t *testing.T) {
 	stats := []stat.Stat{
 		{CommitId: "123", File: "file1"},
 		{CommitId: "123", File: "file2"},
+		{CommitId: "456", File: "file1"},
 	}
 
 	want := []coupling.Coupling{
 		{
 			Entity:           "file1",
 			Coupled:          "file2",
-			Degree:           1,
-			AverageRevisions: 1,
+			Degree:           0.6666666666666666,
+			AverageRevisions: 1.5,
 		},
 	}
 	got := BuildCoupling(stats)
@@ -26,5 +27,6 @@ func TestCouplingForOnePair(t *testing.T) {
 	if !reflect.DeepEqual(want, got) {
 		t.Errorf("Wanted %v, got %v", want, got)
 	}
-
 }
+
+

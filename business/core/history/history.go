@@ -17,8 +17,8 @@ type Core struct {
 	scene  scene.Store
 	app    app.Store
 	commit commit.Store
-	stat stat.Store
-	cloc cloc.Store
+	stat   stat.Store
+	cloc   cloc.Store
 }
 
 func NewCore(connection *sqlx.DB) Core {
@@ -62,16 +62,37 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 
 func BuildCoupling(stats []stat.Stat) []coupling.Coupling {
 	s1 := stats[0]
-	s1Revs := 1
 	s2 := stats[1]
-	s2Revs := 1
-	degree := 1.
+
+	commits := make(map[string](map[string](bool)))
+	commits[stats[0].CommitId] = map[string](bool) { stats[0].File: true, stats[1].File: true }
+	commits[stats[2].CommitId] = map[string](bool) { stats[2].File: true }
+
+	count := 0
+	s1Revs := 0
+	s2Revs := 0
+
+	for _, s := range stats {
+		if s.File == s1.File {
+			s1Revs++
+		}
+		if s.File == s2.File {
+			s2Revs++
+			files := commits[s.CommitId]
+			if _, ok := files[s.File]; ok {
+				count++
+			}
+		}
+
+	}
+	average := float64(s1Revs+s2Revs) / 2
+	degree := float64(count) / average
 	return []coupling.Coupling{
 		{
 			Entity:           s1.File,
 			Coupled:          s2.File,
 			Degree:           degree,
-			AverageRevisions: float64(s1Revs + s2Revs) / 2,
+			AverageRevisions: average,
 		},
 	}
 }
