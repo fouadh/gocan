@@ -25,16 +25,16 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Query(appId string, before time.Time, after time.Time, minimalCoupling float64, minimalRevisionsAverage int) ([]coupling.Coupling, error) {
-	return c.coupling.Query(appId, before, after, minimalCoupling, minimalRevisionsAverage)
+func (c Core) Query(appId string, minimalCoupling float64, minimalRevisionsAverage int) ([]coupling.Coupling, error) {
+	return c.coupling.Query(appId, minimalCoupling, minimalRevisionsAverage)
 }
 
 func (c Core) QuerySoc(appId string, before time.Time, after time.Time) ([]coupling.Soc, error) {
 	return c.coupling.QuerySoc(appId, before, after)
 }
 
-func (c Core) BuildCouplingHierarchy(a app.App, before time.Time, after time.Time, minimalCoupling float64, minimalRevisionsAverage int) (coupling.CouplingHierarchy, error) {
-	couplings, err := c.Query(a.Id, before, after, minimalCoupling, minimalRevisionsAverage)
+func (c Core) BuildCouplingHierarchy(a app.App, minimalCoupling float64, minimalRevisionsAverage int) (coupling.CouplingHierarchy, error) {
+	couplings, err := c.Query(a.Id, minimalCoupling, minimalRevisionsAverage)
 	if err != nil {
 		return coupling.CouplingHierarchy{}, errors.Wrap(err, "Unable to fetch couplings")
 	}

@@ -14,20 +14,22 @@ import (
 )
 
 type Core struct {
-	scene  scene.Store
-	app    app.Store
-	commit commit.Store
-	stat   stat.Store
-	cloc   cloc.Store
+	scene    scene.Store
+	app      app.Store
+	commit   commit.Store
+	stat     stat.Store
+	cloc     cloc.Store
+	coupling coupling.Store
 }
 
 func NewCore(connection *sqlx.DB) Core {
 	return Core{
-		scene:  scene.NewStore(connection),
-		app:    app.NewStore(connection),
-		commit: commit.NewStore(connection),
-		stat:   stat.NewStore(connection),
-		cloc:   cloc.NewStore(connection),
+		scene:    scene.NewStore(connection),
+		app:      app.NewStore(connection),
+		commit:   commit.NewStore(connection),
+		stat:     stat.NewStore(connection),
+		cloc:     cloc.NewStore(connection),
+		coupling: coupling.NewStore(connection),
 	}
 }
 
@@ -48,6 +50,9 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 	if err != nil {
 		return err
 	}
+
+	couplings := CalculateCouplings(stats)
+	c.coupling.ImportCoupling(appId, couplings)
 
 	if err = c.stat.BulkImport(appId, stats); err != nil {
 		return errors.Wrap(err, "Unable to save stats")

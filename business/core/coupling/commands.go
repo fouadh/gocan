@@ -2,6 +2,7 @@ package coupling
 
 import (
 	"com.fha.gocan/business/core"
+	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/foundation"
 	"encoding/json"
 	"fmt"
@@ -14,17 +15,12 @@ func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
 	var sceneName string
 	var minCoupling int
 	var minRevsAvg int
-	var before string
-	var after string
 
 	cmd := cobra.Command{
 		Use:  "coupling",
 		Args: cobra.ExactArgs(1),
 		Short: "Get the coupling relationships between entities for a given application",
 		Example: `
-gocan coupling myapp --scene myscene --min-degree 30 --min-revisions-average 10 --after 2021-01-01 --before 2021-02-01
-gocan coupling myapp --scene myscene --min-degree 30 --min-revisions-average 10 --after 2021-01-01
-gocan coupling myapp --scene myscene --min-degree 30 --min-revisions-average 10 --before 2021-02-01
 gocan coupling myapp --scene myscene --min-degree 30 --min-revisions-average 10
 gocan coupling myapp --scene myscene --min-degree 30
 gocan coupling myapp --scene myscene
@@ -40,12 +36,12 @@ gocan coupling myapp --scene myscene
 
 			c := NewCore(connection)
 
-			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+			a, err := app.FindAppByAppNameAndSceneName(connection, args[0], sceneName)
 			if err != nil {
 				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
-			data, err := c.Query(a.Id, beforeTime, afterTime, float64(minCoupling)/100, minRevsAvg)
+			data, err := c.Query(a.Id, float64(minCoupling)/100, minRevsAvg)
 
 			if err != nil {
 				return errors.Wrap(err, "Cannot retrieve couplings")
@@ -71,8 +67,6 @@ gocan coupling myapp --scene myscene
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().IntVarP(&minCoupling, "min-degree", "d", 30, "minimal degree of coupling wanted (in percent)")
 	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
-	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the couplings before this day")
-	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the couplings after this day")
 
 	return &cmd
 }
@@ -135,8 +129,6 @@ gocan summary-of-coupling myapp --scene myscene
 
 func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 	var sceneName string
-	var before string
-	var after string
 	var minCoupling int
 	var minRevsAvg int
 
@@ -155,12 +147,12 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 
 			c := NewCore(connection)
 
-			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+			a, err := app.FindAppByAppNameAndSceneName(connection, args[0], sceneName)
 			if err != nil {
 				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
-			ch, err := c.BuildCouplingHierarchy(a, beforeTime, afterTime, float64(minCoupling)/100, minRevsAvg)
+			ch, err := c.BuildCouplingHierarchy(a, float64(minCoupling)/100, minRevsAvg)
 
 			ui.Ok()
 
@@ -172,8 +164,6 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the couplings before this day")
-	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the couplings after this day")
 	cmd.Flags().IntVarP(&minCoupling, "min-degree", "d", 30, "minimal degree of coupling wanted (in percent)")
 	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
 
