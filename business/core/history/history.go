@@ -65,6 +65,17 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 	return nil
 }
 
+func (c Core) CheckIfCanImport(path string) error {
+	ok, err := git.CheckIfAllCommited(path)
+	if err != nil {
+		return errors.Wrap(err, "Unable to check repo status")
+	}
+	if !ok {
+		return errors.Errorf("The directory seems to contain files that have not been commited: please stash them or commit them before running the command.")
+	}
+	return nil
+}
+
 type pair struct {
 	file1     string
 	file1Revs int

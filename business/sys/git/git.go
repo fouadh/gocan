@@ -99,6 +99,15 @@ func GetCurrentBranch(directory string) (string, error) {
 	return initialBranch, nil
 }
 
+func CheckIfAllCommited(directory string) (bool, error) {
+	out, err := shell.ExecuteCommand("git", []string{"status", "--porcelain"}, directory)
+	if err != nil {
+		return false, err
+	}
+
+	return strings.TrimSpace(string(out)) == "", nil
+}
+
 func buildStat(commitId string, line string) stat.Stat {
 	cols := strings.Split(line, "\t")
 	insertions, _ := strconv.Atoi(cols[0])
