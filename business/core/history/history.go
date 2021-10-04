@@ -60,39 +60,119 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 	return nil
 }
 
-func BuildCoupling(stats []stat.Stat) []coupling.Coupling {
-	s1 := stats[0]
-	s2 := stats[1]
+type pair struct {
+	file1     string
+	file1Revs int
+	file2     string
+	file2Revs int
+	count     int
+}
 
-	commits := make(map[string](map[string](bool)))
-	commits[stats[0].CommitId] = map[string](bool) { stats[0].File: true, stats[1].File: true }
-	commits[stats[2].CommitId] = map[string](bool) { stats[2].File: true }
+func (p *pair) onFile1() {
+	p.file1Revs++
+}
 
-	count := 0
-	s1Revs := 0
-	s2Revs := 0
+func (p *pair) onFile2() {
+	p.file2Revs++
+}
 
-	for _, s := range stats {
-		if s.File == s1.File {
-			s1Revs++
+func (p *pair) onCoupling() {
+	p.count++
+}
+
+func CalculateCouplings(stats []stat.Stat) []coupling.Coupling {
+	pairs := buildEntitiesPairs(stats)
+	countCoupledEntities(stats, pairs)
+	countRevisions(stats, pairs)
+	return buildCouplings(pairs)
+}
+
+func buildCouplings(pairs []*pair) []coupling.Coupling {
+	couplings := []coupling.Coupling{}
+	for _, p := range pairs {
+		if p.count > 0 {
+			average := float64(p.file1Revs+p.file2Revs) / 2
+			degree := float64(p.count) / average
+
+			c := coupling.Coupling{
+				Entity:           p.file1,
+				Coupled:          p.file2,
+				Degree:           degree,
+				AverageRevisions: average,
+			}
+
+			couplings = append(couplings, c)
 		}
-		if s.File == s2.File {
-			s2Revs++
-			files := commits[s.CommitId]
-			if _, ok := files[s.File]; ok {
-				count++
+	}
+	return couplings
+}
+
+func countRevisions(stats []stat.Stat, pairs []*pair) {
+	for _, p := range pairs {
+		for _, s := range stats {
+			if s.File == p.file1 {
+				p.onFile1()
+			}
+			if s.File == p.file2 {
+				p.onFile2()
+
 			}
 		}
+	}
+}
 
+func countCoupledEntities(stats []stat.Stat, pairs []*pair) {
+	commits := organizeEntitiesPerCommit(stats)
+	for _, files := range commits {
+		for _, p := range pairs {
+			if _, ok := files[p.file1]; ok {
+				if _, ok := files[p.file2]; ok {
+					p.onCoupling()
+				}
+			}
+		}
 	}
-	average := float64(s1Revs+s2Revs) / 2
-	degree := float64(count) / average
-	return []coupling.Coupling{
-		{
-			Entity:           s1.File,
-			Coupled:          s2.File,
-			Degree:           degree,
-			AverageRevisions: average,
-		},
+}
+
+func organizeEntitiesPerCommit(stats []stat.Stat) map[string]map[string]bool {
+	commits := make(map[string](map[string](bool)))
+	for _, s := range stats {
+		if _, ok := commits[s.CommitId]; ok {
+			commits[s.CommitId][s.File] = true
+		} else {
+			commits[s.CommitId] = map[string]bool{s.File: true}
+		}
 	}
+	return commits
+}
+
+func buildEntitiesPairs(stats []stat.Stat) []*pair {
+	pairsMap := make(map[pair](bool))
+	for _, s1 := range stats {
+		for _, s2 := range stats {
+			if s1.File != s2.File {
+				p1 := pair{
+					file1: s1.File,
+					file2: s2.File,
+				}
+				p2 := pair{
+					file1: s2.File,
+					file2: s1.File,
+				}
+				if _, ok := pairsMap[p1]; !ok {
+					if _, ok := pairsMap[p2]; !ok {
+						pairsMap[p1] = true
+					}
+				}
+			}
+		}
+	}
+
+	pairs := make([]*pair, len(pairsMap))
+	i := 0
+	for p := range pairsMap {
+		pairs[i] = &pair{file1: p.file1, file2: p.file2}
+		i++
+	}
+	return pairs
 }
