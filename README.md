@@ -180,3 +180,33 @@ The `-r` flag allows to limit to the query to files that has been modified at le
 ```
 make build
 ```
+# Troubleshooting
+
+## Stopping the database
+
+You might have some issue with the database when trying to start it after having being stopped.
+
+You would get a message similar to that one:
+
+```
+Starting the embedded database...
+
+FAILED
+Cannot start the database: process already listening on port 5432
+```
+
+For some reason, stopping the database didn't work well, you will have to manually kill it
+first and start it after.
+
+The MacOS command to retrieve the process to kill is:
+
+```
+lsof -i tcp:5432
+```
+
+
+## Fail to import the history
+
+If for some reason, the history import failed and when you run the command again, it complains
+about some database key issue, the simplest action to do is to delete the application and
+reimport the history.
