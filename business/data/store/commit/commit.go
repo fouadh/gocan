@@ -1,7 +1,6 @@
 package commit
 
 import (
-	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/db"
 	"fmt"
 	"github.com/jmoiron/sqlx"
@@ -94,8 +93,6 @@ func (s Store) QueryCommitRange(appId string) (CommitRange, error) {
 }
 
 func bulkInsert(list []Commit, appId string, txn *sqlx.Tx) error {
-	fmt.Println("starting bulk insert of", len(list), "commits")
-
 	sql := db.GetBulkInsertSQL("commits", []string{"id", "author", "date", "message", "app_id"}, len(list))
 	stmt, err := txn.Prepare(sql)
 	if err != nil {
@@ -111,8 +108,6 @@ func bulkInsert(list []Commit, appId string, txn *sqlx.Tx) error {
 		args = append(args, appId)
 	}
 
-	fmt.Println("last commit of array is " + date.FormatDay(list[len(list) - 1].Date))
-
 	_, err = stmt.Exec(args...)
 	if err != nil {
 		return err
@@ -123,7 +118,6 @@ func bulkInsert(list []Commit, appId string, txn *sqlx.Tx) error {
 		return err
 	}
 
-	fmt.Println("ending bulk insert")
 	return err
 }
 
