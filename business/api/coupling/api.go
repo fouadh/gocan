@@ -37,7 +37,7 @@ func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request
 		return err
 	}
 
-	c, err := h.Coupling.BuildCouplingHierarchy(a, 0, 3, before, after)
+	c, err := h.Coupling.BuildCouplingHierarchy(a, .4, 6, before, after)
 
 	if err != nil {
 		return err
