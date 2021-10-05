@@ -71,8 +71,8 @@ func TestCouplingForManyFiles(t *testing.T) {
 			AverageRevisions: 1.5,
 		},
 		{
-			Entity:           "file2",
-			Coupled:          "file4",
+			Entity:           "file4",
+			Coupled:          "file2",
 			Degree:           .5,
 			AverageRevisions: 2,
 		},

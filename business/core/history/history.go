@@ -8,6 +8,7 @@ import (
 	"com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/business/data/store/stat"
 	"com.fha.gocan/business/sys/git"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"time"
@@ -51,8 +52,11 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 		return err
 	}
 
+	fmt.Println("calculate couplings...it might take some time...")
 	couplings := CalculateCouplings(stats)
+	fmt.Println("importing couplings...")
 	c.coupling.ImportCoupling(appId, couplings)
+	fmt.Println("couplings imported")
 
 	if err = c.stat.BulkImport(appId, stats); err != nil {
 		return errors.Wrap(err, "Unable to save stats")
@@ -97,10 +101,53 @@ func (p *pair) onCoupling() {
 }
 
 func CalculateCouplings(stats []stat.Stat) []coupling.Coupling {
-	pairs := buildEntitiesPairs(stats)
-	countCoupledEntities(stats, pairs)
-	countRevisions(stats, pairs)
+	pairs := calculateCouplingStats(stats)
 	return buildCouplings(pairs)
+}
+
+func calculateCouplingStats(stats []stat.Stat) []*pair {
+	commits := organizeEntitiesPerCommit(stats)
+	pairsMap := make(map[pair](info))
+	revisions := make(map[string](int))
+
+	fmt.Println("analyzing commits...")
+	for _, files := range commits {
+		for file1, _ := range files {
+			revisions[file1]++
+			for file2, _ := range files {
+				if file1 != file2 {
+					p1 := pair{
+						file1: file1,
+						file2: file2,
+					}
+					p2 := pair{
+						file1: file2,
+						file2: file1,
+					}
+					if _, ok := pairsMap[p1]; !ok {
+						if _, ok := pairsMap[p2]; !ok {
+							pairsMap[p1] = info{
+								count:     1,
+							}
+						}
+					} else {
+						i := pairsMap[p1]
+						i.count++
+						pairsMap[p1] = i
+
+					}
+				}
+			}
+		}
+	}
+
+	pairs := make([]*pair, len(pairsMap))
+	index := 0
+	for p, i := range pairsMap {
+		pairs[index] = &pair{file1: p.file1, file2: p.file2, count: i.count, file1Revs: revisions[p.file1], file2Revs: revisions[p.file2]}
+		index++
+	}
+	return pairs
 }
 
 func buildCouplings(pairs []*pair) []coupling.Coupling {
@@ -123,33 +170,6 @@ func buildCouplings(pairs []*pair) []coupling.Coupling {
 	return couplings
 }
 
-func countRevisions(stats []stat.Stat, pairs []*pair) {
-	for _, p := range pairs {
-		for _, s := range stats {
-			if s.File == p.file1 {
-				p.onFile1()
-			}
-			if s.File == p.file2 {
-				p.onFile2()
-
-			}
-		}
-	}
-}
-
-func countCoupledEntities(stats []stat.Stat, pairs []*pair) {
-	commits := organizeEntitiesPerCommit(stats)
-	for _, files := range commits {
-		for _, p := range pairs {
-			if _, ok := files[p.file1]; ok {
-				if _, ok := files[p.file2]; ok {
-					p.onCoupling()
-				}
-			}
-		}
-	}
-}
-
 func organizeEntitiesPerCommit(stats []stat.Stat) map[string]map[string]bool {
 	commits := make(map[string](map[string](bool)))
 	for _, s := range stats {
@@ -162,33 +182,11 @@ func organizeEntitiesPerCommit(stats []stat.Stat) map[string]map[string]bool {
 	return commits
 }
 
-func buildEntitiesPairs(stats []stat.Stat) []*pair {
-	pairsMap := make(map[pair](bool))
-	for _, s1 := range stats {
-		for _, s2 := range stats {
-			if s1.File != s2.File {
-				p1 := pair{
-					file1: s1.File,
-					file2: s2.File,
-				}
-				p2 := pair{
-					file1: s2.File,
-					file2: s1.File,
-				}
-				if _, ok := pairsMap[p1]; !ok {
-					if _, ok := pairsMap[p2]; !ok {
-						pairsMap[p1] = true
-					}
-				}
-			}
-		}
-	}
-
-	pairs := make([]*pair, len(pairsMap))
-	i := 0
-	for p := range pairsMap {
-		pairs[i] = &pair{file1: p.file1, file2: p.file2}
-		i++
-	}
-	return pairs
+type info struct {
+	count int
+	file1Revs int
+	file2Revs int
 }
+
+
+

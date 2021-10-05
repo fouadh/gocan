@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-	"strconv"
 	"sync"
 	"time"
 )
@@ -34,7 +33,6 @@ func (s Store) BulkImport(appId string, data []Commit) error {
 	}
 
 	var wg sync.WaitGroup
-	fmt.Println("Number of chunks is " + strconv.Itoa(len(divided)))
 	wg.Add(len(divided))
 
 	for _, set := range divided {
@@ -52,10 +50,6 @@ func (s Store) BulkImport(appId string, data []Commit) error {
 		}(set)
 	}
 	wg.Wait()
-	fmt.Println("done")
-
-
-
 	return nil
 }
 
