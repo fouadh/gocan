@@ -1,10 +1,9 @@
 package stat
 
 type Stat struct {
-	AppId      string
-	CommitId   string
-	Insertions int
-	Deletions  int
-	File       string
+	AppId      string `db:"app_id"`
+	CommitId   string `db:"commit_id"`
+	Insertions int    `db:"insertions"`
+	Deletions  int    `db:"deletions"`
+	File       string `db:"file"`
 }
-

@@ -27,7 +27,7 @@ func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request
 	appId := params["appId"]
 
 	query := r.URL.Query()
-	_, _, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
+	before, after, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
 	if err != nil {
 		return err
 	}
@@ -37,7 +37,7 @@ func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request
 		return err
 	}
 
-	c, err := h.Coupling.BuildCouplingHierarchy(a, 0, 3)
+	c, err := h.Coupling.BuildCouplingHierarchy(a, 0, 3, before, after)
 
 	if err != nil {
 		return err

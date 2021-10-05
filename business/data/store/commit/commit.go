@@ -17,6 +17,45 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
+func (s Store) Query(appId string, before time.Time, after time.Time) ([]Commit, error) {
+	const q = `
+	SELECT 
+		id, app_id, author, message, date
+	FROM
+		commits
+	WHERE
+		app_id = :app_id
+		AND date between :after and :before
+`
+
+	data := struct {
+		AppId  string    `db:"app_id"`
+		Before time.Time `db:"before"`
+		After  time.Time `db:"after"`
+	}{
+		AppId: appId,
+		Before: before,
+		After: after,
+	}
+
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return []Commit{}, errors.Wrap(err, "Unable to execute query")
+	}
+
+	results := []Commit{}
+
+	for rows.Next() {
+		var item Commit
+		if err := rows.StructScan(&item); err != nil {
+			return []Commit{}, err
+		}
+		results = append(results, item)
+	}
+
+	return results, nil
+}
+
 func (s Store) BulkImport(appId string, data []Commit) error {
 
 	chunkSize := 1000

@@ -4,7 +4,9 @@ import (
 	"com.fha.gocan/foundation/db"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"sync"
+	"time"
 )
 
 type Store struct {
@@ -13,6 +15,46 @@ type Store struct {
 
 func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
+}
+
+func (s Store) Query(appId string, before time.Time, after time.Time) ([]Stat, error) {
+	const q = `
+	SELECT 
+		s.app_id, commit_id, insertions, deletions, file
+	FROM
+		stats s
+		INNER JOIN commits c ON c.id=s.commit_id AND c.date between :after and :before
+	WHERE
+		s.app_id = :app_id
+		AND s.file not like '%%=>%%'
+`
+
+	data := struct {
+		AppId  string    `db:"app_id"`
+		Before time.Time `db:"before"`
+		After  time.Time `db:"after"`
+	}{
+		AppId: appId,
+		Before: before,
+		After: after,
+	}
+
+	 rows, err := s.connection.NamedQuery(q, data)
+	 if err != nil {
+	 	return []Stat{}, errors.Wrap(err, "Unable to execute query")
+	 }
+
+	 results := []Stat{}
+
+	for rows.Next() {
+		var item Stat
+		if err := rows.StructScan(&item); err != nil {
+			return []Stat{}, err
+		}
+		results = append(results, item)
+	}
+
+	return results, nil
 }
 
 func (s Store) BulkImport(appId string, data []Stat) error {

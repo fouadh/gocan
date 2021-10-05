@@ -1,4 +1,4 @@
-package history
+package coupling
 
 import (
 	"com.fha.gocan/business/data/store/coupling"
@@ -22,7 +22,7 @@ func TestCouplingForTwoFiles(t *testing.T) {
 			AverageRevisions: 1.5,
 		},
 	}
-	got := CalculateCouplings(stats)
+	got := CalculateCouplings(stats, 0, 0)
 
 	if !isEqual(want, got) {
 		t.Errorf("Wanted %v, got %v", want, got)
@@ -77,7 +77,7 @@ func TestCouplingForManyFiles(t *testing.T) {
 			AverageRevisions: 2,
 		},
 	}
-	got := CalculateCouplings(stats)
+	got := CalculateCouplings(stats, 0, 0)
 
 	if !isEqual(want, got) {
 		t.Errorf("Wanted %v, got %v", want, got)
