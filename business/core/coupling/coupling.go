@@ -39,9 +39,6 @@ func (c Core) Query(appId string, minimalCoupling float64, minimalRevisionsAvera
 	}
 
 	couplings := CalculateCouplings(stats, minimalCoupling, float64(minimalRevisionsAverage))
-	sort.Slice(couplings, func(i, j int) bool {
-		return couplings[i].Degree > couplings[j].Degree
-	})
 	return couplings, nil
 }
 
@@ -171,7 +168,11 @@ func (p *pair) onCoupling() {
 
 func CalculateCouplings(stats []stat.Stat, minimalCoupling float64, average float64) []coupling.Coupling {
 	pairs := calculateCouplingStats(stats)
-	return buildCouplings(pairs, minimalCoupling, average)
+	couplings := buildCouplings(pairs, minimalCoupling, average)
+	sort.Slice(couplings, func(i, j int) bool {
+		return couplings[i].Degree > couplings[j].Degree
+	})
+	return couplings
 }
 
 func calculateCouplingStats(stats []stat.Stat) []*pair {
