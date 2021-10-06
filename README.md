@@ -105,7 +105,7 @@ Let's use one of the examples in the book: analyzing Hibernate ORM.
 gocan create-scene hibernate
 gocan create-app orm -s hibernate
 git clone https://github.com/hibernate/hibernate-orm.git
-gocan import-history orm -s hibernate --after 2011-12-31 --before 2013-09-05 --path ./hibernate-orm
+gocan import-history orm -s hibernate --after 2011-01-01 --before 2013-09-04 --directory ./hibernate-orm
 ```
 
 Run the UI to visualize the hotspots:

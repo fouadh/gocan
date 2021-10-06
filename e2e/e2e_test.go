@@ -30,14 +30,25 @@ func importHistory(t *testing.T, appName string, sceneName string) {
 	appFolder := createTempFolder(t)
 	defer os.RemoveAll(appFolder)
 
-	out, err := exec.Command("/bin/sh", "-c", "cd " + appFolder + "; touch file1; git init; git add .; git commit -m 'init repo'").Output()
+	data := `
+	public class Hello {
+      public static void main(String[] args) {
+		System.out.println("hello from gocan !");
+      }
+	}
+`
+	if err := ioutil.WriteFile(appFolder+"/Hello.java", []byte(data), 0755); err != nil {
+		t.Fatalf("Unable to create file")
+	}
+
+	out, err := exec.Command("/bin/sh", "-c", "cd "+appFolder+"; git init; git add .; git commit -m 'init repo'").Output()
 	if err != nil {
 		t.Log(string(out))
 		t.Fatalf("%s Initializing git repo", failed)
 		return
 	}
 
-	output := runCommand(t, "import-history", appName, "--scene", sceneName, "--path", appFolder)
+	output := runCommand(t, "import-history", appName, "--scene", sceneName, "--directory", appFolder)
 	if strings.Contains(output, "Importing history") && strings.Contains(output, "OK") {
 		t.Logf("%s History imported", succeed)
 	} else {
@@ -48,7 +59,8 @@ func importHistory(t *testing.T, appName string, sceneName string) {
 
 func assertRevisionsCanBeRetrieved(t *testing.T, appName string, sceneName string) {
 	output := runCommand(t, "revisions", appName, "--scene", sceneName)
-	if strings.Contains(output, "file1") && strings.Contains(output, "OK") {
+	if 	strings.Contains(output, "Hello.java") &&
+		strings.Contains(output, "OK") {
 		t.Logf("%s Revisions retrieved", succeed)
 	} else {
 		t.Log(output)
@@ -86,7 +98,7 @@ func createScene(t *testing.T, sceneName string) {
 }
 
 func startDatabase(t *testing.T) {
-	output := startCommand(t, 10 * time.Second, "start-db")
+	output := startCommand(t, 10*time.Second, "start-db")
 	if strings.Contains(output, "database system is ready to accept connections") {
 		t.Logf("%s Database started", succeed)
 	} else {
@@ -95,9 +107,9 @@ func startDatabase(t *testing.T) {
 	}
 }
 
-func setupDatabase(t *testing.T) (string) {
+func setupDatabase(t *testing.T) string {
 	dir := createTempFolder(t)
-	output := runCommand(t, "setup-db", "--path", dir)
+	output := runCommand(t, "setup-db", "--directory", dir, "--port", "5433")
 	if strings.Contains(output, "Database configured") {
 		t.Logf("%s Database configured", succeed)
 	} else {

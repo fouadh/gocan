@@ -49,7 +49,7 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&path, "path", "p", ".", "App directory")
+	cmd.Flags().StringVarP(&path, "directory", "d", ".", "App directory")
 	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the hotspots after this day")
 	return &cmd

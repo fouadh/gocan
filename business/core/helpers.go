@@ -21,5 +21,5 @@ func ExtractDateRangeAndAppFromArgs(connection *sqlx.DB, sceneName string, appNa
 		return app2.App{}, time.Time{}, time.Time{}, errors.Wrap(err, "Date range cannot be retrieved")
 	}
 
-	return a, beforeTime, afterTime, nil
+	return a, beforeTime.AddDate(0, 0, 1), afterTime.AddDate(0, 0, -1), nil
 }
