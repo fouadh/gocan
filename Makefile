@@ -9,9 +9,10 @@ arch = $(word 2, $(temp))
 frontend:
 	cd app/ui && yarn install && yarn build
 
-build: frontend
-
+backend:
 	go build -ldflags="-X 'main.Version=v$(VERSION)'" -o bin/gocan ./app/cmd/gocan/main.go
+
+build: frontend backend
 
 run:
 	go run app/cmd/gocan/main.go
@@ -26,6 +27,14 @@ test: build
 	go test ./...
 
 release: frontend $(PLATFORMS)
+
+docker:
+	docker build \
+		-f docker/Dockerfile  \
+		-t gocan:$(VERSION) \
+		--build-arg BUILD_REF=$(VERSION) \
+		--build-arg BUILD_DATE=`date -u +"%Y-%m-%dT%H:%M:%SZ"` \
+		.
 
 $(PLATFORMS):
 	GOOS=$(os) GOARCH=$(arch) go build -ldflags="-X 'main.Version=v$(VERSION)'" -o 'bin/gocan-$(os)-$(arch)' ./app/cmd/gocan/main.go

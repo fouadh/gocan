@@ -198,7 +198,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 
 			srv := &http.Server{
 				Handler:      mux,
-				Addr:         "localhost:" + serverPort,
+				Addr:         "0.0.0.0:" + serverPort,
 				WriteTimeout: 15 * time.Second,
 				ReadTimeout:  15 * time.Second,
 			}
