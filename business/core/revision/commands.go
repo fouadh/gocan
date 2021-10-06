@@ -26,6 +26,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
@@ -75,6 +76,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
@@ -117,6 +119,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)

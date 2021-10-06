@@ -40,6 +40,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			mux := httptreemux.New()
 			mux.PathSource = httptreemux.URLPath

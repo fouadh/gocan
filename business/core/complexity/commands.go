@@ -42,6 +42,7 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 
@@ -101,6 +102,7 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 
@@ -143,6 +145,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 

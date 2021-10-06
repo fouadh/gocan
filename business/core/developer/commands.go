@@ -26,6 +26,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Retrieving main developers...")
 
@@ -76,6 +77,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Retrieving entity efforts...")
 
@@ -126,6 +128,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Building knowledge map...")
 
@@ -172,6 +175,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)

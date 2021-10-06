@@ -24,6 +24,7 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ctx.Ui.Say("Creating the app...")
 			core := NewCore(connection)
@@ -55,6 +56,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ctx.Ui.Say("Retrieving the apps...")
 			core := NewCore(connection)
@@ -94,6 +96,7 @@ func NewDeleteApp(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 
@@ -137,6 +140,7 @@ gocan app-summary myapp --scene myscene
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ctx.Ui.Say("Retrieving the apps...")
 			c := NewCore(connection)

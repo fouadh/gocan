@@ -29,6 +29,7 @@ gocan code-churn myapp --scene myscene
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Retrieving code churn...")
 

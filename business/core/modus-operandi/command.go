@@ -23,6 +23,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Retrieving modus operandi...")
 

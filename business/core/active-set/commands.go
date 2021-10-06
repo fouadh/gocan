@@ -21,6 +21,7 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ctx.Ui.Say("Retrieving the apps...")
 			c := NewCore(connection)

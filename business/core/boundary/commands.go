@@ -40,6 +40,7 @@ the different layers of an application. Or you can define a boundary for product
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 
@@ -88,6 +89,7 @@ func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 
@@ -134,6 +136,7 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			c := NewCore(connection)
 

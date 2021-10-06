@@ -23,6 +23,7 @@ func NewCreateScene(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			core := NewCore(connection)
 			s, err := core.Create(ctx, args[0])
@@ -50,6 +51,7 @@ func NewScenes(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Retrieving scenes...")
 			core := NewCore(connection)
@@ -84,6 +86,7 @@ func NewDeleteScene(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Deleting scene...")
 			c := NewCore(connection)

@@ -32,6 +32,7 @@ gocan coupling myapp --scene myscene
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Retrieving couplings...")
 
@@ -95,6 +96,7 @@ gocan summary-of-coupling myapp --scene myscene
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Retrieving summary...")
 
@@ -147,6 +149,7 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			defer connection.Close()
 
 			ui.Say("Retrieving summary...")
 

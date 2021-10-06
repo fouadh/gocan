@@ -24,7 +24,7 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 			if err != nil {
 				return err
 			}
-
+			defer connection.Close()
 
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
