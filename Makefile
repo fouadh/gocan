@@ -1,3 +1,6 @@
+SHELL := /bin/bash
+
+VERSION := 0.2.0
 PLATFORMS := linux/amd64 darwin/amd64
 temp = $(subst /, ,$@)
 os = $(word 1, $(temp))
@@ -8,7 +11,7 @@ frontend:
 
 build: frontend
 
-	go build -o bin/gocan ./app/cmd/gocan/main.go
+	go build -ldflags="-X 'main.Version=v$(VERSION)'" -o bin/gocan ./app/cmd/gocan/main.go
 
 run:
 	go run app/cmd/gocan/main.go
@@ -25,6 +28,6 @@ test: build
 release: frontend $(PLATFORMS)
 
 $(PLATFORMS):
-	GOOS=$(os) GOARCH=$(arch) go build -o 'bin/gocan-$(os)-$(arch)' ./app/cmd/gocan/main.go
+	GOOS=$(os) GOARCH=$(arch) go build -ldflags="-X 'main.Version=v$(VERSION)'" -o 'bin/gocan-$(os)-$(arch)' ./app/cmd/gocan/main.go
 
 .PHONY: release $(PLATFORMS)

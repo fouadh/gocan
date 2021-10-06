@@ -22,9 +22,11 @@ import (
 	"os"
 )
 
+var Version = "development"
+
 var rootCmd = &cobra.Command{
 	Use: "gocan",
-	Version: "0.1.1",
+	Version: Version,
 }
 
 func main() {
