@@ -2,10 +2,12 @@ import {useEffect, useState} from "react";
 import * as d3 from "d3";
 import axios from "axios";
 import {CirclePacking} from "../components/CirclePacking";
+import {Spinner} from "../components/Spinner";
 
 export function KnowledgeMap({sceneId, appId}) {
   const [knowledgeMap, setKnowledgeMap] = useState();
   const [authors, setAuthors] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const authorColor = d3.scaleOrdinal(d3.schemeCategory10)
   authorColor.domain(authors.map((it) => it.name))
@@ -25,6 +27,7 @@ export function KnowledgeMap({sceneId, appId}) {
 
   useEffect(() => {
     let subscribed = true;
+    setLoading(true);
 
     axios.get(`/api/scenes/${sceneId}/apps/${appId}/developers`)
       .then(it => it.data)
@@ -41,11 +44,25 @@ export function KnowledgeMap({sceneId, appId}) {
           console.log(it);
           setKnowledgeMap(it);
         }
-      });
+      }).finally(() => setLoading(false));
 
 
     return (() => subscribed = false);
   }, [sceneId, appId]);
+
+  let screen;
+
+  if (loading) {
+    screen = <Spinner/>;
+  } else {
+    screen = <CirclePacking
+        width={975}
+        height={975}
+        data={knowledgeMap}
+        fillColor={fillColor}
+        fillOpacity={(d) => 1}
+    />
+  }
 
   return <>
     <div className="p-d-flex p-text-center">
@@ -68,13 +85,7 @@ export function KnowledgeMap({sceneId, appId}) {
         </ul>
       </div>
       <div className="p-ml-5 p-mr-4">
-        <CirclePacking
-          width={975}
-          height={975}
-          data={knowledgeMap}
-          fillColor={fillColor}
-          fillOpacity={(d) => 1}
-        />
+        {screen}
       </div>
     </div>
   </>;
