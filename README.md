@@ -26,6 +26,8 @@ brew install gocan
 
 For other platforms, you will have to build the binary from the source code (see the section below).
 
+There is also a [docker image](https://hub.docker.com/repository/docker/fouadhamdi/gocan) that can be used instead of having to install it locally.
+
 # Using the app
 
 ## Start the embedded database
