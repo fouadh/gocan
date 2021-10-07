@@ -5,7 +5,7 @@ export function Chord({data}) {
   const container = useRef(null);
 
   useEffect(() => {
-    const width = 954;
+    const width = 2000;
     const radius = width / 2;
 
     const tree = d3.cluster()

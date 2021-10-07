@@ -180,7 +180,6 @@ func calculateCouplingStats(stats []stat.Stat) []*pair {
 	pairsMap := make(map[pair](info))
 	revisions := make(map[string](int))
 
-	fmt.Println("analyzing commits...")
 	for _, files := range commits {
 		for file1, _ := range files {
 			revisions[file1]++

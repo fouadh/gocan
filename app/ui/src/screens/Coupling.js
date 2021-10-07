@@ -27,7 +27,9 @@ export function Coupling({sceneId, appId}) {
     if (loading) {
         screen = <Spinner/>;
     } else if (coupling) {
-        screen = <Chord data={coupling}/>
+        screen = <div style={{display: "flex", justifyContent: "center", height: "900px"}}>
+            <Chord data={coupling}/>
+        </div>
     } else {
         screen = <><p>No coupling found.</p></>
     }

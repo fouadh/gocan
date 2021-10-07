@@ -204,7 +204,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			}
 			ctx.Ui.Ok()
 
-			ctx.Ui.Say("Application running on http://localhost:" + serverPort)
+			ctx.Ui.Say("Application running on http://0.0.0.0:" + serverPort)
 			log.Fatal(srv.ListenAndServe())
 			connection.Close()
 			return nil
