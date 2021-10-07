@@ -28,7 +28,7 @@ test: build
 
 release: frontend $(PLATFORMS)
 
-docker:
+docker: frontend backend
 	docker build \
 		-f docker/Dockerfile  \
 		-t gocan:$(VERSION) \

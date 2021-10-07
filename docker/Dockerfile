@@ -32,6 +32,7 @@ RUN mkdir /gocan
 RUN apt update
 RUN apt install -y curl git
 RUN useradd -ms /bin/bash gocan
+ENV PATH="/home/gocan:$PATH"
 USER gocan
 COPY --from=build_cli /gocan/bin/gocan /home/gocan/
 WORKDIR /home/gocan
