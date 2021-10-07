@@ -1,3 +1,5 @@
+[gocan](https://github.com/fouadh/gocan) is a code analyzer that can be used to generate some of the charts described in the book [Your Code as a Crime Scene](https://pragprog.com/titles/atcrime/your-code-as-a-crime-scene/) written by Adam Tornhill.
+
 # Usage Example
 
 ## Starting gocan
