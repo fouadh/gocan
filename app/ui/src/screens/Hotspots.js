@@ -27,7 +27,7 @@ export function Hotspots({sceneId, appId}) {
     if (loading) {
         screen = <Spinner/>;
     } else if (hospots) {
-        screen = <div>
+        screen = <div style={{display: "flex", justifyContent: "center"}}>
             <CirclePacking width={975} height={975} data={hospots}/>
         </div>;
     } else {

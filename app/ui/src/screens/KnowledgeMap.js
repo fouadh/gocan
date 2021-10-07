@@ -65,21 +65,22 @@ export function KnowledgeMap({sceneId, appId}) {
   }
 
   return <>
-    <div className="p-d-flex p-text-center">
+    <div className="p-d-flex p-text-center" style={{display: "flex", justifyContent: "space-around", alignItems: "center"}}>
       <div className="p-mr-5">
         <ul>
           {authors.map((a) =>
             (
-              <li key={a.name}>
-                {a.name}{' '}
+              <li key={a.name} style={{listStyleType: 'none'}}>
                 <span
-                  style={{
-                    display: 'inline-block',
-                    width: '20px',
-                    height: '20px',
-                    backgroundColor: authorColor(a.name)
-                  }}
+                    style={{
+                      display: 'inline-block',
+                      width: '20px',
+                      height: '20px',
+                      marginRight: '.5em',
+                      backgroundColor: authorColor(a.name)
+                    }}
                 ></span>
+                <span>{a.name}</span>
               </li>
             ))}
         </ul>
