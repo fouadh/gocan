@@ -2,6 +2,7 @@ package revision
 
 import (
 	"com.fha.gocan/business/data/store/boundary"
+	"com.fha.gocan/foundation/db"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"time"
@@ -26,7 +27,6 @@ func (s Store) QueryByAppIdAndDateRange(appId string, before time.Time, after ti
 	FROM
 		revisions(:app_id, :before, :after)
 `
-	results := []Revision{}
 
 	data := struct {
 		AppId  string    `db:"app_id"`
@@ -38,20 +38,9 @@ func (s Store) QueryByAppIdAndDateRange(appId string, before time.Time, after ti
 		After:  after,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []Revision{}, err
-	}
-
-	for rows.Next() {
-		var item Revision
-		if err := rows.StructScan(&item); err != nil {
-			return []Revision{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	var results []Revision
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) QueryByBoundary(appId string, b boundary.Boundary, before time.Time, after time.Time) ([]Revision, error) {
@@ -98,8 +87,6 @@ from (
 ORDER BY numberOfRevisions DESC;
 `
 
-	results := []Revision{}
-
 	data := struct {
 		AppId    string    `db:"app_id"`
 		Before   time.Time `db:"before"`
@@ -110,18 +97,8 @@ ORDER BY numberOfRevisions DESC;
 		After:    after,
 	}
 
-	rows, err := s.connection.NamedQuery(fmt.Sprintf(q, caseWhen, caseWhen, caseWhen, caseWhen), data)
-	if err != nil {
-		return []Revision{}, err
-	}
-
-	for rows.Next() {
-		var item Revision
-		if err := rows.StructScan(&item); err != nil {
-			return []Revision{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	query := fmt.Sprintf(q, caseWhen, caseWhen, caseWhen, caseWhen)
+	var results []Revision
+	err := db.NamedQuerySlice(s.connection, query, data, &results)
+	return results, err
 }

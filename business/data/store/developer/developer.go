@@ -1,6 +1,7 @@
 package developer
 
 import (
+	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"time"
 )
@@ -32,21 +33,8 @@ func (s Store) QueryMainDevelopers(appId string, before time.Time, after time.Ti
 	}
 
 	var results []EntityDeveloper
-
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []EntityDeveloper{}, err
-	}
-
-	for rows.Next() {
-		var item EntityDeveloper
-		if err := rows.StructScan(&item); err != nil {
-			return []EntityDeveloper{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) QueryEntityEfforts(appId string, before time.Time, after time.Time) ([]EntityEffort, error) {
@@ -71,21 +59,8 @@ func (s Store) QueryEntityEfforts(appId string, before time.Time, after time.Tim
 	}
 
 	var results []EntityEffort
-
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []EntityEffort{}, err
-	}
-
-	for rows.Next() {
-		var item EntityEffort
-		if err := rows.StructScan(&item); err != nil {
-			return []EntityEffort{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) QueryDevelopers(appId string, before time.Time, after time.Time) ([]Developer, error) {
@@ -105,21 +80,8 @@ from developers(:app_id, :before, :after)
 	}
 
 	var results []Developer
-
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []Developer{}, err
-	}
-
-	for rows.Next() {
-		var item Developer
-		if err := rows.StructScan(&item); err != nil {
-			return []Developer{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func NewStore(connection *sqlx.DB) Store {

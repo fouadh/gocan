@@ -2,6 +2,7 @@ package app
 
 import (
 	context "com.fha.gocan/foundation"
+	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
@@ -44,7 +45,6 @@ func (s Store) QueryBySceneIdAndName(sceneId string, name string) (App, error) {
 		name = :app_name
 		AND scene_id = :scene_id
 `
-	var result App
 
 	data := struct {
 		SceneId string `db:"scene_id"`
@@ -54,20 +54,9 @@ func (s Store) QueryBySceneIdAndName(sceneId string, name string) (App, error) {
 		AppName: name,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return App{}, err
-	}
-	if !rows.Next() {
-		return App{}, errors.New("not found")
-	}
-
-	if err := rows.StructScan(&result); err != nil {
-		return App{}, err
-	}
-
-	return result, nil
-
+	var result App
+	err := db.NamedQueryStruct(s.connection, q, data, &result)
+	return result, err
 }
 
 func (s Store) QueryBySceneId(sceneId string) ([]App, error) {
@@ -86,21 +75,9 @@ func (s Store) QueryBySceneId(sceneId string) ([]App, error) {
 		SceneId: sceneId,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []App{}, err
-	}
-
-	results := []App{}
-	for rows.Next() {
-		var item App
-		if err := rows.StructScan(&item); err != nil {
-			return []App{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	var results []App
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) QuerySummary(appId string, before time.Time, after time.Time) (Summary, error) {
@@ -125,21 +102,9 @@ func (s Store) QuerySummary(appId string, before time.Time, after time.Time) (Su
 		After:  after,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return Summary{}, err
-	}
-
-	if !rows.Next() {
-		return Summary{}, errors.New("No data found for this app.")
-	}
-
 	var result Summary
-	if err := rows.StructScan(&result); err != nil {
-		return Summary{}, err
-	}
-
-	return result, nil
+	err := db.NamedQueryStruct(s.connection, q, data, &result)
+	return result, err
 }
 
 func (s Store) QueryById(appId string) (App, error) {
@@ -151,27 +116,15 @@ func (s Store) QueryById(appId string) (App, error) {
 	WHERE
 		id = :app_id
 `
-	var result App
-
 	data := struct {
 		AppId string `db:"app_id"`
 	}{
 		AppId: appId,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return App{}, err
-	}
-	if !rows.Next() {
-		return App{}, errors.New("not found")
-	}
-
-	if err := rows.StructScan(&result); err != nil {
-		return App{}, err
-	}
-
-	return result, nil
+	var result App
+	err := db.NamedQueryStruct(s.connection, q, data, &result)
+	return result, err
 }
 
 func (s Store) Delete(appId string) error {

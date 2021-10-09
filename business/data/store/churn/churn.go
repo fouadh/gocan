@@ -1,6 +1,7 @@
 package churn
 
 import (
+	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"time"
 )
@@ -30,21 +31,8 @@ func (s Store) QueryCodeChurn(appId string, before time.Time, after time.Time) (
 	}
 
 	var results []CodeChurn
-
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []CodeChurn{}, err
-	}
-
-	for rows.Next() {
-		var item CodeChurn
-		if err := rows.StructScan(&item); err != nil {
-			return []CodeChurn{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func NewStore(connection *sqlx.DB) Store {

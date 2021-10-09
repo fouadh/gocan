@@ -1,6 +1,7 @@
 package complexity
 
 import (
+	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -20,7 +21,9 @@ func (s Store) Create(c Complexity) (Complexity, error) {
   values(:id, :name, :entity, :app_id)`
 
 	if _, err := tx.NamedExec(q1, c); err != nil {
-		tx.Rollback()
+		if err := tx.Rollback(); err != nil {
+			return Complexity{}, errors.Wrap(err, "Unable to rollback")
+		}
 		return Complexity{}, errors.Wrap(err, "Unable to insert complexity analysis")
 	}
 
@@ -43,13 +46,15 @@ max
 )`
 	for _, entry := range c.Entries {
 		if _, err := tx.NamedExec(q2, entry); err != nil {
-			tx.Rollback()
+			if err := tx.Rollback(); err != nil {
+				return Complexity{}, errors.Wrap(err, "Unable to rollback")
+			}
 			return Complexity{}, errors.Wrap(err, "Unable to insert complexity analysis entry")
 		}
 	}
 
-	tx.Commit()
-	return c, nil
+	err := tx.Commit()
+	return c, err
 }
 
 func (s Store) QueryAnalyses(appId string) ([]ComplexityAnalysisSummary, error) {
@@ -69,22 +74,9 @@ func (s Store) QueryAnalyses(appId string) ([]ComplexityAnalysisSummary, error) 
 		AppId: appId,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []ComplexityAnalysisSummary{}, nil
-	}
-
-	results := []ComplexityAnalysisSummary{}
-
-	for rows.Next() {
-		var item ComplexityAnalysisSummary
-		if err := rows.StructScan(&item); err != nil {
-			return []ComplexityAnalysisSummary{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	var results []ComplexityAnalysisSummary
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) QueryAnalysisEntriesById(complexityId string) ([]ComplexityEntry, error) {
@@ -108,22 +100,9 @@ func (s Store) QueryAnalysisEntriesById(complexityId string) ([]ComplexityEntry,
 		ComplexityId: complexityId,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []ComplexityEntry{}, nil
-	}
-
-	results := []ComplexityEntry{}
-
-	for rows.Next() {
-		var item ComplexityEntry
-		if err := rows.StructScan(&item); err != nil {
-			return []ComplexityEntry{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	var results []ComplexityEntry
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) DeleteAnalysisByName(appId string, name string) error {

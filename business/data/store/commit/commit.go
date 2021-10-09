@@ -4,7 +4,6 @@ import (
 	"com.fha.gocan/foundation/db"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 	"sync"
 	"time"
 )
@@ -38,22 +37,9 @@ func (s Store) Query(appId string, before time.Time, after time.Time) ([]Commit,
 		After: after,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []Commit{}, errors.Wrap(err, "Unable to execute query")
-	}
-
-	results := []Commit{}
-
-	for rows.Next() {
-		var item Commit
-		if err := rows.StructScan(&item); err != nil {
-			return []Commit{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	var results []Commit
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) BulkImport(appId string, data []Commit) error {
@@ -107,22 +93,9 @@ func (s Store) QueryCommitRange(appId string) (CommitRange, error) {
 		AppId: appId,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return CommitRange{}, errors.Wrap(err, "Cannot query commit range")
-	}
-
-	if !rows.Next() {
-		return CommitRange{}, errors.Wrap(err, "No commit range available")
-	}
-
 	var result CommitRange
-	err = rows.StructScan(&result)
-	if err != nil {
-		return CommitRange{}, errors.Wrap(err, "Cannot read commit range from db")
-	}
-
-	return result, nil
+	err := db.NamedQueryStruct(s.connection, q, data, &result)
+	return result, err
 }
 
 func bulkInsert(list []Commit, appId string, txn *sqlx.Tx) error {

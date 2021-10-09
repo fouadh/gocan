@@ -1,6 +1,7 @@
 package active_set
 
 import (
+	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"time"
 )
@@ -40,21 +41,8 @@ from data2`
 	}
 
 	var results []ActiveSetStats
-
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []ActiveSetStats{}, err
-	}
-
-	for rows.Next() {
-		var item ActiveSetStats
-		if err := rows.StructScan(&item); err != nil {
-			return []ActiveSetStats{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) QueryClosedEntities(appId string, before time.Time, after time.Time) ([]ActiveSetStats, error) {
@@ -88,21 +76,8 @@ from data2`
 	}
 
 	var results []ActiveSetStats
-
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []ActiveSetStats{}, err
-	}
-
-	for rows.Next() {
-		var item ActiveSetStats
-		if err := rows.StructScan(&item); err != nil {
-			return []ActiveSetStats{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func NewStore(connection *sqlx.DB) Store {

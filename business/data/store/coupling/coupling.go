@@ -1,39 +1,13 @@
 package coupling
 
 import (
+	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"time"
 )
 
 type Store struct {
 	connection *sqlx.DB
-}
-
-func (s Store) ImportCoupling(appId string, couplings []Coupling) error {
-	const q = `
-	INSERT INTO 
-		couplings(entity, coupled, degree, averageRevisions, app_id)
-	VALUES(:entity, :coupled, :degree, :average_revisions, :app_id)
-`
-
-	for _, c := range couplings {
-		data := struct {
-			Entity           string  `db:"entity"`
-			Coupled          string  `db:"coupled"`
-			Degree           float64 `db:"degree"`
-			AverageRevisions float64 `db:"average_revisions"`
-			AppId            string  `db:"app_id"`
-		}{
-			Entity:           c.Entity,
-			Coupled:          c.Coupled,
-			Degree:           c.Degree,
-			AverageRevisions: c.AverageRevisions,
-			AppId:            appId,
-		}
-		s.connection.NamedExec(q, data)
-	}
-
-	return nil
 }
 
 func (s Store) Query(appId string, minimalCoupling float64, minimalRevisionsAverage int) ([]Coupling, error) {
@@ -63,21 +37,8 @@ func (s Store) Query(appId string, minimalCoupling float64, minimalRevisionsAver
 	}
 
 	var results []Coupling
-
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []Coupling{}, err
-	}
-
-	for rows.Next() {
-		var item Coupling
-		if err := rows.StructScan(&item); err != nil {
-			return []Coupling{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func (s Store) QuerySoc(appId string, before time.Time, after time.Time) ([]Soc, error) {
@@ -100,21 +61,8 @@ func (s Store) QuerySoc(appId string, before time.Time, after time.Time) ([]Soc,
 	}
 
 	var results []Soc
-
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return []Soc{}, err
-	}
-
-	for rows.Next() {
-		var item Soc
-		if err := rows.StructScan(&item); err != nil {
-			return []Soc{}, err
-		}
-		results = append(results, item)
-	}
-
-	return results, nil
+	err := db.NamedQuerySlice(s.connection, q, data, &results)
+	return results, err
 }
 
 func NewStore(connection *sqlx.DB) Store {

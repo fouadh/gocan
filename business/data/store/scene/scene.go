@@ -2,6 +2,7 @@ package scene
 
 import (
 	context "com.fha.gocan/foundation"
+	"com.fha.gocan/foundation/db"
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pborman/uuid"
@@ -42,7 +43,6 @@ func (s Store) QueryByName(name string) (Scene, error) {
 	WHERE
 		name = :scene_name
 `
-	var result Scene
 
 	data := struct {
 		SceneName string `db:"scene_name"`
@@ -50,19 +50,9 @@ func (s Store) QueryByName(name string) (Scene, error) {
 		SceneName: name,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return Scene{}, err
-	}
-	if !rows.Next() {
-		return Scene{}, errors.New("not found")
-	}
-
-	if err := rows.StructScan(&result); err != nil {
-		return Scene{}, err
-	}
-
-	return result, nil
+	var result Scene
+	err := db.NamedQueryStruct(s.connection, q, data, &result)
+	return result, err
 }
 
 func (s Store) QueryAll() ([]Scene, error) {
@@ -72,7 +62,6 @@ func (s Store) QueryAll() ([]Scene, error) {
 	FROM 
 		scenes
 `
-
 	var scenes []Scene
 	if err := s.connection.Select(&scenes, q); err != nil {
 		return []Scene{}, errors.Wrap(err, fmt.Sprintf("Cannot fetch scenes: %s", err.Error()))
@@ -90,27 +79,15 @@ func (s Store) QueryById(id string) (Scene, error) {
 	WHERE
 		id = :scene_id
 `
-	var result Scene
-
 	data := struct {
 		SceneId string `db:"scene_id"`
 	}{
 		SceneId: id,
 	}
 
-	rows, err := s.connection.NamedQuery(q, data)
-	if err != nil {
-		return Scene{}, err
-	}
-	if !rows.Next() {
-		return Scene{}, errors.New("not found")
-	}
-
-	if err := rows.StructScan(&result); err != nil {
-		return Scene{}, err
-	}
-
-	return result, nil
+	var result Scene
+	err := db.NamedQueryStruct(s.connection, q, data, &result)
+	return result, err
 }
 
 func (s Store) DeleteByName(name string) error {
