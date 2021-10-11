@@ -158,7 +158,7 @@ gocan app-summary myapp --scene myscene
 
 			summary, err := c.QuerySummary(a.Id, beforeTime, afterTime)
 			if err != nil {
-				return errors.Wrap(err, "No summary found for app " + a.Id + " between " + date.FormatDay(beforeTime) + " and " + date.FormatDay(afterTime))
+				return errors.Wrap(err, "No summary found for app " + a.Id + " between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
 			}
 
 			ctx.Ui.Ok()
