@@ -20,6 +20,7 @@ func TestE2E(t *testing.T) {
 	startDatabase(t)
 	sceneName := "a-scene"
 	createScene(t, sceneName)
+	assertSceneCanBeRetrieved(t, sceneName)
 	appName := "an-app"
 	createApp(t, appName, sceneName)
 	importHistory(t, appName, sceneName)
@@ -54,6 +55,17 @@ func importHistory(t *testing.T, appName string, sceneName string) {
 	} else {
 		t.Log(output)
 		t.Fatalf("%s History Import failed", failed)
+	}
+}
+
+func assertSceneCanBeRetrieved(t *testing.T, sceneName string) {
+	output := runCommand(t, "scenes")
+	if strings.Contains(output, sceneName) &&
+		strings.Contains(output, "OK") {
+		t.Logf("%s Scene %s retrieved", succeed, sceneName)
+	} else {
+		t.Log(output)
+		t.Fatalf("%s Retrieving revisions failed", failed)
 	}
 }
 
