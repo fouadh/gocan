@@ -1,8 +1,8 @@
 package stat
 
 import (
+	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/db"
-	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"sync"
@@ -57,7 +57,7 @@ func (s Store) Query(appId string, before time.Time, after time.Time) ([]Stat, e
 	return results, nil
 }
 
-func (s Store) BulkImport(appId string, data []Stat) error {
+func (s Store) BulkImport(appId string, data []Stat, ctx *foundation.Context) error {
 	txn := s.connection.MustBegin()
 
 	chunkSize := 1000
@@ -82,7 +82,7 @@ func (s Store) BulkImport(appId string, data []Stat) error {
 			err := bulkInsertStats(&data, appId, txn)
 			if err != nil {
 				// todo better than that
-				fmt.Printf("Bulk Insert Error: %s", err.Error())
+				ctx.Ui.Failed("Bulk Insert Error: " + err.Error())
 			}
 		}(set)
 	}

@@ -13,6 +13,7 @@ import (
 
 func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 	var sceneName string
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:  "create-app",
@@ -20,6 +21,7 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		Example: "gocan create-app myapp --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -34,12 +36,14 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 				return errors.Wrap(err, fmt.Sprintf("Unable to create the app: %s", err.Error()))
 			}
 
-			ctx.Ui.Log(fmt.Sprintln("App", a.Id, "created."))
+			ctx.Ui.Print(fmt.Sprintln("App", a.Id, "created."))
 			ctx.Ui.Ok()
 			return nil
 		},
 	}
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
 	return &cmd
 }
 
@@ -74,7 +78,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 			if len(apps) > 0 {
 				printApps(ctx, apps, csv)
 			} else {
-				ctx.Ui.Log("There is no application in this scene.")
+				ctx.Ui.Print("There is no application in this scene.")
 			}
 
 			return nil
@@ -115,6 +119,7 @@ func NewDeleteApp(ctx foundation.Context) *cobra.Command {
 			if err := c.Delete(a.Id); err != nil {
 				return errors.Wrap(err, "Unable to delete the app")
 			}
+			ctx.Ui.Print("The application has been deleted")
 			ctx.Ui.Log("OK")
 
 			return nil

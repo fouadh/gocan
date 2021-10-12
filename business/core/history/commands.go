@@ -41,10 +41,11 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 
 
 			ui.Log("Importing history...")
-			if err = h.Import(a.Id, path, beforeTime, afterTime); err != nil {
+			if err = h.Import(a.Id, path, beforeTime, afterTime, ctx); err != nil {
 				return errors.Wrap(err, "History cannot be imported")
 			}
 
+			ui.Print("History has been imported")
 			ui.Ok()
 			return nil
 		},

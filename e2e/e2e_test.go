@@ -54,7 +54,7 @@ func importHistory(t *testing.T, appName string, sceneName string) {
 	}
 
 	output := runCommand(t, "import-history", appName, "--scene", sceneName, "--directory", appFolder)
-	if strings.Contains(output, "Importing history") && strings.Contains(output, "OK") {
+	if strings.Contains(output, "History has been imported") {
 		t.Logf("%s History imported", succeed)
 	} else {
 		t.Log(output)
@@ -64,8 +64,7 @@ func importHistory(t *testing.T, appName string, sceneName string) {
 
 func assertDevsCanBeRetrieved(t *testing.T, appName string, sceneName string) {
 	output := runCommand(t, "devs", appName, "--scene", sceneName)
-	if strings.Contains(output, "Developer 1") &&
-		strings.Contains(output, "OK") {
+	if strings.Contains(output, "Developer 1") {
 		t.Logf("%s Developers retrieved", succeed)
 	} else {
 		t.Log(output)
@@ -76,8 +75,7 @@ func assertDevsCanBeRetrieved(t *testing.T, appName string, sceneName string) {
 func assertAppSummaryCanBeRetrieved(t *testing.T, appName string, sceneName string) {
 	output := runCommand(t, "app-summary", appName, "--scene", sceneName)
 	if strings.Contains(output, appName) &&
-		strings.Contains(output, "1") &&
-		strings.Contains(output, "OK") {
+		strings.Contains(output, "1") {
 		t.Logf("%s App summary retrieved", succeed)
 	} else {
 		t.Log(output)
@@ -87,8 +85,7 @@ func assertAppSummaryCanBeRetrieved(t *testing.T, appName string, sceneName stri
 
 func assertAppCanBeRetrieved(t *testing.T, appName string, sceneName string) {
 	output := runCommand(t, "apps", "--scene", sceneName)
-	if strings.Contains(output, appName) &&
-		strings.Contains(output, "OK") {
+	if strings.Contains(output, appName) {
 		t.Logf("%s App %s retrieved", succeed, appName)
 	} else {
 		t.Log(output)
@@ -108,8 +105,7 @@ func assertSceneCanBeRetrieved(t *testing.T, sceneName string) {
 
 func assertRevisionsCanBeRetrieved(t *testing.T, appName string, sceneName string) {
 	output := runCommand(t, "revisions", appName, "--scene", sceneName)
-	if strings.Contains(output, "Hello.java") &&
-		strings.Contains(output, "OK") {
+	if strings.Contains(output, "Hello.java") {
 		t.Logf("%s Revisions retrieved", succeed)
 	} else {
 		t.Log(output)
@@ -128,7 +124,8 @@ func createTempFolder(t *testing.T) string {
 
 func createApp(t *testing.T, appName string, sceneName string) {
 	output := runCommand(t, "create-app", appName, "--scene", sceneName)
-	if strings.Contains(output, "Creating the app") && strings.Contains(output, "OK") {
+	match, _ := regexp.MatchString("App .* created", output)
+	if match {
 		t.Logf("%s App created", succeed)
 	} else {
 		t.Log(output)

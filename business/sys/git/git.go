@@ -3,6 +3,7 @@ package git
 import (
 	"com.fha.gocan/business/data/store/commit"
 	"com.fha.gocan/business/data/store/stat"
+	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/shell"
 	"encoding/json"
@@ -14,8 +15,8 @@ import (
 	"time"
 )
 
-func GetCommits(path string, before time.Time, after time.Time) ([]commit.Commit, error) {
-	fmt.Println("looking for commits between " + date.FormatDay(after) + " and " + date.FormatDay(before))
+func GetCommits(path string, before time.Time, after time.Time, ctx *foundation.Context) ([]commit.Commit, error) {
+	ctx.Ui.Log("looking for commits between " + date.FormatDay(after) + " and " + date.FormatDay(before))
 	cmd := exec.Command("git", "log", "--after", date.FormatDay(after), "--before", date.FormatDay(before),
 		"--date=iso", "--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},")
 	cmd.Dir = path
@@ -57,7 +58,8 @@ func GetCommits(path string, before time.Time, after time.Time) ([]commit.Commit
 	return commits, nil
 }
 
-func GetStats(path string, before time.Time, after time.Time, commitsMap map[string]commit.Commit) ([]stat.Stat, error) {
+func GetStats(path string, before time.Time, after time.Time, commitsMap map[string]commit.Commit, ctx *foundation.Context) ([]stat.Stat, error) {
+	ctx.Ui.Log("Getting the git logs to extract stats")
 	cmd := exec.Command("git", "log", "--after", date.FormatDay(after), "--before", date.FormatDay(before), "--numstat", "--format=%H")
 	cmd.Dir = path
 	out, err := cmd.Output()

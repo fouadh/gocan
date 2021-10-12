@@ -3,6 +3,7 @@ package cloc
 import (
 	"com.fha.gocan/business/data/store/commit"
 	"com.fha.gocan/business/sys/git"
+	"com.fha.gocan/foundation"
 	"encoding/json"
 	"fmt"
 	"github.com/boyter/scc/processor"
@@ -21,7 +22,7 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
-func (s Store) ImportCloc(appId string, directory string, commits []commit.Commit) error {
+func (s Store) ImportCloc(appId string, directory string, commits []commit.Commit, ctx *foundation.Context) error {
 	if len(commits) == 0 {
 		return fmt.Errorf("No commit provided !")
 	}
@@ -86,7 +87,7 @@ func (s Store) ImportCloc(appId string, directory string, commits []commit.Commi
 		)
 	}
 
-	fmt.Println("reinitialising repo to initial branch")
+	ctx.Ui.Log("reinitialising repo to initial branch")
 	if err := git.Checkout(initialBranch, directory); err != nil {
 		return errors.Wrap(err, "Cannot reinitialize initial branch")
 	}

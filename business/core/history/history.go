@@ -8,6 +8,7 @@ import (
 	"com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/business/data/store/stat"
 	"com.fha.gocan/business/sys/git"
+	"com.fha.gocan/foundation"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"time"
@@ -33,8 +34,8 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Import(appId string, path string, before time.Time, after time.Time) error {
-	commits, err := git.GetCommits(path, before, after)
+func (c Core) Import(appId string, path string, before time.Time, after time.Time, ctx *foundation.Context) error {
+	commits, err := git.GetCommits(path, before, after, ctx)
 	if err != nil {
 		return errors.Wrap(err, "Unable to retrieve commits")
 	}
@@ -46,16 +47,16 @@ func (c Core) Import(appId string, path string, before time.Time, after time.Tim
 	for _, ct := range commits {
 		commitsMap[ct.Id] = ct
 	}
-	stats, err := git.GetStats(path, before, after, commitsMap)
+	stats, err := git.GetStats(path, before, after, commitsMap, ctx)
 	if err != nil {
 		return err
 	}
 
-	if err = c.stat.BulkImport(appId, stats); err != nil {
+	if err = c.stat.BulkImport(appId, stats, ctx); err != nil {
 		return errors.Wrap(err, "Unable to save stats")
 	}
 
-	if err = c.cloc.ImportCloc(appId, path, commits); err != nil {
+	if err = c.cloc.ImportCloc(appId, path, commits, ctx); err != nil {
 		return errors.Wrap(err, "Unable to save clocs")
 	}
 
