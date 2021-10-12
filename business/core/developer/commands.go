@@ -156,7 +156,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 			ui.Ok()
 
 			str, _ := json.MarshalIndent(km, "", "  ")
-			ui.Log(string(str))
+			ui.Print(string(str))
 
 			return nil
 		},

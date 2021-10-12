@@ -96,7 +96,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 			ui.Ok()
 
 			str, _ := json.MarshalIndent(hotspots, "", "  ")
-			ui.Log(string(str))
+			ui.Print(string(str))
 
 			return nil
 		},

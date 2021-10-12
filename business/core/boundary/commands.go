@@ -56,6 +56,7 @@ the different layers of an application. Or you can define a boundary for product
 			if err != nil {
 				return err
 			}
+			ctx.Ui.Print("Boundary has been created.")
 			ctx.Ui.Ok()
 
 			return nil
@@ -109,6 +110,7 @@ func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to delete boundary")
 			}
 
+			ctx.Ui.Print("Boundary has been deleted.")
 			ctx.Ui.Ok()
 			return nil
 		},

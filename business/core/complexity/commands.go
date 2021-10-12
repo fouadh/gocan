@@ -123,6 +123,7 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to delete the analysis")
 			}
 
+			ui.Print("Complexity has been deleted.")
 			ui.Ok()
 
 			return nil
