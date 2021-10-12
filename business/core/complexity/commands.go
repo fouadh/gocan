@@ -20,6 +20,7 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	var directory string
 	var spaces int
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:     "create-complexity-analysis",
@@ -39,6 +40,7 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -84,13 +86,14 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 	cmd.Flags().StringVarP(&directory, "directory", "d", "", "The directory of the git repo")
 	cmd.Flags().IntVarP(&spaces, "spaces", "", 4, "The number of spaces defining an indentation")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
-
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
 
 func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:     "delete-complexity-analysis",
@@ -100,6 +103,7 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -127,7 +131,7 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
-
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
 
@@ -135,6 +139,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:     "complexity-analyses",
@@ -144,6 +149,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 		Example: "gocan complexity-analyses --app myapp --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -181,6 +187,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }

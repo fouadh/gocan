@@ -15,6 +15,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:     "main-developers",
@@ -23,6 +24,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -59,6 +61,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the main developers before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the main developers after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }
@@ -68,6 +71,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:     "entity-efforts",
@@ -76,6 +80,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -112,6 +117,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the entity efforts before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the entity efforts after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }
@@ -120,6 +126,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:     "knowledge-map",
@@ -128,6 +135,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -157,6 +165,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the main developers before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the main developers after this day")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }
@@ -166,6 +175,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:     "devs",
@@ -174,6 +184,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			ui.Log("Getting app revisions...")
 
 			connection, err := ctx.GetConnection()
@@ -206,5 +217,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the developers before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the developers after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
 	return &cmd
 }

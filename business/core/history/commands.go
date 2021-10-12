@@ -13,6 +13,7 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 	var path string
 	var before string
 	var after string
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:  "import-history",
@@ -20,6 +21,7 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 		Short: "Import the commits of an application",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -52,5 +54,6 @@ func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&path, "directory", "d", ".", "App directory")
 	cmd.Flags().StringVarP(&before, "before", "a", date.Today(), "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", date.LongTimeAgo(), "Fetch all the hotspots after this day")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }

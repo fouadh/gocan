@@ -13,6 +13,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use: "modus-operandi",
@@ -20,6 +21,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 		Short: "Get the most used terms in git messages of an application",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -54,6 +56,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the modus-operandi before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch the modus-operandi after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }

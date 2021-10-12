@@ -17,6 +17,7 @@ func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:  "coupling",
@@ -29,6 +30,7 @@ gocan coupling myapp --scene myscene
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -73,7 +75,7 @@ gocan coupling myapp --scene myscene
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch coupling after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
-
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
 
@@ -82,6 +84,7 @@ func NewSocCommand(ctx foundation.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:  "summary-of-coupling",
@@ -95,6 +98,7 @@ gocan summary-of-coupling myapp --scene myscene
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -132,7 +136,7 @@ gocan summary-of-coupling myapp --scene myscene
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the summary of coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the summary of coupling after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
-
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
 
@@ -142,6 +146,7 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 	var minRevsAvg int
 	var before string
 	var after string
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use: "coupling-hierarchy",
@@ -149,6 +154,7 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 		Short: "Get the coupling information about an app in JSON formatted to be used with d3.js",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -180,6 +186,6 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch coupling after this day")
-
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }

@@ -29,12 +29,14 @@ var app embed.FS
 
 func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 	var serverPort string
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use: "ui",
 		Args: cobra.NoArgs,
 		Short: "Start the gocan ui",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx.Ui.SetVerbose(verbose)
 			ctx.Ui.Log("Starting the UI...")
 			connection, err := ctx.GetConnection()
 			if err != nil {
@@ -212,5 +214,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&serverPort, "port", "p", "1233", "Port to use for the server")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
 	return &cmd
 }

@@ -21,12 +21,14 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 	var dbName string
 	var externalDb bool
 	var embeddedPath string
+	var verbose bool
 
 	cmd := &cobra.Command{
 		Use:   "setup-db",
 		Short: "Configure the database options. Caution: if you are changing the embedded db properties, you will lose all the existing data.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			ui.Log("Configuring the database...")
 			var dataPath string
 			if externalDb {
@@ -75,6 +77,7 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&dbName, "database", "n", db.DefaultConfig.Database, "Database name")
 	cmd.Flags().BoolVarP(&externalDb, "external-db", "e", false, "Set this flag if you prefer to use an external db rather than the embedded one")
 	cmd.Flags().StringVarP(&embeddedPath, "directory", "d", defaultPath()+"/data", "Directory where the data will be stored. Only valid for the embedded database.")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return cmd
 }

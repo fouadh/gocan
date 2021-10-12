@@ -46,6 +46,7 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 	var sceneName string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use: "apps",
@@ -53,6 +54,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 		Args: cobra.NoArgs,
 		Example: "gocan apps --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -86,6 +88,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 
 func NewDeleteApp(ctx foundation.Context) *cobra.Command {
 	var sceneName string
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use: "delete-app",
@@ -94,6 +97,7 @@ func NewDeleteApp(ctx foundation.Context) *cobra.Command {
 		Example: "gocan delete-app myapp -s myscene",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -118,6 +122,7 @@ func NewDeleteApp(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }
@@ -127,6 +132,7 @@ func NewAppSummary(ctx foundation.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use: "app-summary",
@@ -139,6 +145,7 @@ gocan app-summary myapp --scene myscene
 `,
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -178,6 +185,7 @@ gocan app-summary myapp --scene myscene
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the summary of coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the summary of coupling after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
 

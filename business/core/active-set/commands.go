@@ -13,17 +13,18 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:  "active-set",
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
 			}
 			defer connection.Close()
-
 			ctx.Ui.Log("Retrieving the apps...")
 			c := NewCore(connection)
 
@@ -53,5 +54,6 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the active set before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch active set after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }

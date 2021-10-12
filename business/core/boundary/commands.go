@@ -12,6 +12,7 @@ func NewCreateBoundary(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 	var transformations []string
+	var verbose bool
 
 	cmd := &cobra.Command{
 		Use:   "create-boundary",
@@ -36,6 +37,7 @@ the different layers of an application. Or you can define a boundary for product
 				return fmt.Errorf("No transformation provided")
 			}
 
+			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -63,6 +65,7 @@ the different layers of an application. Or you can define a boundary for product
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
 	cmd.Flags().StringSliceVarP(&transformations, "transformation", "t", nil, "Transformations")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return cmd
 }
@@ -70,6 +73,7 @@ the different layers of an application. Or you can define a boundary for product
 func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
+	var verbose bool
 
 	cmd := &cobra.Command{
 		Use:     "delete-boundary",
@@ -85,6 +89,7 @@ func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
 				return fmt.Errorf("No scene provided")
 			}
 
+			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -111,13 +116,14 @@ func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
-
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return cmd
 }
 
 func NewBoundaries(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
+	var verbose bool
 
 	cmd := &cobra.Command{
 		Use:     "boundaries",
@@ -132,6 +138,7 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 				return fmt.Errorf("No scene provided")
 			}
 
+			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -173,6 +180,6 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
-
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return cmd
 }

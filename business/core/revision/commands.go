@@ -68,6 +68,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use: "hotspots",
@@ -75,6 +76,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 		Short: "Get the hotspots of an application in JSON formatted for d3.js",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 			ui.Log("Getting app hotspots...")
 
 			connection, err := ctx.GetConnection()
@@ -103,6 +105,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the hotspots after this day")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
 
@@ -112,6 +115,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use: "revision-trends",
@@ -120,6 +124,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
+			ui.SetVerbose(verbose)
 
 			connection, err := ctx.GetConnection()
 			if err != nil {
@@ -169,6 +174,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the hotspots after this day")
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }
