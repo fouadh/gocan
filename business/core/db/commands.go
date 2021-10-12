@@ -11,6 +11,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/user"
+	"strconv"
 )
 
 func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
@@ -29,7 +30,6 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.SetVerbose(verbose)
-			ui.Log("Configuring the database...")
 			var dataPath string
 			if externalDb {
 				dataPath = ""
@@ -52,20 +52,36 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to marshal configuration object into json")
 			}
 
-			if err := createDirectory(embeddedPath); err != nil {
-				return errors.Wrap(err, "Unable to create embedded db directory")
+			if !externalDb {
+				ui.Log("Creating embedded database folder at " + embeddedPath)
+				if err := createDirectory(embeddedPath); err != nil {
+					return errors.Wrap(err, "Unable to create embedded db directory")
+				}
 			}
 
+			ui.Log("Create configuration folder if not existing")
 			if err := createDirectory(defaultPath()); err != nil {
 				return errors.Wrap(err, "Unable to create configuration directory")
 			}
 
-			if err := ioutil.WriteFile(defaultPath()+"/config.json", data, 0644); err != nil {
+			configLocation := defaultPath() + "/config.json"
+			ui.Log("Saving configuration file at location " + configLocation)
+			if err := ioutil.WriteFile(configLocation, data, 0644); err != nil {
 				return errors.Wrap(err, "Unable to save the configuration file")
 			}
 
-			ui.Log("Database configured")
+			ui.Print("Database has been configured with the following properties:")
+			t := ui.Table([]string{"host", "port", "user", "database", "embedded", "embedded db path"}, false)
+			var embedded string
+			if c.Embedded {
+				embedded = "true"
+			} else {
+				embedded = "false"
+			}
+			t.Add(c.Host, strconv.Itoa(c.Port), c.User, c.Database, embedded, c.EmbeddedDataPath)
+			t.Print()
 			ui.Ok()
+
 			return nil
 		},
 	}

@@ -159,7 +159,7 @@ func startDatabase(t *testing.T) {
 func setupDatabase(t *testing.T) string {
 	dir := createTempFolder(t)
 	output := runCommand(t, "setup-db", "--directory", dir, "--port", "5433")
-	if strings.Contains(output, "Database configured") {
+	if strings.Contains(output, "Database has been configured") {
 		t.Logf("%s Database configured", succeed)
 	} else {
 		t.Log(output)
