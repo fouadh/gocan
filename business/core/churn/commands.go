@@ -48,7 +48,7 @@ gocan code-churn myapp --scene myscene
 
 			ui.Ok()
 
-			table := ui.Table([]string{"date", "added", "deleted"})
+			table := ui.Table([]string{"date", "added", "deleted"}, false)
 
 			for _, cc := range data {
 				table.Add(cc.Date, fmt.Sprint(cc.Added), fmt.Sprint(cc.Deleted))

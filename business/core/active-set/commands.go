@@ -38,7 +38,7 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 
 			ctx.Ui.Ok()
 
-			table := ctx.Ui.Table([]string{"Date", "Opened", "Closed"})
+			table := ctx.Ui.Table([]string{"Date", "Opened", "Closed"}, false)
 			for _, item := range as {
 				table.Add(item.Date, strconv.Itoa(item.Opened), strconv.Itoa(item.Closed))
 			}

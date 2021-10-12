@@ -44,7 +44,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 
 			ui.Ok()
 
-			table := ui.Table([]string{"entity", "main-dev", "added", "total-added", "ownership"})
+			table := ui.Table([]string{"entity", "main-dev", "added", "total-added", "ownership"}, false)
 			for _, dev := range data {
 				table.Add(dev.Entity, dev.Author, fmt.Sprint(dev.Added), fmt.Sprint(dev.TotalAdded), fmt.Sprintf("%.2f", dev.Ownership))
 			}
@@ -95,7 +95,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 
 			ui.Ok()
 
-			table := ui.Table([]string{"entity", "author", "author-revs", "total-revs"})
+			table := ui.Table([]string{"entity", "author", "author-revs", "total-revs"}, false)
 			for _, dev := range data {
 				table.Add(dev.Entity, dev.Author, fmt.Sprint(dev.AuthorRevisions), fmt.Sprint(dev.TotalRevisions))
 			}
@@ -187,7 +187,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 			}
 			ui.Ok()
 
-			table := ui.Table([]string{"name", "commits"})
+			table := ui.Table([]string{"name", "commits"}, false)
 			for _, dev := range devs {
 				table.Add(dev.Name, strconv.Itoa(dev.NumberOfCommits))
 			}

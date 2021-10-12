@@ -56,7 +56,7 @@ gocan coupling myapp --scene myscene
 				return nil
 			}
 
-			table := ui.Table([]string{"entity", "coupled", "degree", "average-revs"})
+			table := ui.Table([]string{"entity", "coupled", "degree", "average-revs"}, false)
 			for _, coupling := range data {
 				table.Add(coupling.Entity, coupling.Coupled, fmt.Sprintf("%.2f", coupling.Degree), fmt.Sprint(int(math.Ceil(coupling.AverageRevisions))))
 			}
@@ -115,7 +115,7 @@ gocan summary-of-coupling myapp --scene myscene
 
 			ui.Ok()
 
-			table := ui.Table([]string { "entity", "soc" })
+			table := ui.Table([]string{"entity", "soc"}, false)
 			for _, soc := range data {
 				table.Add(soc.Entity, fmt.Sprint(soc.Soc))
 			}

@@ -106,7 +106,7 @@ func printScenes(ui terminal.UI, scenes []scene.Scene) {
 	table := ui.Table([]string{
 		"id",
 		"name",
-	})
+	}, false)
 
 	for _, s := range scenes {
 		table.Add(s.Id, s.Name)

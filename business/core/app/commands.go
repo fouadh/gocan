@@ -163,7 +163,7 @@ gocan app-summary myapp --scene myscene
 
 			ctx.Ui.Ok()
 
-			table := ctx.Ui.Table([]string{"id", "name", "commits", "entities", "entities-changed", "authors"})
+			table := ctx.Ui.Table([]string{"id", "name", "commits", "entities", "entities-changed", "authors"}, false)
 			table.Add(summary.Id, summary.Name, strconv.Itoa(summary.NumberOfCommits), strconv.Itoa(summary.NumberOfEntities), strconv.Itoa(summary.NumberOfEntitiesChanged), strconv.Itoa(summary.NumberOfAuthors))
 			table.Print()
 
@@ -181,7 +181,7 @@ func printApps(ctx *foundation.Context, apps []app.App) {
 	table := ctx.Ui.Table([]string{
 		"id",
 		"name",
-	})
+	}, false)
 
 	for _, a := range apps {
 		table.Add(a.Id, a.Name)

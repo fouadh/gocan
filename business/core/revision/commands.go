@@ -45,8 +45,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 				"entity",
 				"n-revs",
 				"code",
-			})
-			table.SetCsv(csv)
+			}, csv)
 			for _, revision := range revisions {
 				table.Add(revision.Entity, strconv.Itoa(revision.NumberOfRevisions), strconv.Itoa(revision.Code))
 			}
@@ -147,7 +146,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 			for _, t := range b.Transformations {
 				headers = append(headers, t.Name)
 			}
-			table := ui.Table(headers)
+			table := ui.Table(headers, false)
 			for _, rt := range trends {
 				cols := []string{rt.Date}
 				for _, t := range b.Transformations {

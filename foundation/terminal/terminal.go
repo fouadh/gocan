@@ -47,7 +47,6 @@ func colorize(message string, textColor color.Attribute, bold int) string {
 type UITable interface {
 	Add(row ...string)
 	Print()
-	SetCsv(csv bool)
 }
 
 type Table struct {
@@ -76,17 +75,14 @@ func (t *Table) Transform(column int, s string) string {
 	return t.transformer[column](s)
 }
 
-func (t *Table) SetCsv(csv bool)  {
-	t.csv = csv
-}
-
-func (t *terminal) Table(headers []string) UITable {
+func (t *terminal) Table(headers []string, csv bool) UITable {
 	pt := &Table{
 		ui:          t,
 		headers:     headers,
 		columnWidth: make([]int, len(headers)),
 		colSpacing:  "    ",
 		transformer: make([]Transformer, len(headers)),
+		csv: csv,
 	}
 
 	for i := range pt.transformer {
@@ -176,7 +172,7 @@ type UI interface {
 	Say(message string)
 	Ok()
 	Failed(message string)
-	Table(headers []string) UITable
+	Table(headers []string, csv bool) UITable
 }
 
 func NewUI(stdout io.Writer, stderr io.Writer) UI {

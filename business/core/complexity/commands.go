@@ -61,7 +61,7 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 
 			ui.Ok()
 
-			table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Stdev", "Max"})
+			table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Stdev", "Max"}, false)
 			for _, cy := range data.Entries {
 				table.Add(cy.Date.String(), strconv.Itoa(cy.Lines),
 					strconv.Itoa(cy.Indentations),
@@ -162,7 +162,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 			}
 
 			if len(data) > 0 {
-				table := ui.Table([]string{"id", "name"})
+				table := ui.Table([]string{"id", "name"}, false)
 				for _, a := range data {
 					table.Add(a.Id, a.Name)
 				}

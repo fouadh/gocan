@@ -39,7 +39,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 				return err
 			}
 
-			table := ui.Table([]string{"word","count"})
+			table := ui.Table([]string{"word", "count"}, false)
 			for _, w := range words {
 				table.Add(w.Word, strconv.Itoa(w.Count))
 			}

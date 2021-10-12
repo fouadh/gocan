@@ -155,7 +155,7 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 			ctx.Ui.Ok()
 
 			if len(data) > 0 {
-				table := ctx.Ui.Table([]string{"id", "name", "transformations"})
+				table := ctx.Ui.Table([]string{"id", "name", "transformations"}, false)
 				for _, b := range data {
 					transformations := ""
 					for _, t := range b.Transformations {
