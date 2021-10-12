@@ -108,10 +108,12 @@ func NewDeleteScene(ctx foundation.Context) *cobra.Command {
 			ui.Log("Deleting scene...")
 			c := NewCore(connection)
 
-			if err := c.DeleteSceneByName(args[0]); err != nil {
+			sceneName := args[0]
+			if err := c.DeleteSceneByName(sceneName); err != nil {
 				return errors.Wrap(err, "Unable to delete the scene")
 			}
 
+			ui.Print("Scene " + sceneName + " has been deleted")
 			ui.Ok()
 
 			return nil

@@ -98,8 +98,7 @@ func assertAppCanBeRetrieved(t *testing.T, appName string, sceneName string) {
 
 func assertSceneCanBeRetrieved(t *testing.T, sceneName string) {
 	output := runCommand(t, "scenes")
-	if strings.Contains(output, sceneName) &&
-		strings.Contains(output, "OK") {
+	if strings.Contains(output, sceneName) {
 		t.Logf("%s Scene %s retrieved", succeed, sceneName)
 	} else {
 		t.Log(output)
