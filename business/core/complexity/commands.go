@@ -19,6 +19,7 @@ func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	var filename string
 	var directory string
 	var spaces int
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:     "create-complexity-analysis",
@@ -61,7 +62,7 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 
 			ui.Ok()
 
-			table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Stdev", "Max"}, false)
+			table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Stdev", "Max"}, csv)
 			for _, cy := range data.Entries {
 				table.Add(cy.Date.String(), strconv.Itoa(cy.Lines),
 					strconv.Itoa(cy.Indentations),
@@ -82,6 +83,7 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 	cmd.Flags().StringVarP(&filename, "filename", "f", "", "The file to analyze relative to the directory argument")
 	cmd.Flags().StringVarP(&directory, "directory", "d", "", "The directory of the git repo")
 	cmd.Flags().IntVarP(&spaces, "spaces", "", 4, "The number of spaces defining an indentation")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 
 	return &cmd
 }
@@ -132,6 +134,7 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:     "complexity-analyses",
@@ -162,7 +165,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 			}
 
 			if len(data) > 0 {
-				table := ui.Table([]string{"id", "name"}, false)
+				table := ui.Table([]string{"id", "name"}, csv)
 				for _, a := range data {
 					table.Add(a.Id, a.Name)
 				}
@@ -177,6 +180,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 
 	return &cmd
 }

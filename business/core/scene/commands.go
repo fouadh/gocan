@@ -39,11 +39,13 @@ func NewCreateScene(ctx foundation.Context) *cobra.Command {
 }
 
 func NewScenes(ctx foundation.Context) *cobra.Command {
-	return &cobra.Command{
-		Use: "scenes",
-		Short: "List the scenes",
+	var csv bool
+
+	cmd := cobra.Command{
+		Use:     "scenes",
+		Short:   "List the scenes",
 		Example: "gocan scenes",
-		Args: cobra.NoArgs,
+		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 
@@ -66,11 +68,14 @@ func NewScenes(ctx foundation.Context) *cobra.Command {
 			}
 			ui.Ok()
 
-			printScenes(ui, scenes)
+			printScenes(ui, scenes, csv)
 
 			return nil
 		},
 	}
+
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	return &cmd
 }
 
 func NewDeleteScene(ctx foundation.Context) *cobra.Command {
@@ -102,11 +107,11 @@ func NewDeleteScene(ctx foundation.Context) *cobra.Command {
 	}
 }
 
-func printScenes(ui terminal.UI, scenes []scene.Scene) {
+func printScenes(ui terminal.UI, scenes []scene.Scene, csv bool) {
 	table := ui.Table([]string{
 		"id",
 		"name",
-	}, false)
+	}, csv)
 
 	for _, s := range scenes {
 		table.Add(s.Id, s.Name)

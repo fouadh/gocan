@@ -14,6 +14,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:     "main-developers",
@@ -44,7 +45,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 
 			ui.Ok()
 
-			table := ui.Table([]string{"entity", "main-dev", "added", "total-added", "ownership"}, false)
+			table := ui.Table([]string{"entity", "main-dev", "added", "total-added", "ownership"}, csv)
 			for _, dev := range data {
 				table.Add(dev.Entity, dev.Author, fmt.Sprint(dev.Added), fmt.Sprint(dev.TotalAdded), fmt.Sprintf("%.2f", dev.Ownership))
 			}
@@ -57,6 +58,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the main developers before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the main developers after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 
 	return &cmd
 }
@@ -65,6 +67,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:     "entity-efforts",
@@ -95,7 +98,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 
 			ui.Ok()
 
-			table := ui.Table([]string{"entity", "author", "author-revs", "total-revs"}, false)
+			table := ui.Table([]string{"entity", "author", "author-revs", "total-revs"}, csv)
 			for _, dev := range data {
 				table.Add(dev.Entity, dev.Author, fmt.Sprint(dev.AuthorRevisions), fmt.Sprint(dev.TotalRevisions))
 			}
@@ -108,6 +111,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the entity efforts before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the entity efforts after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 
 	return &cmd
 }
@@ -161,6 +165,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:     "devs",
@@ -187,7 +192,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 			}
 			ui.Ok()
 
-			table := ui.Table([]string{"name", "commits"}, false)
+			table := ui.Table([]string{"name", "commits"}, csv)
 			for _, dev := range devs {
 				table.Add(dev.Name, strconv.Itoa(dev.NumberOfCommits))
 			}
@@ -200,5 +205,6 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the developers before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the developers after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	return &cmd
 }

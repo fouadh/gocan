@@ -12,6 +12,7 @@ func NewCodeChurn(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:  "code-churn",
@@ -48,7 +49,7 @@ gocan code-churn myapp --scene myscene
 
 			ui.Ok()
 
-			table := ui.Table([]string{"date", "added", "deleted"}, false)
+			table := ui.Table([]string{"date", "added", "deleted"}, csv)
 
 			for _, cc := range data {
 				table.Add(cc.Date, fmt.Sprint(cc.Added), fmt.Sprint(cc.Deleted))
@@ -63,6 +64,7 @@ gocan code-churn myapp --scene myscene
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the code churn before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the code churn after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 
 	return &cmd
 }

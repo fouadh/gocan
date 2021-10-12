@@ -12,6 +12,7 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:  "active-set",
@@ -38,7 +39,7 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 
 			ctx.Ui.Ok()
 
-			table := ctx.Ui.Table([]string{"Date", "Opened", "Closed"}, false)
+			table := ctx.Ui.Table([]string{"Date", "Opened", "Closed"}, csv)
 			for _, item := range as {
 				table.Add(item.Date, strconv.Itoa(item.Opened), strconv.Itoa(item.Closed))
 			}
@@ -51,5 +52,6 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the active set before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch active set after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	return &cmd
 }

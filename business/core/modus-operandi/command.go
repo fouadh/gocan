@@ -12,6 +12,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use: "modus-operandi",
@@ -39,7 +40,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 				return err
 			}
 
-			table := ui.Table([]string{"word", "count"}, false)
+			table := ui.Table([]string{"word", "count"}, csv)
 			for _, w := range words {
 				table.Add(w.Word, strconv.Itoa(w.Count))
 			}
@@ -52,6 +53,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the modus-operandi before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch the modus-operandi after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 
 	return &cmd
 }

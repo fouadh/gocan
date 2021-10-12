@@ -16,6 +16,7 @@ func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
 	var minRevsAvg int
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:  "coupling",
@@ -56,7 +57,7 @@ gocan coupling myapp --scene myscene
 				return nil
 			}
 
-			table := ui.Table([]string{"entity", "coupled", "degree", "average-revs"}, false)
+			table := ui.Table([]string{"entity", "coupled", "degree", "average-revs"}, csv)
 			for _, coupling := range data {
 				table.Add(coupling.Entity, coupling.Coupled, fmt.Sprintf("%.2f", coupling.Degree), fmt.Sprint(int(math.Ceil(coupling.AverageRevisions))))
 			}
@@ -71,6 +72,7 @@ gocan coupling myapp --scene myscene
 	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch coupling after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 
 	return &cmd
 }
@@ -79,6 +81,7 @@ func NewSocCommand(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:  "summary-of-coupling",
@@ -115,7 +118,7 @@ gocan summary-of-coupling myapp --scene myscene
 
 			ui.Ok()
 
-			table := ui.Table([]string{"entity", "soc"}, false)
+			table := ui.Table([]string{"entity", "soc"}, csv)
 			for _, soc := range data {
 				table.Add(soc.Entity, fmt.Sprint(soc.Soc))
 			}
@@ -128,6 +131,7 @@ gocan summary-of-coupling myapp --scene myscene
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the summary of coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the summary of coupling after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 
 	return &cmd
 }

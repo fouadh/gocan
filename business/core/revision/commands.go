@@ -108,6 +108,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 	var boundaryName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use: "revision-trends",
@@ -146,7 +147,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 			for _, t := range b.Transformations {
 				headers = append(headers, t.Name)
 			}
-			table := ui.Table(headers, false)
+			table := ui.Table(headers, csv)
 			for _, rt := range trends {
 				cols := []string{rt.Date}
 				for _, t := range b.Transformations {
@@ -164,5 +165,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the hotspots after this day")
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+
 	return &cmd
 }

@@ -45,6 +45,7 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 
 func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 	var sceneName string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use: "apps",
@@ -69,7 +70,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 			ctx.Ui.Ok()
 
 			if len(apps) > 0 {
-				printApps(ctx, apps)
+				printApps(ctx, apps, csv)
 			} else {
 				ctx.Ui.Say("There is no application in this scene.")
 			}
@@ -79,6 +80,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	return &cmd
 }
 
@@ -124,6 +126,7 @@ func NewAppSummary(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use: "app-summary",
@@ -163,7 +166,7 @@ gocan app-summary myapp --scene myscene
 
 			ctx.Ui.Ok()
 
-			table := ctx.Ui.Table([]string{"id", "name", "commits", "entities", "entities-changed", "authors"}, false)
+			table := ctx.Ui.Table([]string{"id", "name", "commits", "entities", "entities-changed", "authors"}, csv)
 			table.Add(summary.Id, summary.Name, strconv.Itoa(summary.NumberOfCommits), strconv.Itoa(summary.NumberOfEntities), strconv.Itoa(summary.NumberOfEntitiesChanged), strconv.Itoa(summary.NumberOfAuthors))
 			table.Print()
 
@@ -174,14 +177,15 @@ gocan app-summary myapp --scene myscene
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the summary of coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the summary of coupling after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	return &cmd
 }
 
-func printApps(ctx *foundation.Context, apps []app.App) {
+func printApps(ctx *foundation.Context, apps []app.App, csv bool) {
 	table := ctx.Ui.Table([]string{
 		"id",
 		"name",
-	}, false)
+	}, csv)
 
 	for _, a := range apps {
 		table.Add(a.Id, a.Name)
