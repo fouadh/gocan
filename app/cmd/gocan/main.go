@@ -30,7 +30,7 @@ var rootCmd = &cobra.Command{
 }
 
 func main() {
-	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
+	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr(), false)
 	config, err := db.ReadConfig()
 	if err  != nil {
 		ui.Failed(errors.Cause(err).Error())

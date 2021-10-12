@@ -82,7 +82,7 @@ func (t *terminal) Table(headers []string, csv bool) UITable {
 		columnWidth: make([]int, len(headers)),
 		colSpacing:  "    ",
 		transformer: make([]Transformer, len(headers)),
-		csv: csv,
+		csv:         csv,
 	}
 
 	for i := range pt.transformer {
@@ -175,16 +175,18 @@ type UI interface {
 	Table(headers []string, csv bool) UITable
 }
 
-func NewUI(stdout io.Writer, stderr io.Writer) UI {
+func NewUI(stdout io.Writer, stderr io.Writer, silent bool) UI {
 	return &terminal{
 		stderr: stderr,
 		stdout: stdout,
+		silent: silent,
 	}
 }
 
 type terminal struct {
 	stderr io.Writer
 	stdout io.Writer
+	silent bool
 }
 
 func (t *terminal) Failed(message string) {
@@ -197,9 +199,13 @@ func (t *terminal) SayError(message string) {
 }
 
 func (t *terminal) Ok() {
-	t.Say(ColorizeBold("OK\n", color.FgGreen))
+	if !t.silent {
+		t.Say(ColorizeBold("OK\n", color.FgGreen))
+	}
 }
 
 func (t *terminal) Say(message string) {
-	fmt.Fprintln(t.stdout, message)
+	if !t.silent {
+		fmt.Fprintln(t.stdout, message)
+	}
 }
