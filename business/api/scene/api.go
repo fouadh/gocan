@@ -21,7 +21,7 @@ func NewHandlers(connection *sqlx.DB) Handlers {
 	}
 }
 
-func (h *Handlers) QueryAll(w http.ResponseWriter, r *http.Request) error {
+func (h *Handlers) QueryAll(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	scenes, err := h.Scene.QueryAll()
 	if err != nil {
 		return err

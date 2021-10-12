@@ -15,6 +15,7 @@ import (
 	"embed"
 	"fmt"
 	"github.com/dimfeld/httptreemux/v5"
+	"github.com/jmoiron/sqlx"
 	"github.com/spf13/cobra"
 	"io/fs"
 	"log"
@@ -70,133 +71,22 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			})
 
 			group := mux.NewGroup("/api")
+			handlers := createHandlers(connection)
+			for path, h := range handlers {
+				handler := h
+				group.GET(path, func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
+					ctx.Ui.Log("Query " + path)
+					err := handler(writer, request, params)
+					if err != nil {
+						ctx.Ui.Failed(err.Error())
+						if verbose {
+							fmt.Println(err)
+						}
+						writer.WriteHeader(http.StatusInternalServerError)
+					}
 
-			sceneHandlers := scene.NewHandlers(connection)
-			appHandlers := app2.NewHandlers(connection)
-			revisionHandlers := revision.NewHandlers(connection)
-			couplingHandlers := coupling.NewHandlers(connection)
-			churnHandlers := churn.NewHandlers(connection)
-			modusOperandiHandlers := modus_operandi.NewHandlers(connection)
-			activeSetHandlers := active_set.NewHandlers(connection)
-			developerHandlers := developer.NewHandlers(connection)
-			boundaryHandlers := boundary.NewHandlers(connection)
-			complexityHandlers := complexity.NewHandlers(connection)
-
-			group.GET("/scenes",  func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
-				err := sceneHandlers.QueryAll(writer, request)
-				if err != nil {
-					writer.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:id", func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
-				err := sceneHandlers.QueryById(writer, request, params)
-				if err != nil {
-					writer.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps", func(writer http.ResponseWriter, request *http.Request, params map[string]string) {
-				err := appHandlers.QueryAll(writer, request, params)
-				if err != nil {
-					fmt.Println(err)
-					writer.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := appHandlers.QueryById(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/revisions", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := revisionHandlers.Query(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/hotspots", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := revisionHandlers.QueryHotspots(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/revisions-trends", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := revisionHandlers.QueryRevisionsTrends(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					fmt.Println(err)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/boundaries", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := boundaryHandlers.QueryByAppId(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/coupling-hierarchy", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := couplingHandlers.BuildCouplingHierarchy(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/code-churn", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := churnHandlers.Query(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/modus-operandi", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := modusOperandiHandlers.Query(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/active-set", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := activeSetHandlers.Query(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/developers", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := developerHandlers.QueryDevelopers(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/knowledge-map", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := developerHandlers.BuildKnowledgeMap(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/complexity-analyses", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := complexityHandlers.QueryAnalyses(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
-			group.GET("/scenes/:sceneId/apps/:appId/complexity-analyses/:complexityId", func(w http.ResponseWriter, r *http.Request, params map[string]string) {
-				err := complexityHandlers.QueryAnalysisEntriesById(w, r, params)
-				if err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-				}
-			})
-
+				})
+			}
 
 			srv := &http.Server{
 				Handler:      mux,
@@ -217,4 +107,36 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
+}
+
+func createHandlers(connection *sqlx.DB) map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	sceneHandlers := scene.NewHandlers(connection)
+	appHandlers := app2.NewHandlers(connection)
+	revisionHandlers := revision.NewHandlers(connection)
+	couplingHandlers := coupling.NewHandlers(connection)
+	churnHandlers := churn.NewHandlers(connection)
+	modusOperandiHandlers := modus_operandi.NewHandlers(connection)
+	activeSetHandlers := active_set.NewHandlers(connection)
+	developerHandlers := developer.NewHandlers(connection)
+	boundaryHandlers := boundary.NewHandlers(connection)
+	complexityHandlers := complexity.NewHandlers(connection)
+
+	handlers := make(map[string](func(w http.ResponseWriter, r *http.Request, params map[string]string) error))
+	handlers["/scenes"] = sceneHandlers.QueryAll
+	handlers["/scenes/:id"] = sceneHandlers.QueryById
+	handlers["/scenes/:sceneId/apps"] = appHandlers.QueryAll
+	handlers["/scenes/:sceneId/apps/:appId"] = appHandlers.QueryById
+	handlers["/scenes/:sceneId/apps/:appId/revisions"] = revisionHandlers.Query
+	handlers["/scenes/:sceneId/apps/:appId/hotspots"] = revisionHandlers.QueryHotspots
+	handlers["/scenes/:sceneId/apps/:appId/revisions-trends"] = revisionHandlers.QueryRevisionsTrends
+	handlers["/scenes/:sceneId/apps/:appId/boundaries"] = boundaryHandlers.QueryByAppId
+	handlers["/scenes/:sceneId/apps/:appId/coupling-hierarchy"] = couplingHandlers.BuildCouplingHierarchy
+	handlers["/scenes/:sceneId/apps/:appId/code-churn"] = churnHandlers.Query
+	handlers["/scenes/:sceneId/apps/:appId/modus-operandi"] = modusOperandiHandlers.Query
+	handlers["/scenes/:sceneId/apps/:appId/active-set"] = activeSetHandlers.Query
+	handlers["/scenes/:sceneId/apps/:appId/developers"] = developerHandlers.QueryDevelopers
+	handlers["/scenes/:sceneId/apps/:appId/knowledge-map"] = developerHandlers.BuildKnowledgeMap
+	handlers["/scenes/:sceneId/apps/:appId/complexity-analyses"] = complexityHandlers.QueryAnalyses
+	handlers["/scenes/:sceneId/apps/:appId/complexity-analyses/:complexityId"] = complexityHandlers.QueryAnalysisEntriesById
+	return handlers
 }
