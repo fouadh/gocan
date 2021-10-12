@@ -35,7 +35,7 @@ gocan coupling myapp --scene myscene
 			}
 			defer connection.Close()
 
-			ui.Say("Retrieving couplings...")
+			ui.Log("Retrieving couplings...")
 
 			c := NewCore(connection)
 
@@ -53,7 +53,7 @@ gocan coupling myapp --scene myscene
 			ui.Ok()
 
 			if len(data) == 0 {
-				ui.Say("No coupling found.")
+				ui.Log("No coupling found.")
 				return nil
 			}
 
@@ -101,7 +101,7 @@ gocan summary-of-coupling myapp --scene myscene
 			}
 			defer connection.Close()
 
-			ui.Say("Retrieving summary...")
+			ui.Log("Retrieving summary...")
 
 			c := NewCore(connection)
 
@@ -155,7 +155,7 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ui.Say("Retrieving summary...")
+			ui.Log("Retrieving summary...")
 
 			c := NewCore(connection)
 
@@ -169,7 +169,7 @@ func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
 			ui.Ok()
 
 			str, _ := json.MarshalIndent(ch, "", "  ")
-			ui.Say(string(str))
+			ui.Log(string(str))
 
 			return nil
 		},

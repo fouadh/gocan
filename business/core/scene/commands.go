@@ -17,7 +17,7 @@ func NewCreateScene(ctx foundation.Context) *cobra.Command {
 		Args: cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
-			ui.Say("Creating the scene...")
+			ui.Log("Creating the scene...")
 
 			connection, err := ctx.GetConnection()
 			if err != nil {
@@ -31,7 +31,7 @@ func NewCreateScene(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, fmt.Sprintf("Unable to create the scene: %s", err.Error()))
 			}
 
-			ui.Say(fmt.Sprintln("Scene", s.Id, "created."))
+			ui.Log(fmt.Sprintln("Scene", s.Id, "created."))
 			ui.Ok()
 			return nil
 		},
@@ -55,7 +55,7 @@ func NewScenes(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ui.Say("Retrieving scenes...")
+			ui.Log("Retrieving scenes...")
 			core := NewCore(connection)
 			scenes, err := core.QueryAll()
 			if err != nil {
@@ -63,7 +63,7 @@ func NewScenes(ctx foundation.Context) *cobra.Command {
 			}
 
 			if len(scenes) == 0 {
-				ui.Say("No scene found")
+				ui.Log("No scene found")
 				return nil
 			}
 			ui.Ok()
@@ -93,7 +93,7 @@ func NewDeleteScene(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ui.Say("Deleting scene...")
+			ui.Log("Deleting scene...")
 			c := NewCore(connection)
 
 			if err := c.DeleteSceneByName(args[0]); err != nil {

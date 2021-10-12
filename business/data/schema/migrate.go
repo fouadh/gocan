@@ -29,7 +29,7 @@ func Migrate(dsn string, ui terminal2.UI) error {
 		return errors.Wrap(err, "Migrations could not be applied")
 	}
 
-	ui.Say(fmt.Sprintf("Applied %d migrations", applied))
+	ui.Log(fmt.Sprintf("Applied %d migrations", applied))
 	return nil
 }
 

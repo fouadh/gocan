@@ -14,6 +14,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 	var before string
 	var after string
 	var csv bool
+	var verbose bool
 
 	cmd := cobra.Command{
 		Use:  "revisions",
@@ -21,7 +22,8 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 		Short: "Get the entities of an application ordered by their number of revisions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
-			ui.Say("Getting app revisions...")
+			ui.SetVerbose(verbose)
+			ui.Log("Getting app revisions...")
 
 			connection, err := ctx.GetConnection()
 			if err != nil {
@@ -58,6 +60,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the revisions before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the revisions after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
 
@@ -72,7 +75,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 		Short: "Get the hotspots of an application in JSON formatted for d3.js",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
-			ui.Say("Getting app hotspots...")
+			ui.Log("Getting app hotspots...")
 
 			connection, err := ctx.GetConnection()
 			if err != nil {
@@ -91,7 +94,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 			ui.Ok()
 
 			str, _ := json.MarshalIndent(hotspots, "", "  ")
-			ui.Say(string(str))
+			ui.Log(string(str))
 
 			return nil
 		},
@@ -135,7 +138,7 @@ func NewRevisionTrends(ctx context.Context) *cobra.Command {
 				return errors.Wrap(err, "Boundary not found")
 			}
 
-			ui.Say("Getting revisions trends...")
+			ui.Log("Getting revisions trends...")
 			trends, err := c.RevisionTrends(a.Id, b, beforeTime, afterTime)
 			if err != nil {
 				return errors.Wrap(err, "Cannot get revisions trends")

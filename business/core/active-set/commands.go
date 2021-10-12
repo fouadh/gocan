@@ -24,7 +24,7 @@ func NewActiveSet(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ctx.Ui.Say("Retrieving the apps...")
+			ctx.Ui.Log("Retrieving the apps...")
 			c := NewCore(connection)
 
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)

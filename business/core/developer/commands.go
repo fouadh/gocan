@@ -29,7 +29,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ui.Say("Retrieving main developers...")
+			ui.Log("Retrieving main developers...")
 
 			c := NewCore(connection)
 
@@ -82,7 +82,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ui.Say("Retrieving entity efforts...")
+			ui.Log("Retrieving entity efforts...")
 
 			c := NewCore(connection)
 
@@ -134,7 +134,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ui.Say("Building knowledge map...")
+			ui.Log("Building knowledge map...")
 
 			c := NewCore(connection)
 
@@ -148,7 +148,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 			ui.Ok()
 
 			str, _ := json.MarshalIndent(km, "", "  ")
-			ui.Say(string(str))
+			ui.Log(string(str))
 
 			return nil
 		},
@@ -174,7 +174,7 @@ func NewDevsCommand(ctx foundation.Context) *cobra.Command {
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
-			ui.Say("Getting app revisions...")
+			ui.Log("Getting app revisions...")
 
 			connection, err := ctx.GetConnection()
 			if err != nil {

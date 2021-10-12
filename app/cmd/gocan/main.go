@@ -24,13 +24,13 @@ import (
 
 var Version = "development"
 
-var rootCmd = &cobra.Command{
-	Use: "gocan",
-	Version: Version,
-}
-
 func main() {
-	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr(), false)
+	rootCmd := &cobra.Command{
+		Use: "gocan",
+		Version: Version,
+	}
+
+	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
 	config, err := db.ReadConfig()
 	if err  != nil {
 		ui.Failed(errors.Cause(err).Error())
@@ -75,3 +75,4 @@ func main() {
 		os.Exit(1)
 	}
 }
+

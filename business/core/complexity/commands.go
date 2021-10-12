@@ -52,7 +52,7 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
-			ui.Say("Analyzing the file revisions between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
+			ui.Log("Analyzing the file revisions between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
 
 			data, err := c.CreateComplexityAnalysis(args[0], a.Id, beforeTime, afterTime, filename, directory, spaces)
 
@@ -113,7 +113,7 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to find the app")
 			}
 
-			ui.Say("Deleting the analysis...")
+			ui.Log("Deleting the analysis...")
 
 			if err := c.DeleteAnalysisByName(a.Id, args[0]); err != nil {
 				return errors.Wrap(err, "Unable to delete the analysis")
@@ -157,7 +157,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to find the app")
 			}
 
-			ui.Say("Fetching the analyses...")
+			ui.Log("Fetching the analyses...")
 
 			data, err := c.QueryAnalyses(a.Id)
 			if err != nil {
@@ -171,7 +171,7 @@ func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
 				}
 				table.Print()
 			} else {
-				ui.Say("No analysis found.")
+				ui.Log("No analysis found.")
 			}
 
 			return nil

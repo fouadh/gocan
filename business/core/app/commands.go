@@ -26,7 +26,7 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ctx.Ui.Say("Creating the app...")
+			ctx.Ui.Log("Creating the app...")
 			core := NewCore(connection)
 			a, err := core.Create(*ctx, args[0], sceneName)
 
@@ -34,7 +34,7 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 				return errors.Wrap(err, fmt.Sprintf("Unable to create the app: %s", err.Error()))
 			}
 
-			ctx.Ui.Say(fmt.Sprintln("App", a.Id, "created."))
+			ctx.Ui.Log(fmt.Sprintln("App", a.Id, "created."))
 			ctx.Ui.Ok()
 			return nil
 		},
@@ -59,7 +59,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ctx.Ui.Say("Retrieving the apps...")
+			ctx.Ui.Log("Retrieving the apps...")
 			core := NewCore(connection)
 			apps, err := core.QueryBySceneName(sceneName)
 
@@ -72,7 +72,7 @@ func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
 			if len(apps) > 0 {
 				printApps(ctx, apps, csv)
 			} else {
-				ctx.Ui.Say("There is no application in this scene.")
+				ctx.Ui.Log("There is no application in this scene.")
 			}
 
 			return nil
@@ -107,11 +107,11 @@ func NewDeleteApp(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to retrieve the app")
 			}
 
-			ctx.Ui.Say("Deleting the app...")
+			ctx.Ui.Log("Deleting the app...")
 			if err := c.Delete(a.Id); err != nil {
 				return errors.Wrap(err, "Unable to delete the app")
 			}
-			ctx.Ui.Say("OK")
+			ctx.Ui.Log("OK")
 
 			return nil
 		},
@@ -145,7 +145,7 @@ gocan app-summary myapp --scene myscene
 			}
 			defer connection.Close()
 
-			ctx.Ui.Say("Retrieving the apps...")
+			ctx.Ui.Log("Retrieving the apps...")
 			c := NewCore(connection)
 			ct := commit.NewCore(connection)
 

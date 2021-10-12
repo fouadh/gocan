@@ -49,7 +49,7 @@ the different layers of an application. Or you can define a boundary for product
 				return errors.Wrap(err, "Application not found")
 			}
 
-			ctx.Ui.Say("Creating boundary...")
+			ctx.Ui.Log("Creating boundary...")
 			_, err = c.Create(a.Id, args[0], transformations)
 			if err != nil {
 				return err
@@ -98,7 +98,7 @@ func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Application not found")
 			}
 
-			ctx.Ui.Say("Deleting boundary...")
+			ctx.Ui.Log("Deleting boundary...")
 
 			if err := c.DeleteBoundaryByName(a.Id, args[0]); err != nil {
 				return errors.Wrap(err, "Unable to delete boundary")
@@ -145,7 +145,7 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Application not found")
 			}
 
-			ctx.Ui.Say("Retrieving boundaries...")
+			ctx.Ui.Log("Retrieving boundaries...")
 
 			data, err := c.QueryByAppId(a.Id)
 			if err != nil {
@@ -165,7 +165,7 @@ func NewBoundaries(ctx foundation.Context) *cobra.Command {
 				}
 				table.Print()
 			} else {
-				ctx.Ui.Say("No boundaries found.")
+				ctx.Ui.Log("No boundaries found.")
 			}
 			return nil
 		},

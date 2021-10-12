@@ -19,7 +19,7 @@ type SqlxDataSource struct {
 }
 
 func (ds *SqlxDataSource) GetConnection() (*sqlx.DB, error) {
-	ds.Ui.Say("Connecting to the database...")
+	ds.Ui.Log("Connecting to the database...")
 	db, err := sqlx.Connect("postgres", ds.Dsn)
 	if err != nil {
 		return nil, err

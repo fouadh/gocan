@@ -26,7 +26,7 @@ func NewModusOperandi(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ui.Say("Retrieving modus operandi...")
+			ui.Log("Retrieving modus operandi...")
 
 			c := NewCore(connection)
 

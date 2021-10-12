@@ -23,7 +23,7 @@ func (ed *EmbeddedDatabase) Start(ui terminal.UI) {
 		Port(uint32(ed.Config.Port)).
 		DataPath(ed.Config.EmbeddedDataPath))
 
-	ui.Say("Starting the embedded database...")
+	ui.Log("Starting the embedded database...")
 	if err := ed.database.Start(); err != nil {
 		ui.Failed(fmt.Sprintf("Cannot start the database: %+v\n", err))
 		os.Exit(1)
@@ -32,7 +32,7 @@ func (ed *EmbeddedDatabase) Start(ui terminal.UI) {
 }
 
 func (ed *EmbeddedDatabase) Stop(ui terminal.UI) {
-	ui.Say("Stopping the database...")
+	ui.Log("Stopping the database...")
 	usr, _ := user.Current()
 	dir := usr.HomeDir
 	// todo the path to the db should come from the configuration

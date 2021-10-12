@@ -32,7 +32,7 @@ gocan code-churn myapp --scene myscene
 			}
 			defer connection.Close()
 
-			ui.Say("Retrieving code churn...")
+			ui.Log("Retrieving code churn...")
 
 			c := NewCore(connection)
 

@@ -123,9 +123,9 @@ func visibleSize(s string) int {
 
 func (t *Table) Print() {
 	if t.csv {
-		t.ui.Say(strings.Join(t.headers, ","))
+		t.ui.Print(strings.Join(t.headers, ","))
 		for _, row := range t.rows {
-			t.ui.Say(strings.Join(row, ","))
+			t.ui.Print(strings.Join(row, ","))
 		}
 	} else {
 		rowIndex := 0
@@ -152,7 +152,7 @@ func (t *Table) printRow(transformer rowTransformer, rowIndex int, row []string)
 	for columnIndex, col := range row {
 		t.printCellValue(line, transformer, columnIndex, last, col)
 	}
-	t.ui.Say(strings.TrimSpace(string(line.Bytes())))
+	t.ui.Print(strings.TrimSpace(string(line.Bytes())))
 	rowIndex++
 }
 
@@ -169,24 +169,29 @@ func (t *Table) printCellValue(line *bytes.Buffer, transformer rowTransformer, c
 }
 
 type UI interface {
-	Say(message string)
+	Log(message string)
 	Ok()
 	Failed(message string)
 	Table(headers []string, csv bool) UITable
+	SetVerbose(verbose bool)
+	Print(message string)
 }
 
-func NewUI(stdout io.Writer, stderr io.Writer, silent bool) UI {
+func NewUI(stdout io.Writer, stderr io.Writer) UI {
 	return &terminal{
 		stderr: stderr,
 		stdout: stdout,
-		silent: silent,
 	}
 }
 
 type terminal struct {
 	stderr io.Writer
-	stdout io.Writer
-	silent bool
+	stdout  io.Writer
+	verbose bool
+}
+
+func (t *terminal) SetVerbose(silent bool) {
+	t.verbose = silent
 }
 
 func (t *terminal) Failed(message string) {
@@ -199,13 +204,17 @@ func (t *terminal) SayError(message string) {
 }
 
 func (t *terminal) Ok() {
-	if !t.silent {
-		t.Say(ColorizeBold("OK\n", color.FgGreen))
+	if t.verbose {
+		t.Log(ColorizeBold("OK\n", color.FgGreen))
 	}
 }
 
-func (t *terminal) Say(message string) {
-	if !t.silent {
-		fmt.Fprintln(t.stdout, message)
+func (t *terminal) Log(message string) {
+	if t.verbose {
+		t.Print(message)
 	}
+}
+
+func (t *terminal) Print(message string) {
+	fmt.Fprintln(t.stdout, message)
 }

@@ -27,7 +27,7 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 		Short: "Configure the database options. Caution: if you are changing the embedded db properties, you will lose all the existing data.",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
-			ui.Say("Configuring the database...")
+			ui.Log("Configuring the database...")
 			var dataPath string
 			if externalDb {
 				dataPath = ""
@@ -62,7 +62,7 @@ func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to save the configuration file")
 			}
 
-			ui.Say("Database configured")
+			ui.Log("Database configured")
 			ui.Ok()
 			return nil
 		},
@@ -101,7 +101,7 @@ func NewStartDbCommand(ctx *foundation.Context) *cobra.Command {
 			ui := ctx.Ui
 			database := db.EmbeddedDatabase{Config: ctx.Config}
 			database.Start(ui)
-			ui.Say("Applying migrations...")
+			ui.Log("Applying migrations...")
 			schema.Migrate(ctx.Config.Dsn(), ui)
 			ui.Ok()
 			return nil

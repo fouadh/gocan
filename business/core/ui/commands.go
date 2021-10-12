@@ -35,7 +35,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 		Args: cobra.NoArgs,
 		Short: "Start the gocan ui",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx.Ui.Say("Starting the UI...")
+			ctx.Ui.Log("Starting the UI...")
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -204,7 +204,7 @@ func NewStartUiCommand(ctx *context.Context) *cobra.Command {
 			}
 			ctx.Ui.Ok()
 
-			ctx.Ui.Say("Application running on http://0.0.0.0:" + serverPort)
+			ctx.Ui.Log("Application running on http://0.0.0.0:" + serverPort)
 			log.Fatal(srv.ListenAndServe())
 			connection.Close()
 			return nil
