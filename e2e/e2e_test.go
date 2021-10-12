@@ -26,6 +26,7 @@ func TestE2E(t *testing.T) {
 	assertAppCanBeRetrieved(t, appName, sceneName)
 	importHistory(t, appName, sceneName)
 	assertAppSummaryCanBeRetrieved(t, appName, sceneName)
+	assertDevsCanBeRetrieved(t, appName, sceneName)
 	assertRevisionsCanBeRetrieved(t, appName, sceneName)
 }
 
@@ -44,7 +45,7 @@ func importHistory(t *testing.T, appName string, sceneName string) {
 		t.Fatalf("Unable to create file")
 	}
 
-	out, err := exec.Command("/bin/sh", "-c", "cd "+appFolder+"; git init; git add .; git commit -m 'init repo'").Output()
+	out, err := exec.Command("/bin/sh", "-c", "cd "+appFolder+"; git init; git config user.name \"Developer 1\"; git add .; git commit -m 'init repo'").Output()
 	if err != nil {
 		t.Log(string(out))
 		t.Fatalf("%s Initializing git repo", failed)
@@ -60,6 +61,17 @@ func importHistory(t *testing.T, appName string, sceneName string) {
 	}
 }
 
+func assertDevsCanBeRetrieved(t *testing.T, appName string, sceneName string) {
+	output := runCommand(t, "devs", appName, "--scene", sceneName)
+	if strings.Contains(output, "Developer 1") &&
+		strings.Contains(output, "OK") {
+		t.Logf("%s Developers retrieved", succeed)
+	} else {
+		t.Log(output)
+		t.Fatalf("%s Retrieving developers", failed)
+	}
+}
+
 func assertAppSummaryCanBeRetrieved(t *testing.T, appName string, sceneName string) {
 	output := runCommand(t, "app-summary", appName, "--scene", sceneName)
 	if strings.Contains(output, appName) &&
@@ -70,7 +82,6 @@ func assertAppSummaryCanBeRetrieved(t *testing.T, appName string, sceneName stri
 		t.Log(output)
 		t.Fatalf("%s Retrieving app summary", failed)
 	}
-
 }
 
 func assertAppCanBeRetrieved(t *testing.T, appName string, sceneName string) {
