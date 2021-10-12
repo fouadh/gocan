@@ -13,6 +13,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var csv bool
 
 	cmd := cobra.Command{
 		Use:  "revisions",
@@ -45,6 +46,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 				"n-revs",
 				"code",
 			})
+			table.SetCsv(csv)
 			for _, revision := range revisions {
 				table.Add(revision.Entity, strconv.Itoa(revision.NumberOfRevisions), strconv.Itoa(revision.Code))
 			}
@@ -56,6 +58,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the revisions before this day")
 	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the revisions after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	return &cmd
 }
 
