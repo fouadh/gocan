@@ -33,7 +33,7 @@ func NewCreateScene(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, fmt.Sprintf("Unable to create the scene: %s", err.Error()))
 			}
 
-			ui.Log(fmt.Sprintln("Scene", s.Id, "created."))
+			ui.Print(fmt.Sprintln("Scene", s.Id, "created."))
 			ui.Ok()
 			return nil
 		},

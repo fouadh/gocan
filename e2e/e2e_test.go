@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"os"
 	"os/exec"
+	"regexp"
 	"strings"
 	"testing"
 	"time"
@@ -138,7 +139,8 @@ func createApp(t *testing.T, appName string, sceneName string) {
 
 func createScene(t *testing.T, sceneName string) {
 	output := runCommand(t, "create-scene", sceneName)
-	if strings.Contains(output, "Creating the scene") && strings.Contains(output, "OK") {
+	match, _ := regexp.MatchString("Scene .* created", output)
+	if match {
 		t.Logf("%s Scene created", succeed)
 	} else {
 		t.Log(output)
