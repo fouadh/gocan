@@ -14,7 +14,7 @@ import (
 	"strconv"
 )
 
-func NewSetupDbCommand(ctx *foundation.Context) *cobra.Command {
+func NewSetupDbCommand(ctx foundation.Context) *cobra.Command {
 	var host string
 	var port int
 	var user string
@@ -107,7 +107,7 @@ func createDirectory(directory string) error {
 	return nil
 }
 
-func NewStartDbCommand(ctx *foundation.Context) *cobra.Command {
+func NewStartDbCommand(ctx foundation.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "start-db",
 		Args: cobra.NoArgs,
@@ -130,7 +130,7 @@ func NewStartDbCommand(ctx *foundation.Context) *cobra.Command {
 	return cmd
 }
 
-func NewStopDbCommand(ctx *foundation.Context) *cobra.Command {
+func NewStopDbCommand(ctx foundation.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "stop-db",
 		Args: cobra.NoArgs,
@@ -146,7 +146,7 @@ func NewStopDbCommand(ctx *foundation.Context) *cobra.Command {
 	return cmd
 }
 
-func NewMigrateDb(ctx *foundation.Context) *cobra.Command {
+func NewMigrateDb(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use: "migrate-db",
 		Short: "Run the migration scripts against a database. To be used with external dbs.",

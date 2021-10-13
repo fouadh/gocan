@@ -57,7 +57,7 @@ func (s Store) Query(appId string, before time.Time, after time.Time) ([]Stat, e
 	return results, nil
 }
 
-func (s Store) BulkImport(appId string, data []Stat, ctx *foundation.Context) error {
+func (s Store) BulkImport(appId string, data []Stat, ctx foundation.Context) error {
 	txn := s.connection.MustBegin()
 
 	chunkSize := 1000

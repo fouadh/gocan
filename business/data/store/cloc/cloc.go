@@ -22,7 +22,7 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
-func (s Store) ImportCloc(appId string, directory string, commits []commit.Commit, ctx *foundation.Context) error {
+func (s Store) ImportCloc(appId string, directory string, commits []commit.Commit, ctx foundation.Context) error {
 	if len(commits) == 0 {
 		return fmt.Errorf("No commit provided !")
 	}

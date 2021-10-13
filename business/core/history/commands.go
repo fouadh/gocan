@@ -8,7 +8,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewImportHistoryCommand(ctx *foundation.Context) *cobra.Command {
+func NewImportHistoryCommand(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var path string
 	var before string

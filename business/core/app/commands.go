@@ -11,7 +11,7 @@ import (
 	"strconv"
 )
 
-func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
+func NewCreateAppCommand(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var verbose bool
 
@@ -30,7 +30,7 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 
 			ctx.Ui.Log("Creating the app...")
 			core := NewCore(connection)
-			a, err := core.Create(*ctx, args[0], sceneName)
+			a, err := core.Create(ctx, args[0], sceneName)
 
 			if err != nil {
 				return errors.Wrap(err, fmt.Sprintf("Unable to create the app: %s", err.Error()))
@@ -47,7 +47,7 @@ func NewCreateAppCommand(ctx *foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewAppsCommand(ctx *foundation.Context) *cobra.Command {
+func NewAppsCommand(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var csv bool
 	var verbose bool
@@ -194,7 +194,7 @@ gocan app-summary myapp --scene myscene
 	return &cmd
 }
 
-func printApps(ctx *foundation.Context, apps []app.App, csv bool) {
+func printApps(ctx foundation.Context, apps []app.App, csv bool) {
 	table := ctx.Ui.Table([]string{
 		"id",
 		"name",

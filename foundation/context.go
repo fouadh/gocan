@@ -15,13 +15,13 @@ type Context struct {
 	Config *db.Config
 }
 
-func New(ui terminal.UI, config *db.Config) *Context {
+func New(ui terminal.UI, config *db.Config) Context {
 	dataSource := db.SqlxDataSource{
 		Dsn: config.Dsn(),
 		Ui: ui,
 	}
 
-	return &Context{
+	return Context{
 		Ui:         ui,
 		DataSource: &dataSource,
 		Validator: validator.New(),

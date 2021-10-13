@@ -28,7 +28,7 @@ import (
 //go:embed dist
 var app embed.FS
 
-func NewStartUiCommand(ctx *context.Context) *cobra.Command {
+func NewStartUiCommand(ctx context.Context) *cobra.Command {
 	var serverPort string
 	var verbose bool
 

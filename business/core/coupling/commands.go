@@ -10,7 +10,7 @@ import (
 	"math"
 )
 
-func NewCouplingCommand(ctx *foundation.Context) *cobra.Command {
+func NewCouplingCommand(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var minCoupling int
 	var minRevsAvg int
