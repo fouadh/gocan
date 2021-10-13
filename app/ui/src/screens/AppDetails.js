@@ -10,6 +10,7 @@ import {RevisionTrends} from "./RevisionTrends";
 import {KnowledgeMap} from "./KnowledgeMap";
 import {Hotspots} from "./Hotspots";
 import {ComplexityAnalysis} from "./ComplexityAnalysis";
+import {EntityCoupling} from "./EntityCoupling";
 
 export function AppDetails() {
     const {sceneId, appId} = useParams();
@@ -42,6 +43,9 @@ export function AppDetails() {
                 </TabPanel>
                 <TabPanel header="Coupling">
                     <Coupling sceneId={sceneId} appId={appId}/>
+                </TabPanel>
+                <TabPanel header="Entity Coupling">
+                    <EntityCoupling sceneId={sceneId} appId={appId}/>
                 </TabPanel>
                 <TabPanel header="Code Churn">
                     <CodeChurn sceneId={sceneId} appId={appId}/>
