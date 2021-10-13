@@ -26,53 +26,55 @@ var Version = "development"
 
 func main() {
 	rootCmd := &cobra.Command{
-		Use: "gocan",
+		Use:     "gocan",
 		Version: Version,
 	}
 
 	ui := terminal.NewUI(rootCmd.OutOrStdout(), rootCmd.ErrOrStderr())
 	config, err := db.ReadConfig()
-	if err  != nil {
+	if err != nil {
 		ui.Failed(errors.Cause(err).Error())
 		os.Exit(2)
 	}
 	ctx := context.New(ui, config)
 
-	rootCmd.AddCommand(web_ui.NewStartUiCommand(ctx))
-	rootCmd.AddCommand(db2.NewSetupDbCommand(ctx))
-	rootCmd.AddCommand(db2.NewStartDbCommand(ctx))
-	rootCmd.AddCommand(db2.NewStopDbCommand(ctx))
-	rootCmd.AddCommand(db2.NewMigrateDb(ctx))
-	rootCmd.AddCommand(scene.NewCreateScene(ctx))
-	rootCmd.AddCommand(scene.NewDeleteScene(ctx))
-	rootCmd.AddCommand(scene.NewScenes(ctx))
-	rootCmd.AddCommand(app.NewCreateAppCommand(ctx))
-	rootCmd.AddCommand(app.NewAppsCommand(ctx))
-	rootCmd.AddCommand(app.NewAppSummary(ctx))
-	rootCmd.AddCommand(app.NewDeleteApp(ctx))
-	rootCmd.AddCommand(history.NewImportHistoryCommand(ctx))
-	rootCmd.AddCommand(revision.NewRevisionsCommand(ctx))
-	rootCmd.AddCommand(revision.NewHotspotsCommand(ctx))
-	rootCmd.AddCommand(revision.NewRevisionTrends(ctx))
-	rootCmd.AddCommand(coupling.NewCouplingCommand(ctx))
-	rootCmd.AddCommand(coupling.NewSocCommand(ctx))
-	rootCmd.AddCommand(coupling.NewCouplingHierarchyCommand(ctx))
-	rootCmd.AddCommand(developer.NewMainDevelopers(ctx))
-	rootCmd.AddCommand(developer.NewEntityEfforts(ctx))
-	rootCmd.AddCommand(developer.NewKnowledgeMapCommand(ctx))
-	rootCmd.AddCommand(developer.NewDevsCommand(ctx))
-	rootCmd.AddCommand(churn.NewCodeChurn(ctx))
-	rootCmd.AddCommand(modus_operandi.NewModusOperandi(ctx))
-	rootCmd.AddCommand(active_set.NewActiveSet(ctx))
-	rootCmd.AddCommand(boundary.NewCreateBoundary(ctx))
-	rootCmd.AddCommand(boundary.NewDeleteBoundary(ctx))
-	rootCmd.AddCommand(boundary.NewBoundaries(ctx))
-	rootCmd.AddCommand(complexity.NewCreateComplexityAnalysis(ctx))
-	rootCmd.AddCommand(complexity.NewDeleteComplexityAnalysis(ctx))
-	rootCmd.AddCommand(complexity.NewComplexityAnalyses(ctx))
+	commands := []*cobra.Command{
+		web_ui.NewStartUiCommand(ctx),
+		db2.NewSetupDbCommand(ctx),
+		db2.NewStartDbCommand(ctx),
+		db2.NewStopDbCommand(ctx),
+		db2.NewMigrateDb(ctx),
+		scene.NewCreateScene(ctx),
+		scene.NewDeleteScene(ctx),
+		scene.NewScenes(ctx),
+		app.NewCreateAppCommand(ctx),
+		app.NewAppsCommand(ctx),
+		app.NewAppSummary(ctx),
+		app.NewDeleteApp(ctx),
+		history.NewImportHistoryCommand(ctx),
+		revision.NewRevisionsCommand(ctx),
+		revision.NewHotspotsCommand(ctx),
+		revision.NewRevisionTrends(ctx),
+		coupling.NewCouplingCommand(ctx),
+		coupling.NewSocCommand(ctx),
+		coupling.NewCouplingHierarchyCommand(ctx),
+		developer.NewMainDevelopers(ctx),
+		developer.NewEntityEfforts(ctx),
+		developer.NewKnowledgeMapCommand(ctx),
+		developer.NewDevsCommand(ctx),
+		churn.NewCodeChurn(ctx),
+		modus_operandi.NewModusOperandi(ctx),
+		active_set.NewActiveSet(ctx),
+		boundary.NewCreateBoundary(ctx),
+		boundary.NewDeleteBoundary(ctx),
+		boundary.NewBoundaries(ctx),
+		complexity.NewCreateComplexityAnalysis(ctx),
+		complexity.NewDeleteComplexityAnalysis(ctx),
+		complexity.NewComplexityAnalyses(ctx),
+	}
 
+	rootCmd.AddCommand(commands...)
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
 }
-
