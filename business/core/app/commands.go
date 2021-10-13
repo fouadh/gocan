@@ -11,7 +11,16 @@ import (
 	"strconv"
 )
 
-func NewCreateAppCommand(ctx foundation.Context) *cobra.Command {
+func Commands(ctx foundation.Context) []*cobra.Command {
+	return []*cobra.Command{
+		create(ctx),
+		list(ctx),
+		summary(ctx),
+		delete(ctx),
+	}
+}
+
+func create(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var verbose bool
 
@@ -47,7 +56,7 @@ func NewCreateAppCommand(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewAppsCommand(ctx foundation.Context) *cobra.Command {
+func list(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var csv bool
 	var verbose bool
@@ -90,7 +99,7 @@ func NewAppsCommand(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewDeleteApp(ctx foundation.Context) *cobra.Command {
+func delete(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var verbose bool
 
@@ -132,7 +141,7 @@ func NewDeleteApp(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewAppSummary(ctx foundation.Context) *cobra.Command {
+func summary(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string

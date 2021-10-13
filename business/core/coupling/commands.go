@@ -10,7 +10,15 @@ import (
 	"math"
 )
 
-func NewCouplingCommand(ctx foundation.Context) *cobra.Command {
+func Commands(ctx foundation.Context) []*cobra.Command {
+	return []*cobra.Command{
+		list(ctx),
+		summary(ctx),
+		hierarchy(ctx),
+	}
+}
+
+func list(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var minCoupling int
 	var minRevsAvg int
@@ -79,7 +87,7 @@ gocan coupling myapp --scene myscene
 	return &cmd
 }
 
-func NewSocCommand(ctx foundation.Context) *cobra.Command {
+func summary(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -140,7 +148,7 @@ gocan summary-of-coupling myapp --scene myscene
 	return &cmd
 }
 
-func NewCouplingHierarchyCommand(ctx foundation.Context) *cobra.Command {
+func hierarchy(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var minCoupling int
 	var minRevsAvg int

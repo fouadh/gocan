@@ -8,7 +8,13 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCodeChurn(ctx foundation.Context) *cobra.Command {
+func Commands(ctx foundation.Context) []*cobra.Command {
+	return []*cobra.Command{
+		list(ctx),
+	}
+}
+
+func list(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string

@@ -8,7 +8,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCreateBoundary(ctx foundation.Context) *cobra.Command {
+func Commands(ctx foundation.Context) []*cobra.Command {
+	return []*cobra.Command{
+		create(ctx),
+		delete(ctx),
+		list(ctx),
+	}
+}
+
+func create(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 	var transformations []string
@@ -71,7 +79,7 @@ the different layers of an application. Or you can define a boundary for product
 	return cmd
 }
 
-func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
+func delete(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 	var verbose bool
@@ -122,7 +130,7 @@ func NewDeleteBoundary(ctx foundation.Context) *cobra.Command {
 	return cmd
 }
 
-func NewBoundaries(ctx foundation.Context) *cobra.Command {
+func list(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 	var verbose bool

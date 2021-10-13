@@ -13,7 +13,7 @@ import (
 	modus_operandi "com.fha.gocan/business/core/modus-operandi"
 	"com.fha.gocan/business/core/revision"
 	"com.fha.gocan/business/core/scene"
-	web_ui "com.fha.gocan/business/core/ui"
+	ui2 "com.fha.gocan/business/core/ui"
 	context "com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/db"
 	"com.fha.gocan/foundation/terminal"
@@ -38,42 +38,26 @@ func main() {
 	}
 	ctx := context.New(ui, config)
 
-	commands := []*cobra.Command{
-		web_ui.NewStartUiCommand(ctx),
-		db2.NewSetupDbCommand(ctx),
-		db2.NewStartDbCommand(ctx),
-		db2.NewStopDbCommand(ctx),
-		db2.NewMigrateDb(ctx),
-		scene.NewCreateScene(ctx),
-		scene.NewDeleteScene(ctx),
-		scene.NewScenes(ctx),
-		app.NewCreateAppCommand(ctx),
-		app.NewAppsCommand(ctx),
-		app.NewAppSummary(ctx),
-		app.NewDeleteApp(ctx),
-		history.NewImportHistoryCommand(ctx),
-		revision.NewRevisionsCommand(ctx),
-		revision.NewHotspotsCommand(ctx),
-		revision.NewRevisionTrends(ctx),
-		coupling.NewCouplingCommand(ctx),
-		coupling.NewSocCommand(ctx),
-		coupling.NewCouplingHierarchyCommand(ctx),
-		developer.NewMainDevelopers(ctx),
-		developer.NewEntityEfforts(ctx),
-		developer.NewKnowledgeMapCommand(ctx),
-		developer.NewDevsCommand(ctx),
-		churn.NewCodeChurn(ctx),
-		modus_operandi.NewModusOperandi(ctx),
-		active_set.NewActiveSet(ctx),
-		boundary.NewCreateBoundary(ctx),
-		boundary.NewDeleteBoundary(ctx),
-		boundary.NewBoundaries(ctx),
-		complexity.NewCreateComplexityAnalysis(ctx),
-		complexity.NewDeleteComplexityAnalysis(ctx),
-		complexity.NewComplexityAnalyses(ctx),
+	commands := [][]*cobra.Command{
+		ui2.Commands(ctx),
+		db2.Commands(ctx),
+		history.Commands(ctx),
+		revision.Commands(ctx),
+		coupling.Commands(ctx),
+		scene.Commands(ctx),
+		app.Commands(ctx),
+		developer.Commands(ctx),
+		boundary.Commands(ctx),
+		complexity.Commands(ctx),
+		churn.Commands(ctx),
+		modus_operandi.Commands(ctx),
+		active_set.Commands(ctx),
 	}
 
-	rootCmd.AddCommand(commands...)
+	for _, c := range commands {
+		rootCmd.AddCommand(c...)
+	}
+
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}

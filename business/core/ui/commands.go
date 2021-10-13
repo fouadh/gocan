@@ -11,6 +11,7 @@ import (
 	modus_operandi "com.fha.gocan/business/api/modus-operandi"
 	"com.fha.gocan/business/api/revision"
 	"com.fha.gocan/business/api/scene"
+	"com.fha.gocan/foundation"
 	context "com.fha.gocan/foundation"
 	"embed"
 	"fmt"
@@ -28,13 +29,19 @@ import (
 //go:embed dist
 var app embed.FS
 
-func NewStartUiCommand(ctx context.Context) *cobra.Command {
+func Commands(ctx foundation.Context) []*cobra.Command {
+	return []*cobra.Command{
+		start(ctx),
+	}
+}
+
+func start(ctx context.Context) *cobra.Command {
 	var serverPort string
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "ui",
-		Args: cobra.NoArgs,
+		Use:   "ui",
+		Args:  cobra.NoArgs,
 		Short: "Start the gocan ui",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx.Ui.SetVerbose(verbose)
@@ -47,7 +54,6 @@ func NewStartUiCommand(ctx context.Context) *cobra.Command {
 
 			mux := httptreemux.New()
 			mux.PathSource = httptreemux.URLPath
-
 
 			fsys, _ := fs.Sub(app, "dist")
 			fs := http.FS(fsys)

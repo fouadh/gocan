@@ -10,7 +10,16 @@ import (
 	"strconv"
 )
 
-func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
+func Commands(ctx foundation.Context) []*cobra.Command {
+	return []*cobra.Command{
+		mainDevs(ctx),
+		entityEfforts(ctx),
+		knowledgeMap(ctx),
+		list(ctx),
+	}
+}
+
+func mainDevs(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -66,7 +75,7 @@ func NewMainDevelopers(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
+func entityEfforts(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -122,7 +131,7 @@ func NewEntityEfforts(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
+func knowledgeMap(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -170,7 +179,7 @@ func NewKnowledgeMapCommand(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewDevsCommand(ctx foundation.Context) *cobra.Command {
+func list(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string

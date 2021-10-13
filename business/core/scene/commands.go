@@ -9,7 +9,15 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewCreateScene(ctx foundation.Context) *cobra.Command {
+func Commands(ctx foundation.Context) []*cobra.Command {
+	return []*cobra.Command {
+		create(ctx),
+		delete(ctx),
+		list(ctx),
+	}
+}
+
+func create(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 	cmd := cobra.Command{
 		Use:     "create-scene",
@@ -43,7 +51,7 @@ func NewCreateScene(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewScenes(ctx foundation.Context) *cobra.Command {
+func list(ctx foundation.Context) *cobra.Command {
 	var csv bool
 	var verbose bool
 
@@ -87,7 +95,7 @@ func NewScenes(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewDeleteScene(ctx foundation.Context) *cobra.Command {
+func delete(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{

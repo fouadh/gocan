@@ -11,7 +11,15 @@ import (
 	"strconv"
 )
 
-func NewCreateComplexityAnalysis(ctx foundation.Context) *cobra.Command {
+func Commands(ctx foundation.Context) []*cobra.Command {
+	return []*cobra.Command{
+		create(ctx),
+		delete(ctx),
+		list(ctx),
+	}
+}
+
+func create(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 	var before string
@@ -90,7 +98,7 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 	return &cmd
 }
 
-func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
+func delete(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 	var verbose bool
@@ -136,7 +144,7 @@ func NewDeleteComplexityAnalysis(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewComplexityAnalyses(ctx foundation.Context) *cobra.Command {
+func list(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
 	var csv bool

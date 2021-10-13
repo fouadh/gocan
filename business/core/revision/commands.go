@@ -9,7 +9,15 @@ import (
 	"strconv"
 )
 
-func NewRevisionsCommand(ctx context.Context) *cobra.Command {
+func Commands(ctx context.Context) []*cobra.Command {
+	return []*cobra.Command{
+		list(ctx),
+		hotspots(ctx),
+		trends(ctx),
+	}
+}
+
+func list(ctx context.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -64,7 +72,7 @@ func NewRevisionsCommand(ctx context.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewHotspotsCommand(ctx context.Context) *cobra.Command {
+func hotspots(ctx context.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -109,7 +117,7 @@ func NewHotspotsCommand(ctx context.Context) *cobra.Command {
 	return &cmd
 }
 
-func NewRevisionTrends(ctx context.Context) *cobra.Command {
+func trends(ctx context.Context) *cobra.Command {
 	var sceneName string
 	var boundaryName string
 	var before string
