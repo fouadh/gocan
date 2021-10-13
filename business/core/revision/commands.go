@@ -65,8 +65,8 @@ func list(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the revisions before this day")
-	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the revisions after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the revisions before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the revisions after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
@@ -111,8 +111,8 @@ func hotspots(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the hotspots before this day")
-	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the hotspots after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the hotspots before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the hotspots after this day")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
@@ -178,8 +178,8 @@ func trends(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "a", "", "Fetch all the hotspots before this day")
-	cmd.Flags().StringVarP(&after, "after", "b", "", "Fetch all the hotspots after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the hotspots before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the hotspots after this day")
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")

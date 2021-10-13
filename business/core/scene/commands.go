@@ -78,7 +78,7 @@ func list(ctx foundation.Context) *cobra.Command {
 			}
 
 			if len(scenes) == 0 {
-				ui.Log("No scene found")
+				ui.Print("No scene found.")
 				return nil
 			}
 			ui.Ok()
