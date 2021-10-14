@@ -2,31 +2,49 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {Timeline} from "../components/Timeline";
 import {Spinner} from "../components/Spinner";
+import {DateSelector} from "../components/DateSelector";
 
 export function Revisions({sceneId, appId}) {
+    const [dateRange, setDateRange] = useState({});
+    const [analyze, setAnalyze] = useState(true);
     const [revisions, setRevisions] = useState([]);
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         let subscribed = true;
-        setLoading(true);
-        axios.get(`/api/scenes/${sceneId}/apps/${appId}/revisions`)
-            .then(it => it.data)
-            .then(it => it.revisions)
-            .then(it => {
-                const results = [];
-                it.forEach((each, i) => results.push({x: i, y: each.numberOfRevisions}));
-                return results;
-            })
-            .then(it => {
-                if (subscribed) {
-                    setRevisions(it);
-
+        if (analyze) {
+            setLoading(true);
+            let endpoint = `/api/scenes/${sceneId}/apps/${appId}/revisions`;
+            if (dateRange.min) {
+                if (dateRange.max) {
+                    endpoint += `?after=${dateRange.min}&before=${dateRange.max}`
+                } else {
+                    endpoint += `?after=${dateRange.min}`
                 }
-            }).finally(() => setLoading(false));
+            } else if (dateRange.max) {
+                endpoint += `?before=${dateRange.max}`
+            }
+            axios.get(endpoint)
+                .then(it => it.data)
+                .then(it => it.revisions)
+                .then(it => {
+                    const results = [];
+                    it.forEach((each, i) => results.push({x: i, y: each.numberOfRevisions}));
+                    return results;
+                })
+                .then(it => {
+                    if (subscribed) {
+                        setRevisions(it);
+
+                    }
+                }).finally(() => {
+                    setAnalyze(false);
+                    setLoading(false);
+            });
+        }
 
         return () => subscribed = false;
-    }, [sceneId, appId]);
+    }, [sceneId, appId, analyze]);
 
     let screen;
     if (loading) {
@@ -43,6 +61,8 @@ export function Revisions({sceneId, appId}) {
     }
 
     return <>
+        <DateSelector onChange={e => setDateRange(e)}/>
+        <button onClick={e => setAnalyze(true)}>Submit</button>
         {screen}
     </>;
 }
