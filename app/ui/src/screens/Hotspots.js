@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
+import {DateSelector} from "../components/DateSelector";
 
 export function Hotspots({sceneId, appId}) {
     const [dateRange, setDateRange] = useState({});
@@ -51,13 +52,8 @@ export function Hotspots({sceneId, appId}) {
     }
 
     return <>
-        <div>
-            <label htmlFor="min">Min Date:</label>
-            <input type="text" value={dateRange.min} onChange={e => setDateRange({...dateRange, min: e.target.value})}/>
-            <label htmlFor="max">Max Date:</label>
-            <input type="text" value={dateRange.max} onChange={e => setDateRange({...dateRange, max: e.target.value})}/>
-            <button onClick={e => setAnalyze(true)}>Submit</button>
-        </div>
+        <DateSelector onChange={e => setDateRange(e)}/>
+        <button onClick={e => setAnalyze(true)}>Submit</button>
         {screen}
     </>
 }
