@@ -4,24 +4,41 @@ import {Chord} from "../components/Chord";
 import {Spinner} from "../components/Spinner";
 
 export function Coupling({sceneId, appId}) {
+    const [dateRange, setDateRange] = useState({});
+    const [analyze, setAnalyze] = useState(true);
     const [coupling, setCoupling] = useState();
     const [loading, setLoading] = useState(false);
     const [boundary] = useState("");
 
     useEffect(() => {
         let subscribe = true;
-        setLoading(true);
-        axios.get(`/api/scenes/${sceneId}/apps/${appId}/coupling-hierarchy`)
-            .then(it => it.data)
-            .then(it => {
-                if (subscribe) {
-                    setCoupling(it);
+        if (analyze) {
+            setLoading(true);
+            let endpoint = `/api/scenes/${sceneId}/apps/${appId}/coupling-hierarchy`;
+            if (dateRange.min) {
+                if (dateRange.max) {
+                    endpoint += `?after=${dateRange.min}&before=${dateRange.max}`
+                } else {
+                    endpoint += `?after=${dateRange.min}`
                 }
-            })
-            .finally(() => setLoading(false));
+            } else if (dateRange.max) {
+                endpoint += `?before=${dateRange.max}`
+            }
+            axios.get(endpoint)
+                .then(it => it.data)
+                .then(it => {
+                    if (subscribe) {
+                        setCoupling(it);
+                    }
+                })
+                .finally(() => {
+                    setLoading(false);
+                    setAnalyze(false);
+                });
+        }
 
         return () => subscribe = false;
-    }, [sceneId, appId, boundary]);
+    }, [sceneId, appId, boundary, analyze]);
 
     let screen;
     if (loading) {
@@ -34,5 +51,14 @@ export function Coupling({sceneId, appId}) {
         screen = <><p>No coupling found.</p></>
     }
 
-    return <>{screen}</>;
+    return <>
+        <div>
+            <label htmlFor="min">Min Date:</label>
+            <input type="text" value={dateRange.min} onChange={e => setDateRange({...dateRange, min: e.target.value})}/>
+            <label htmlFor="max">Max Date:</label>
+            <input type="text" value={dateRange.max} onChange={e => setDateRange({...dateRange, max: e.target.value})}/>
+            <button onClick={e => setAnalyze(true)}>Submit</button>
+        </div>
+        {screen}
+    </>;
 }

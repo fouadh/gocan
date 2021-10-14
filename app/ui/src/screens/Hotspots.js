@@ -5,35 +5,35 @@ import {Spinner} from "../components/Spinner";
 
 export function Hotspots({sceneId, appId}) {
     const [dateRange, setDateRange] = useState({});
+    const [analyze, setAnalyze] = useState(true);
     const [hospots, setHotspots] = useState();
     const [loading, setLoading] = useState(false);
-    const [analyze, setAnalyze] = useState(false);
 
     useEffect(() => {
         let subscribed = true;
-        setLoading(true);
-        let endpoint = `/api/scenes/${sceneId}/apps/${appId}/hotspots` ;
-        if (dateRange.min) {
-            if (dateRange.max) {
-                endpoint += `?after=${dateRange.min}&before=${dateRange.max}`
-            } else {
-                endpoint += `?after=${dateRange.min}`
-            }
-        } else if (dateRange.max) {
-            endpoint += `?before=${dateRange.max}`
-        }
-        console.log({dateRange});
-        axios.get(endpoint)
-            .then(it => it.data)
-            .then(it => {
-                if (subscribed) {
-                    setHotspots(it);
+        if (analyze) {
+            setLoading(true);
+            let endpoint = `/api/scenes/${sceneId}/apps/${appId}/hotspots`;
+            if (dateRange.min) {
+                if (dateRange.max) {
+                    endpoint += `?after=${dateRange.min}&before=${dateRange.max}`
+                } else {
+                    endpoint += `?after=${dateRange.min}`
                 }
-            }).finally(() => {
-            setLoading(false);
-            setAnalyze(false);
-        });
-        ;
+            } else if (dateRange.max) {
+                endpoint += `?before=${dateRange.max}`
+            }
+            axios.get(endpoint)
+                .then(it => it.data)
+                .then(it => {
+                    if (subscribed) {
+                        setHotspots(it);
+                    }
+                }).finally(() => {
+                setLoading(false);
+                setAnalyze(false);
+            });
+        }
 
         return () => subscribed = false;
     }, [sceneId, appId, analyze]);
