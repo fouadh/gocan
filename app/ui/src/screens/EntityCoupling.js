@@ -2,13 +2,15 @@ import {useEffect, useState} from "react";
 import axios from "axios";
 import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
+import {DateSelector} from "../components/DateSelector";
 
 export function EntityCoupling({sceneId, appId}) {
     const [entity, setEntity] = useState("");
+    const [dateRange, setDateRange] = useState({});
+    const [analyze, setAnalyze] = useState(true);
     const [error, setError] = useState();
     const [coupling, setCoupling] = useState();
     const [loading, setLoading] = useState(false);
-    const [analyze, setAnalyze] = useState(false);
 
     useEffect(() => {
         let subscribed = true;
@@ -16,7 +18,18 @@ export function EntityCoupling({sceneId, appId}) {
             if (entity !== "") {
                 setError(null);
                 setLoading(true);
-                axios.get(`/api/scenes/${sceneId}/apps/${appId}/entity-coupling?entity=${entity}`)
+                let endpoint = `/api/scenes/${sceneId}/apps/${appId}/entity-coupling?entity=${entity}`;
+                if (dateRange.min) {
+                    if (dateRange.max) {
+                        endpoint += `&after=${dateRange.min}&before=${dateRange.max}`
+                    } else {
+                        endpoint += `&after=${dateRange.min}`
+                    }
+                } else if (dateRange.max) {
+                    endpoint += `&before=${dateRange.max}`
+                }
+
+                axios.get(endpoint)
                     .then(it => it.data)
                     .then(it => {
                         if (subscribed) {
@@ -53,6 +66,7 @@ export function EntityCoupling({sceneId, appId}) {
         <div>
             <label htmlFor="entity">Entity</label>
             <input type="text" value={entity} onChange={e => setEntity(e.target.value)}/>
+            <DateSelector onChange={e => setDateRange(e)}/>
             <button onClick={e => setAnalyze(true)}>Submit</button>
         </div>
         {screen}
