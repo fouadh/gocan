@@ -13,10 +13,10 @@ type Soc struct {
 }
 
 type CouplingHierarchy struct {
-	Name     string               `json:"name"`
-	Children []*CouplingHierarchy `json:"children,omitempty"`
-	Coupling []string             `json:"coupling,omitempty"`
-	Relations []CouplingRelation  `json:"relations,omitempty"`
+	Name      string               `json:"name"`
+	Children  []*CouplingHierarchy `json:"children,omitempty"`
+	Coupling  []string             `json:"coupling,omitempty"`
+	Relations []CouplingRelation   `json:"relations,omitempty"`
 }
 
 type CouplingRelation struct {
@@ -25,3 +25,9 @@ type CouplingRelation struct {
 	AverageRevisions float64 `json:"averageRevisions"`
 }
 
+type EntityCouplingHierarchy struct {
+	Name     string                     `json:"name"`
+	Children []*EntityCouplingHierarchy `json:"children,omitempty"`
+	Weight   float64                    `json:"weight,omitempty"`
+	Size     int                        `json:"size,omitempty"`
+}

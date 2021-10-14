@@ -45,3 +45,28 @@ func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request
 
 	return web.Respond(w, c, 200)
 }
+
+func (h *Handlers) BuildEntityCouplingHierarchy(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+
+	query := r.URL.Query()
+	entity := query.Get("entity")
+
+	before, after, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
+	if err != nil {
+		return err
+	}
+
+	a, err := h.App.QueryById(appId)
+	if err != nil {
+		return err
+	}
+
+	c, err := h.Coupling.BuildEntityCouplingHierarchy(a, entity, .4, 6, before, after)
+
+	if err != nil {
+		return err
+	}
+
+	return web.Respond(w, c, 200)
+}

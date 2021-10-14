@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/commit"
 	"com.fha.gocan/business/data/store/coupling"
+	"com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/business/data/store/stat"
 	"fmt"
@@ -20,6 +21,7 @@ type Core struct {
 	coupling coupling.Store
 	stat     stat.Store
 	commit   commit.Store
+	revision revision.Store
 }
 
 func NewCore(connection *sqlx.DB) Core {
@@ -29,6 +31,7 @@ func NewCore(connection *sqlx.DB) Core {
 		coupling: coupling.NewStore(connection),
 		stat:     stat.NewStore(connection),
 		commit:   commit.NewStore(connection),
+		revision: revision.NewStore(connection),
 	}
 }
 
@@ -65,6 +68,70 @@ func (c Core) BuildCouplingHierarchy(a app.App, minimalCoupling float64, minimal
 	buildCouplingNodes(&root, &root)
 
 	return root, nil
+}
+
+func (c Core) BuildEntityCouplingHierarchy(a app.App, entity string, minimalCoupling float64, minimalRevisionsAverage int, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
+	revisions, err := c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
+	if err != nil {
+		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
+	}
+
+	couplings, err := c.Query(a.Id, minimalCoupling, minimalRevisionsAverage, before, after)
+	if err != nil {
+		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch couplings")
+	}
+
+	couplingsMap := make(map[string](float64))
+	maxDegree := 0.
+	for _, c := range couplings {
+		if c.Entity == entity {
+			couplingsMap[c.Coupled] = c.Degree
+		} else if c.Coupled == entity {
+			couplingsMap[c.Entity] = c.Degree
+		}
+		if c.Degree > maxDegree {
+			maxDegree = c.Degree
+		}
+	}
+
+	root := revision.HotspotHierarchy{
+		Name:     a.Name,
+		Children: []*revision.HotspotHierarchy{},
+	}
+
+	for _, revision := range revisions {
+		path := strings.Split(revision.Entity, "/")
+		buildEntityCouplingNode(path, &root, revision, couplingsMap[revision.Entity] / maxDegree)
+	}
+
+	return root, nil
+}
+
+func buildEntityCouplingNode(path []string, parent *revision.HotspotHierarchy, rev revision.Revision, couplingDegree float64) *revision.HotspotHierarchy {
+	existingNode := findEntityCouplingNode(parent.Children, path[0])
+	if existingNode != nil {
+		return buildEntityCouplingNode(path[1:], existingNode, rev, couplingDegree)
+	}
+	newNode := &revision.HotspotHierarchy{
+		Name: path[0],
+	}
+	parent.Children = append(parent.Children, newNode)
+	if len(path) <= 1 {
+		newNode.Size = rev.Code
+		newNode.Weight = couplingDegree
+		return nil
+	} else {
+		return buildEntityCouplingNode(path[1:], parent.Children[len(parent.Children)-1], rev, couplingDegree)
+	}
+}
+
+func findEntityCouplingNode(nodes []*revision.HotspotHierarchy, name string) *revision.HotspotHierarchy {
+	for _, n := range nodes {
+		if n.Name == name {
+			return n
+		}
+	}
+	return nil
 }
 
 func buildCouplingNodes(node *coupling.CouplingHierarchy, root *coupling.CouplingHierarchy) {
@@ -258,6 +325,3 @@ type info struct {
 	file1Revs int
 	file2Revs int
 }
-
-
-
