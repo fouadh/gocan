@@ -3,8 +3,11 @@ import * as d3 from "d3";
 import axios from "axios";
 import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
+import {DateSelector} from "../components/DateSelector";
 
 export function KnowledgeMap({sceneId, appId}) {
+  const [dateRange, setDateRange] = useState({});
+  const [analyze, setAnalyze] = useState(true);
   const [knowledgeMap, setKnowledgeMap] = useState();
   const [authors, setAuthors] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -27,28 +30,52 @@ export function KnowledgeMap({sceneId, appId}) {
 
   useEffect(() => {
     let subscribed = true;
-    setLoading(true);
 
-    axios.get(`/api/scenes/${sceneId}/apps/${appId}/developers`)
-      .then(it => it.data)
-      .then(it => it.authors)
-      .then(it => {
-        if (subscribed)
-          setAuthors(it);
-      });
-
-    axios.get(`/api/scenes/${sceneId}/apps/${appId}/knowledge-map`)
-      .then(it => it.data)
-      .then(it => {
-        if (subscribed) {
-          console.log(it);
-          setKnowledgeMap(it);
+    if (analyze) {
+      setLoading(true);
+      let endpoint1 = `/api/scenes/${sceneId}/apps/${appId}/developers`;
+      if (dateRange.min) {
+        if (dateRange.max) {
+          endpoint1 += `?after=${dateRange.min}&before=${dateRange.max}`
+        } else {
+          endpoint1 += `?after=${dateRange.min}`
         }
-      }).finally(() => setLoading(false));
+      } else if (dateRange.max) {
+        endpoint1 += `?before=${dateRange.max}`
+      }
+      axios.get(endpoint1)
+          .then(it => it.data)
+          .then(it => it.authors)
+          .then(it => {
+            if (subscribed)
+              setAuthors(it);
+          });
 
+      let endpoint2 = `/api/scenes/${sceneId}/apps/${appId}/knowledge-map`;
+      if (dateRange.min) {
+        if (dateRange.max) {
+          endpoint2 += `?after=${dateRange.min}&before=${dateRange.max}`
+        } else {
+          endpoint2 += `?after=${dateRange.min}`
+        }
+      } else if (dateRange.max) {
+        endpoint2 += `?before=${dateRange.max}`
+      }
+      axios.get(endpoint2)
+          .then(it => it.data)
+          .then(it => {
+            if (subscribed) {
+              console.log(it);
+              setKnowledgeMap(it);
+            }
+          }).finally(() => {
+        setLoading(false);
+        setAnalyze(false);
+      });
+    }
 
     return (() => subscribed = false);
-  }, [sceneId, appId]);
+  }, [sceneId, appId, analyze]);
 
   let screen;
 
@@ -65,6 +92,8 @@ export function KnowledgeMap({sceneId, appId}) {
   }
 
   return <>
+    <DateSelector onChange={e => setDateRange(e)}/>
+    <button onClick={e => setAnalyze(true)}>Submit</button>
     <div className="p-d-flex p-text-center" style={{display: "flex", justifyContent: "space-around", alignItems: "center"}}>
       <div className="p-mr-5">
         <ul>
