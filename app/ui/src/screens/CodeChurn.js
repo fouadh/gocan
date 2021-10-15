@@ -40,7 +40,7 @@ export function CodeChurn({sceneId, appId, date}) {
         }
 
         return () => subscribed = false;
-    }, [sceneId, appId, analyze]);
+    }, [sceneId, appId, analyze, dateRange]);
 
     return (
         <>

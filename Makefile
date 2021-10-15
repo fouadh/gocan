@@ -1,5 +1,4 @@
 SHELL := /bin/bash
-
 VERSION := 0.2.1
 PLATFORMS := linux/amd64 darwin/amd64
 temp = $(subst /, ,$@)
@@ -7,7 +6,7 @@ os = $(word 1, $(temp))
 arch = $(word 2, $(temp))
 
 frontend:
-	cd app/ui && yarn install && yarn build
+	cd app/ui && yarn install && CI=true yarn build
 
 backend:
 	go build -ldflags="-X 'main.Version=v$(VERSION)'" -o bin/gocan ./app/cmd/gocan/main.go

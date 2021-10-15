@@ -48,7 +48,7 @@ export function EntityCoupling({sceneId, appId, date}) {
         }
 
         return () => subscribed = false;
-    }, [sceneId, appId, analyze]);
+    }, [sceneId, appId, analyze, dateRange, entity]);
 
     let screen;
 

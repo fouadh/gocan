@@ -39,7 +39,7 @@ export function Coupling({sceneId, appId, date}) {
         }
 
         return () => subscribe = false;
-    }, [sceneId, appId, boundary, analyze]);
+    }, [sceneId, appId, boundary, analyze, dateRange]);
 
     let screen;
     if (loading) {

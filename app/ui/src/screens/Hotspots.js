@@ -37,7 +37,7 @@ export function Hotspots({sceneId, appId, date}) {
         }
 
         return () => subscribed = false;
-    }, [sceneId, appId, analyze]);
+    }, [sceneId, appId, analyze, dateRange]);
 
     let screen;
 

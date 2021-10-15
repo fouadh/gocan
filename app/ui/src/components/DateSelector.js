@@ -8,7 +8,7 @@ export function DateSelector({min, max, onChange}) {
 
     useEffect(() => {
         onChange(dateRange);
-    }, [dateRange]);
+    }, [dateRange, onChange]);
 
     return <div>
         <label htmlFor="min">Min Date:</label>
