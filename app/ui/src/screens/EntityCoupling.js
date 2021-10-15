@@ -3,6 +3,8 @@ import axios from "axios";
 import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
+import {InputText} from 'primereact/inputtext';
+import { Button } from 'primereact/button';
 
 export function EntityCoupling({sceneId, appId, date}) {
     const [entity, setEntity] = useState("");
@@ -38,9 +40,9 @@ export function EntityCoupling({sceneId, appId, date}) {
                     })
                     .catch(() => setError("Unable to get coupling information"))
                     .finally(() => {
-                    setLoading(false);
-                    setAnalyze(false);
-                });
+                        setLoading(false);
+                        setAnalyze(false);
+                    });
             } else {
                 setCoupling(null);
                 setAnalyze(false);
@@ -63,11 +65,17 @@ export function EntityCoupling({sceneId, appId, date}) {
     }
 
     return <>
-        <div>
-            <label htmlFor="entity">Entity</label>
-            <input type="text" value={entity} onChange={e => setEntity(e.target.value)}/>
-            <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
-            <button onClick={e => setAnalyze(true)}>Submit</button>
+        <div className="card mt-4">
+            <div className="flex align-items-center">
+                <div className="p-field p-col-12 p-md-4 mr-4">
+                    <span className="p-float-label">
+                        <InputText id="entity" value={entity} onChange={e => setEntity(e.target.value)}/>
+                        <label htmlFor="entity">Entity</label>
+                    </span>
+                </div>
+                <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
+                <Button label="Submit" onClick={e => setAnalyze(true)} />
+            </div>
         </div>
         {screen}
     </>

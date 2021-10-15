@@ -3,6 +3,7 @@ import axios from "axios";
 import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
+import {Button} from 'primereact/button';
 
 export function Hotspots({sceneId, appId, date}) {
     const [dateRange, setDateRange] = useState(date);
@@ -52,8 +53,12 @@ export function Hotspots({sceneId, appId, date}) {
     }
 
     return <>
-        <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
-        <button onClick={e => setAnalyze(true)}>Submit</button>
+        <div className="card mt-4">
+            <div className="flex align-items-center">
+                <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
+                <Button label="Submit" onClick={e => setAnalyze(true)}/>
+            </div>
+        </div>
         {screen}
     </>
 }

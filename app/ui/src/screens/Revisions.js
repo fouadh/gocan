@@ -3,6 +3,7 @@ import axios from "axios";
 import {Timeline} from "../components/Timeline";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
+import { Button } from 'primereact/button';
 
 export function Revisions({sceneId, appId, date}) {
     const [dateRange, setDateRange] = useState(date);
@@ -38,8 +39,8 @@ export function Revisions({sceneId, appId, date}) {
 
                     }
                 }).finally(() => {
-                    setLoading(false);
-                    setAnalyze(false);
+                setLoading(false);
+                setAnalyze(false);
             });
         }
 
@@ -61,8 +62,12 @@ export function Revisions({sceneId, appId, date}) {
     }
 
     return <>
-        <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
-        <button onClick={e => setAnalyze(true)}>Submit</button>
+        <div className="card mt-4">
+            <div className="flex align-items-center">
+                <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
+                <Button label="Submit" onClick={e => setAnalyze(true)} />
+            </div>
+        </div>
         {screen}
     </>;
 }

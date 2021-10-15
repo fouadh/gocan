@@ -27,14 +27,22 @@ export function DateSelector({min, max, onChange}) {
         onChange(date);
     };
 
-    return <div>
-        <label htmlFor="min">Min Date:</label>
-        <Calendar value={dateRange.min} onChange={e => {
-            notifyChange({...dateRange, min: e.value});
-        }} dateFormat="yy-mm-dd"/>
-        <label htmlFor="max">Max Date:</label>
-        <Calendar value={dateRange.max} onChange={e => {
-            notifyChange({...dateRange, max: e.value});
-        }} dateFormat="yy-mm-dd"/>
-    </div>
+    return <>
+        <div className="p-field p-col-12 p-md-4 mr-4">
+            <span className="p-float-label">
+                <Calendar id="min" value={dateRange.min} onChange={e => {
+                    notifyChange({...dateRange, min: e.value});
+                }} dateFormat="yy-mm-dd"/>
+                <label htmlFor="min">Min Date</label>
+            </span>
+        </div>
+        <div className="p-field p-col-12 p-md-4 mr-4">
+            <span className="p-float-label">
+                <Calendar id="max" value={dateRange.max} onChange={e => {
+                    notifyChange({...dateRange, max: e.value});
+                }} dateFormat="yy-mm-dd"/>
+                <label htmlFor="max">Max Date</label>
+            </span>
+        </div>
+    </>
 }
