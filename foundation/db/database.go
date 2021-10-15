@@ -67,6 +67,7 @@ func NamedQuerySlice(connection *sqlx.DB, query string, data interface{}, dest i
 	if err != nil {
 		return err
 	}
+	defer rows.Close()
 
 	slice := val.Elem()
 	for rows.Next() {
@@ -88,6 +89,7 @@ func NamedQueryStruct(connection *sqlx.DB, query string, data interface{}, dest 
 	if !rows.Next() {
 		return errors.New("Unable to retrieve record")
 	}
+	defer rows.Close()
 
 	if err := rows.StructScan(dest); err != nil {
 		return err

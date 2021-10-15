@@ -43,6 +43,7 @@ func (s Store) Query(appId string, before time.Time, after time.Time) ([]Stat, e
 	 if err != nil {
 	 	return []Stat{}, errors.Wrap(err, "Unable to execute query")
 	 }
+	 defer rows.Close()
 
 	 results := []Stat{}
 

@@ -69,6 +69,7 @@ from (
 	if err != nil {
 		return []Boundary{}, err
 	}
+	defer rows.Close()
 
 	results := []Boundary{}
 	for rows.Next() {
@@ -107,6 +108,7 @@ from (
 	if err != nil || !rows.Next() {
 		return Boundary{}, err
 	}
+	defer rows.Close()
 
 	var row struct {
 		Row string `db:"row"`
@@ -144,6 +146,7 @@ from (
 	if err != nil || !rows.Next() {
 		return Boundary{}, err
 	}
+	defer rows.Close()
 
 	var row struct {
 		Row string `db:"row"`
