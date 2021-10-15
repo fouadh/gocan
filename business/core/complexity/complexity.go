@@ -102,6 +102,11 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 		return complexity.Complexity{}, errors.Wrap(err, "Unable to get current branch info")
 	}
 
+	if !strings.HasSuffix(directory, "/") && !strings.HasPrefix(filename, "/") {
+		directory += "/"
+	}
+	filePath := directory + filename
+
 	for _, line := range lines {
 		cols := strings.Split(line, ";")
 		rev := cols[0]
@@ -119,7 +124,7 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 				return complexity.Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
 			}
 
-			c, err := c.AnalyzeComplexity(complexityId, directory + filename, revDate, spaces)
+			c, err := c.AnalyzeComplexity(complexityId, filePath, revDate, spaces)
 			if err != nil {
 				fmt.Println("WARNING: File cannot be analyzed for revision " + rev)
 			} else {
