@@ -4,8 +4,8 @@ import {Chord} from "../components/Chord";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 
-export function Coupling({sceneId, appId}) {
-    const [dateRange, setDateRange] = useState({});
+export function Coupling({sceneId, appId, date}) {
+    const [dateRange, setDateRange] = useState({date});
     const [analyze, setAnalyze] = useState(true);
     const [coupling, setCoupling] = useState();
     const [loading, setLoading] = useState(false);
@@ -53,7 +53,7 @@ export function Coupling({sceneId, appId}) {
     }
 
     return <>
-        <DateSelector onChange={e => setDateRange(e)}/>
+        <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
         <button onClick={e => setAnalyze(true)}>Submit</button>
         {screen}
     </>;

@@ -5,8 +5,8 @@ import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 
-export function KnowledgeMap({sceneId, appId}) {
-  const [dateRange, setDateRange] = useState({});
+export function KnowledgeMap({sceneId, appId, date}) {
+  const [dateRange, setDateRange] = useState(date);
   const [analyze, setAnalyze] = useState(true);
   const [knowledgeMap, setKnowledgeMap] = useState();
   const [authors, setAuthors] = useState([]);
@@ -92,7 +92,7 @@ export function KnowledgeMap({sceneId, appId}) {
   }
 
   return <>
-    <DateSelector onChange={e => setDateRange(e)}/>
+    <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
     <button onClick={e => setAnalyze(true)}>Submit</button>
     <div className="p-d-flex p-text-center" style={{display: "flex", justifyContent: "space-around", alignItems: "center"}}>
       <div className="p-mr-5">

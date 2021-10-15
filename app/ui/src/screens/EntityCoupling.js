@@ -4,9 +4,9 @@ import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 
-export function EntityCoupling({sceneId, appId}) {
+export function EntityCoupling({sceneId, appId, date}) {
     const [entity, setEntity] = useState("");
-    const [dateRange, setDateRange] = useState({});
+    const [dateRange, setDateRange] = useState(date);
     const [analyze, setAnalyze] = useState(true);
     const [error, setError] = useState();
     const [coupling, setCoupling] = useState();
@@ -66,7 +66,7 @@ export function EntityCoupling({sceneId, appId}) {
         <div>
             <label htmlFor="entity">Entity</label>
             <input type="text" value={entity} onChange={e => setEntity(e.target.value)}/>
-            <DateSelector onChange={e => setDateRange(e)}/>
+            <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
             <button onClick={e => setAnalyze(true)}>Submit</button>
         </div>
         {screen}

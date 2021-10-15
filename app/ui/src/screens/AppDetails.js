@@ -45,19 +45,19 @@ export function AppDetails() {
                     <Revisions sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Hotspots">
-                    <Hotspots sceneId={sceneId} appId={appId}/>
+                    <Hotspots sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Complexity">
                     <ComplexityAnalysis sceneId={sceneId} appId={appId}/>
                 </TabPanel>
                 <TabPanel header="Coupling">
-                    <Coupling sceneId={sceneId} appId={appId}/>
+                    <Coupling sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Entity Coupling">
-                    <EntityCoupling sceneId={sceneId} appId={appId}/>
+                    <EntityCoupling sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Code Churn">
-                    <CodeChurn sceneId={sceneId} appId={appId}/>
+                    <CodeChurn sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Modus Operandi">
                     <ModusOperandi sceneId={sceneId} appId={appId}/>
@@ -66,7 +66,7 @@ export function AppDetails() {
                     <RevisionTrends sceneId={sceneId} appId={appId}/>
                 </TabPanel>
                 <TabPanel header="Knowledge Map">
-                    <KnowledgeMap sceneId={sceneId} appId={appId}/>
+                    <KnowledgeMap sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
             </TabView>
         </>

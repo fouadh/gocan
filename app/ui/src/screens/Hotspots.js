@@ -4,8 +4,8 @@ import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 
-export function Hotspots({sceneId, appId}) {
-    const [dateRange, setDateRange] = useState({});
+export function Hotspots({sceneId, appId, date}) {
+    const [dateRange, setDateRange] = useState(date);
     const [analyze, setAnalyze] = useState(true);
     const [hospots, setHotspots] = useState();
     const [loading, setLoading] = useState(false);
@@ -52,7 +52,7 @@ export function Hotspots({sceneId, appId}) {
     }
 
     return <>
-        <DateSelector onChange={e => setDateRange(e)}/>
+        <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
         <button onClick={e => setAnalyze(true)}>Submit</button>
         {screen}
     </>

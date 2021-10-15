@@ -4,8 +4,8 @@ import * as d3 from "d3";
 import {MultiLineChart} from "../components/MultiLineChart";
 import {DateSelector} from "../components/DateSelector";
 
-export function CodeChurn({sceneId, appId}) {
-    const [dateRange, setDateRange] = useState({});
+export function CodeChurn({sceneId, appId, date}) {
+    const [dateRange, setDateRange] = useState(date);
     const [analyze, setAnalyze] = useState(true);
     const [codeChurn, setCodeChurn] = useState([]);
 
@@ -44,7 +44,7 @@ export function CodeChurn({sceneId, appId}) {
 
     return (
         <>
-            <DateSelector onChange={e => setDateRange(e)}/>
+            <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
             <button onClick={e => setAnalyze(true)}>Submit</button>
             <MultiLineChart yLabel="Code Churn"
                             data={codeChurn}
