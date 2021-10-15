@@ -38,8 +38,8 @@ export function Revisions({sceneId, appId, date}) {
 
                     }
                 }).finally(() => {
-                    setAnalyze(false);
                     setLoading(false);
+                    setAnalyze(false);
             });
         }
 
