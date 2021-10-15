@@ -62,7 +62,7 @@ func (h *Handlers) BuildEntityCouplingHierarchy(w http.ResponseWriter, r *http.R
 		return err
 	}
 
-	c, err := h.Coupling.BuildEntityCouplingHierarchy(a, entity, .4, 6, before, after)
+	c, err := h.Coupling.BuildEntityCouplingHierarchy(a, entity, .39, 6, before, after)
 
 	if err != nil {
 		return err

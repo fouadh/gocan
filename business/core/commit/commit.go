@@ -56,7 +56,7 @@ func (c Core) ExtractDateRangeFromArgs(appId string, before string, after string
 		if rangeErr != nil {
 			return time.Time{}, time.Time{}, errors.Wrap(rangeErr, "Commit range cannot be retrieved")
 		}
-		before = date.FormatDay(cr.MaxDate.AddDate(0, 0, 1))
+		before = date.FormatDay(cr.MaxDate)
 	}
 	beforeTime, err := date.ParseDay(before)
 	if err != nil {
