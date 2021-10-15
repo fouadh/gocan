@@ -121,13 +121,10 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 
 			c, err := c.AnalyzeComplexity(complexityId, directory + filename, revDate, spaces)
 			if err != nil {
-				// in case of error, we consider that the file's complexity is 0 for every field
 				fmt.Println("WARNING: File cannot be analyzed for revision " + rev)
-				c = complexity.ComplexityEntry{
-					ComplexityId: complexityId,
-				}
+			} else {
+				complexities = append(complexities, c)
 			}
-			complexities = append(complexities, c)
 		}
 	}
 
