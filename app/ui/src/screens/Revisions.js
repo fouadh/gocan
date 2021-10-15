@@ -4,8 +4,8 @@ import {Timeline} from "../components/Timeline";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 
-export function Revisions({sceneId, appId}) {
-    const [dateRange, setDateRange] = useState({});
+export function Revisions({sceneId, appId, date}) {
+    const [dateRange, setDateRange] = useState(date);
     const [analyze, setAnalyze] = useState(true);
     const [revisions, setRevisions] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -61,7 +61,7 @@ export function Revisions({sceneId, appId}) {
     }
 
     return <>
-        <DateSelector onChange={e => setDateRange(e)}/>
+        <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
         <button onClick={e => setAnalyze(true)}>Submit</button>
         {screen}
     </>;

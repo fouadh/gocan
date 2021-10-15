@@ -1,5 +1,5 @@
 import axios from "axios";
-import {useParams} from 'react-router-dom'
+import {useParams, useLocation} from 'react-router-dom'
 import {useEffect, useState} from "react";
 import {TabPanel, TabView} from 'primereact/tabview';
 import {Revisions} from "./Revisions";
@@ -12,7 +12,16 @@ import {Hotspots} from "./Hotspots";
 import {ComplexityAnalysis} from "./ComplexityAnalysis";
 import {EntityCoupling} from "./EntityCoupling";
 
+function useQuery() {
+    return new URLSearchParams(useLocation().search);
+}
+
 export function AppDetails() {
+    const query = useQuery();
+    const dateRange = {
+        min: query.get("after"),
+        max: query.get("before")
+    }
     const {sceneId, appId} = useParams();
     const [application, setApplication] = useState();
 
@@ -33,7 +42,7 @@ export function AppDetails() {
             <div><h3 className="p-ml-4">{application?.name}</h3></div>
             <TabView renderActiveOnly={true}>
                 <TabPanel header="Revisions">
-                    <Revisions sceneId={sceneId} appId={appId}/>
+                    <Revisions sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Hotspots">
                     <Hotspots sceneId={sceneId} appId={appId}/>
