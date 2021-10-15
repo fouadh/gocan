@@ -53,6 +53,7 @@ func GetBulkInsertSQL(table string, columns []string, rowCount int) string {
 			b.WriteString(",")
 		}
 	}
+	b.WriteString(" ON CONFLICT DO NOTHING")
 	return b.String()
 }
 

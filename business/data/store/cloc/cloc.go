@@ -79,7 +79,7 @@ func (s Store) ImportCloc(appId string, directory string, commits []commit.Commi
 
 	for _, c := range info {
 		s.connection.MustExec(
-			`INSERT INTO cloc(app_id, file, lines, commit_id) VALUES($1, $2, $3, $4)`,
+			`INSERT INTO cloc(app_id, file, lines, commit_id) VALUES($1, $2, $3, $4) ON CONFLICT DO NOTHING`,
 			appId,
 			c.File,
 			c.Lines,
