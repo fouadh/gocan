@@ -19,7 +19,7 @@ select entity,
                              inner join commits c2 on cloc.commit_id = c2.id
                     where cloc.file = entity
                       and cloc.app_id = $1
-                      and c2.date >= $2
+                      and c2.date >= $2 - interval '1 DAY'
                     order by c2.date asc
                     limit 1
                 ), 0)                                                      as code
