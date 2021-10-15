@@ -11,11 +11,17 @@ type NewApp struct {
 	SceneId string `validate:"required"`
 }
 
+type DateRange struct {
+	MinDate string `json:"minDate"`
+	MaxDate string `json:"maxDate"`
+}
+
 type Summary struct {
-	Id                      string `json:"id"`
-	Name                    string `json:"name"`
-	NumberOfCommits         int    `json:"numberOfCommits"`
-	NumberOfEntities        int    `json:"numberOfEntities"`
-	NumberOfEntitiesChanged int    `json:"numberOfEntitiesChanged"`
-	NumberOfAuthors         int    `json:"numberOfAuthors"`
+	Id                      string    `json:"id"`
+	Name                    string    `json:"name"`
+	NumberOfCommits         int       `json:"numberOfCommits"`
+	NumberOfEntities        int       `json:"numberOfEntities"`
+	NumberOfEntitiesChanged int       `json:"numberOfEntitiesChanged"`
+	NumberOfAuthors         int       `json:"numberOfAuthors"`
+	DateRange               DateRange `json:"dateRange"`
 }

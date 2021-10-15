@@ -37,10 +37,13 @@ export function Scene() {
 
   const AppSummary = (data) => {
     const headerTemplate = <div className="p-text-center"><Link
-      to={`/scenes/${sceneId}/apps/${data.id}`}>{data.name}</Link></div>;
+      to={`/scenes/${sceneId}/apps/${data.id}?after=${data.dateRange.minDate}&before=${data.dateRange.maxDate}`}>{data.name}</Link></div>;
     return (
       <>
         <Panel header={headerTemplate} className="p-ml-4">
+          <div className="p-d-flex p-text-center">
+            (Between {data.dateRange.minDate} and {data.dateRange.maxDate})
+          </div>
           <div className="p-d-flex p-text-center">
             <div className="p-mr-4">
               <div className="p-d-flex p-flex-column">

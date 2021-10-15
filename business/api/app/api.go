@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/commit"
 	app2 "com.fha.gocan/business/data/store/app"
+	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
 	"net/http"
@@ -37,6 +38,10 @@ func (h *Handlers) QueryAll(w http.ResponseWriter, r *http.Request, params map[s
 		}
 
 		summary, err := h.App.QuerySummary(a.Id, cr.MaxDate, cr.MinDate)
+		summary.DateRange = app2.DateRange{
+			MinDate: date.FormatDay(cr.MinDate),
+			MaxDate: date.FormatDay(cr.MaxDate),
+		}
 		if err != nil {
 			return err
 		}
