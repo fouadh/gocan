@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"io/ioutil"
+	"os"
 	"strconv"
 	"time"
 )
@@ -62,15 +63,23 @@ func create(ctx foundation.Context) *cobra.Command {
 				}
 			}
 
+			dir, err := ioutil.TempDir("", "gocan-storyboard-")
+			defer os.RemoveAll(dir)
+
+			if err != nil {
+				return errors.Wrap(err, "Unable to build temp folder")
+			}
 			for i := 0; i < len(buffers); i++ {
-				if err := ioutil.WriteFile("screenshot-" + strconv.Itoa(i) + ".jpeg", buffers[i], 0644); err != nil {
+				filename := dir + "/screenshot-" + strconv.Itoa(i) + ".jpeg"
+				if err := ioutil.WriteFile(filename, buffers[i], 0644); err != nil {
 					// todo
 					fmt.Println(err)
 					ui.Failed(err.Error())
 				}
-				ui.Log("wrote screenshot-" + strconv.Itoa(i) + ".jpeg")
+				ui.Log("wrote " + filename)
 			}
 
+			ui.Ok()
 			return nil
 		},
 	}
