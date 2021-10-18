@@ -1,17 +1,19 @@
 package storyboard
 
 import (
+	"bytes"
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"context"
-	"fmt"
 	"github.com/chromedp/chromedp"
+	"github.com/icza/mjpeg"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
-	"io/ioutil"
-	"os"
-	"strconv"
+	"image"
+	"image/draw"
+	"image/jpeg"
+	"image/png"
 	"time"
 )
 
@@ -29,17 +31,12 @@ func create(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 
 	cmd := cobra.Command{
-		Use: "storyboard",
-		Args: cobra.ExactArgs(1),
+		Use:   "storyboard",
+		Args:  cobra.ExactArgs(1),
 		Short: "Create a storyboard of visualizations",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.SetVerbose(verbose)
-			connection, err := ctx.GetConnection()
-			if err != nil {
-				return err
-			}
-			defer connection.Close()
 
 			ctxt, cancel := chromedp.NewContext(context.Background())
 			defer cancel()
@@ -47,38 +44,34 @@ func create(ctx foundation.Context) *cobra.Command {
 			ctxt, cancel = context.WithTimeout(ctxt, 15*time.Second)
 			defer cancel()
 
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
 				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
 			daysInRange := beforeTime.Sub(afterTime).Hours() / 24
-			var buffers = make([][]byte, int(daysInRange))
-
+			var pngs = make([][]byte, int(daysInRange))
 			for i := 0; i < int(daysInRange); i++ {
 				max := afterTime.AddDate(0, 0, i)
 				ui.Log("Getting data between " + date.FormatDay(afterTime) + " and " + date.FormatDay(max))
-				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(max), &buffers[i])); err != nil {
+				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(max), &pngs[i])); err != nil {
 					return errors.Wrap(err, "Unable to browse data")
 				}
 			}
 
-			dir, err := ioutil.TempDir("", "gocan-storyboard-")
-			defer os.RemoveAll(dir)
-
+			width, height, err := calculateImageDimension(pngs[0])
 			if err != nil {
-				return errors.Wrap(err, "Unable to build temp folder")
-			}
-			for i := 0; i < len(buffers); i++ {
-				filename := dir + "/screenshot-" + strconv.Itoa(i) + ".jpeg"
-				if err := ioutil.WriteFile(filename, buffers[i], 0644); err != nil {
-					// todo
-					fmt.Println(err)
-					ui.Failed(err.Error())
-				}
-				ui.Log("wrote " + filename)
+				return errors.Wrap(err, "Unable to calculate image dimensions")
 			}
 
+			if err := createVideo(width, height, pngs); err != nil {
+				return errors.Wrap(err, "Unable to create video")
+			}
 			ui.Ok()
 			return nil
 		},
@@ -93,8 +86,50 @@ func create(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
+func createVideo(width int, height int, pngs [][]byte) (error) {
+	aw, err := mjpeg.New("storyboard.avi", int32(width), int32(height), 4)
+	if err != nil {
+		return errors.Wrap(err, "Unable to build video")
+	}
+	defer aw.Close()
+
+	for i := 0; i < len(pngs); i++ {
+		jpg, err := pngToJpeg(pngs[i])
+		if err != nil {
+			return errors.Wrap(err, "Unable to convert png to jpeg")
+		}
+		buf := new(bytes.Buffer)
+		if err := jpeg.Encode(buf, jpg, nil); err != nil {
+			return errors.Wrap(err, "Unable to encode jpeg image")
+		}
+		if err := aw.AddFrame(buf.Bytes()); err != nil {
+			return errors.Wrap(err, "Unable to add frame to video")
+		}
+	}
+	return nil
+}
+
+func calculateImageDimension(img []byte) (int, int, error) {
+	jpg, err := pngToJpeg(img)
+	if err != nil {
+		return 0, 0, errors.Wrap(err, "Unable to convert first png to jpeg")
+	}
+	width, height := jpg.Bounds().Size().X, jpg.Bounds().Size().Y
+	return width, height, nil
+}
+
+func pngToJpeg(buf []byte) (*image.RGBA, error) {
+	img, err := png.Decode(bytes.NewReader(buf))
+	if err != nil {
+		return nil, errors.Wrap(err, "Unable to decode png image")
+	}
+	jpg := image.NewRGBA(img.Bounds())
+	draw.Draw(jpg, jpg.Bounds(), img, img.Bounds().Min, draw.Src)
+	return jpg, nil
+}
+
 func tasks(endpoint string, sceneId string, appId string, min string, max string, buf *[]byte) chromedp.Tasks {
-	url := endpoint + `scenes/`+ sceneId + `/apps/` + appId + `?after=` + min + `&before=` + max
+	url := endpoint + `scenes/` + sceneId + `/apps/` + appId + `?after=` + min + `&before=` + max
 
 	tasks := chromedp.Tasks{
 		chromedp.Navigate(url),
