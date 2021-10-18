@@ -29,6 +29,7 @@ func create(ctx foundation.Context) *cobra.Command {
 	var after string
 	var verbose bool
 	var sceneName string
+	var filename string
 
 	cmd := cobra.Command{
 		Use:   "storyboard",
@@ -69,7 +70,7 @@ func create(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Unable to calculate image dimensions")
 			}
 
-			if err := createVideo(width, height, pngs); err != nil {
+			if err := createVideo(width, height, pngs, filename); err != nil {
 				return errors.Wrap(err, "Unable to create video")
 			}
 			ui.Ok()
@@ -81,13 +82,14 @@ func create(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&endpoint, "endpoint", "e", "http://localhost:1233/", "Endpoint of the UI")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch coupling after this day")
+	cmd.Flags().StringVarP(&filename, "filename", "f", "storyboard" + date.Today() + ".avi", "storyboard file name")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }
 
-func createVideo(width int, height int, pngs [][]byte) (error) {
-	aw, err := mjpeg.New("storyboard.avi", int32(width), int32(height), 4)
+func createVideo(width int, height int, pngs [][]byte, filename string) (error) {
+	aw, err := mjpeg.New(filename, int32(width), int32(height), 4)
 	if err != nil {
 		return errors.Wrap(err, "Unable to build video")
 	}
