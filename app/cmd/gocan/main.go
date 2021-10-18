@@ -13,6 +13,7 @@ import (
 	modus_operandi "com.fha.gocan/business/core/modus-operandi"
 	"com.fha.gocan/business/core/revision"
 	"com.fha.gocan/business/core/scene"
+	"com.fha.gocan/business/core/storyboard"
 	ui2 "com.fha.gocan/business/core/ui"
 	context "com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/db"
@@ -52,6 +53,7 @@ func main() {
 		churn.Commands(ctx),
 		modus_operandi.Commands(ctx),
 		active_set.Commands(ctx),
+		storyboard.Commands(ctx),
 	}
 
 	for _, c := range commands {
