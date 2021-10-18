@@ -14,6 +14,7 @@ import (
 	"image/draw"
 	"image/jpeg"
 	"image/png"
+	"math"
 	"time"
 )
 
@@ -31,6 +32,7 @@ func create(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var filename string
 	var fps int
+	var interval int
 
 	cmd := cobra.Command{
 		Use:   "storyboard",
@@ -57,11 +59,24 @@ func create(ctx foundation.Context) *cobra.Command {
 			}
 
 			daysInRange := beforeTime.Sub(afterTime).Hours() / 24
-			var pngs = make([][]byte, int(daysInRange))
-			for i := 0; i < int(daysInRange); i++ {
-				max := afterTime.AddDate(0, 0, i)
+			total := int(daysInRange)/interval
+			remainder := math.Mod(daysInRange, float64(interval))
+
+			fullTotal := total
+			if int(remainder) > 0 {
+				fullTotal += 1
+			}
+			var pngs = make([][]byte, fullTotal)
+			for i := 0; i < total; i++ {
+				max := afterTime.AddDate(0, 0, (i+1)*interval)
 				ui.Log("Getting data between " + date.FormatDay(afterTime) + " and " + date.FormatDay(max))
 				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(max), &pngs[i])); err != nil {
+					return errors.Wrap(err, "Unable to browse data")
+				}
+			}
+			if int(remainder) > 0 {
+				ui.Log("Getting data between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
+				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(beforeTime), &pngs[len(pngs) - 1])); err != nil {
 					return errors.Wrap(err, "Unable to browse data")
 				}
 			}
@@ -83,14 +98,15 @@ func create(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&endpoint, "endpoint", "e", "http://localhost:1233/", "Endpoint of the UI")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch coupling after this day")
-	cmd.Flags().StringVarP(&filename, "filename", "f", "storyboard" + date.Today() + ".avi", "storyboard file name")
+	cmd.Flags().StringVarP(&filename, "filename", "f", "storyboard"+date.Today()+".avi", "storyboard file name")
 	cmd.Flags().IntVarP(&fps, "fps", "", 8, "number of frames per second")
+	cmd.Flags().IntVarP(&interval, "interval", "", 1, "interval in days between two sets of measures")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }
 
-func createVideo(width int, height int, pngs [][]byte, filename string, fps int) (error) {
+func createVideo(width int, height int, pngs [][]byte, filename string, fps int) error {
 	aw, err := mjpeg.New(filename, int32(width), int32(height), int32(fps))
 	if err != nil {
 		return errors.Wrap(err, "Unable to build video")
