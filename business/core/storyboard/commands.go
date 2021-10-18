@@ -1,6 +1,7 @@
 package storyboard
 
 import (
+	"com.fha.gocan/business/core"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"context"
@@ -20,10 +21,24 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 }
 
 func create(ctx foundation.Context) *cobra.Command {
+	var endpoint string
+	var before string
+	var after string
+	var verbose bool
+	var sceneName string
+
 	cmd := cobra.Command{
 		Use: "storyboard",
+		Args: cobra.ExactArgs(1),
+		Short: "Create a storyboard of visualizations",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			ctx.Ui.Print("storyboard...")
+			ui := ctx.Ui
+			ui.SetVerbose(verbose)
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
 
 			ctxt, cancel := chromedp.NewContext(context.Background())
 			defer cancel()
@@ -31,24 +46,18 @@ func create(ctx foundation.Context) *cobra.Command {
 			ctxt, cancel = context.WithTimeout(ctxt, 15*time.Second)
 			defer cancel()
 
-			endpoint := "http://0.0.0.0:1233/"
-			sceneId := "a3b28fd2-2fe8-11ec-838e-acde48001122"
-			appId := "a74b58cc-2fe8-11ec-b713-acde48001122"
-			after, err := date.ParseDay("2020-01-04")
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
-				return err
-			}
-			before, err := date.ParseDay("2020-01-10")
-			if err != nil {
-				return err
+				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
-			daysInRange := before.Sub(after).Hours() / 24
+			daysInRange := beforeTime.Sub(afterTime).Hours() / 24
 			var buffers = make([][]byte, int(daysInRange))
 
 			for i := 0; i < int(daysInRange); i++ {
-				max := after.AddDate(0, 0, i)
-				if err := chromedp.Run(ctxt, tasks(endpoint, sceneId, appId, date.FormatDay(after), date.FormatDay(max), &buffers[i])); err != nil {
+				max := afterTime.AddDate(0, 0, i)
+				ui.Log("Getting data between " + date.FormatDay(afterTime) + " and " + date.FormatDay(max))
+				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(max), &buffers[i])); err != nil {
 					return errors.Wrap(err, "Unable to browse data")
 				}
 			}
@@ -57,14 +66,20 @@ func create(ctx foundation.Context) *cobra.Command {
 				if err := ioutil.WriteFile("screenshot-" + strconv.Itoa(i) + ".jpeg", buffers[i], 0644); err != nil {
 					// todo
 					fmt.Println(err)
+					ui.Failed(err.Error())
 				}
-				fmt.Println("wrote screenshot-" + strconv.Itoa(i) + ".jpeg")
+				ui.Log("wrote screenshot-" + strconv.Itoa(i) + ".jpeg")
 			}
-
 
 			return nil
 		},
 	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&endpoint, "endpoint", "e", "http://localhost:1233/", "Endpoint of the UI")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch coupling after this day")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
 }
