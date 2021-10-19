@@ -62,7 +62,7 @@ export function CirclePacking({
 
     function buildSvg() {
       const svg = d3.select(container.current)
-      svg.classed('circle-packing', true)
+      svg.classed('circle-packing js-viz', true)
       svg
         .style('display', 'block')
         .style('cursor', 'pointer')

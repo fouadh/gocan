@@ -7,6 +7,7 @@ export function WordCloud({data, width = 600, height = 900}) {
 
   useEffect(() => {
     const svg = d3.select(container.current);
+    svg.classed('word-cloud js-viz', true)
     const fontScale = d3.scaleLinear().range([20, 120]);
     const fillScale = d3.scaleOrdinal(d3.schemeCategory10);
     const padding = 0;

@@ -30,7 +30,7 @@ export function MultiLineChart({data, type = "time", xAccessor, yAccessor, xForm
     const colorScale = d3.scaleOrdinal(d3.schemeSet1);
 
     return (
-        <div className="Timeline" ref={ref}>
+        <div className="Timeline js-viz" ref={ref}>
             <div className="p-mr-6 p-d-flex p-flex-column">
                 {
                     legend.map((each, index) => {

@@ -24,6 +24,15 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 	}
 }
 
+var analysisIds = map[string](string) {
+	"revisions": "0",
+	"hotspots": "1",
+	"coupling": "3",
+	"code-churn": "5",
+	"modus-operandi": "6",
+	"knowledge-map": "8",
+}
+
 func create(ctx foundation.Context) *cobra.Command {
 	var endpoint string
 	var before string
@@ -33,6 +42,7 @@ func create(ctx foundation.Context) *cobra.Command {
 	var filename string
 	var fps int
 	var interval int
+	var analysis string
 
 	cmd := cobra.Command{
 		Use:   "storyboard",
@@ -53,6 +63,12 @@ func create(ctx foundation.Context) *cobra.Command {
 				return err
 			}
 			defer connection.Close()
+
+			analysisId := analysisIds[analysis]
+			if analysisId == "" {
+				return errors.Errorf("Unknown analysis [%s]", analysis)
+			}
+
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 			if err != nil {
 				return errors.Wrap(err, "Invalid argument(s)")
@@ -70,13 +86,13 @@ func create(ctx foundation.Context) *cobra.Command {
 			for i := 0; i < total; i++ {
 				max := afterTime.AddDate(0, 0, (i+1)*interval)
 				ui.Log("Getting data between " + date.FormatDay(afterTime) + " and " + date.FormatDay(max))
-				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(max), &pngs[i])); err != nil {
+				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(max), &pngs[i], analysisId)); err != nil {
 					return errors.Wrap(err, "Unable to browse data")
 				}
 			}
 			if int(remainder) > 0 {
 				ui.Log("Getting data between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
-				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(beforeTime), &pngs[len(pngs) - 1])); err != nil {
+				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(beforeTime), &pngs[len(pngs) - 1], analysisId)); err != nil {
 					return errors.Wrap(err, "Unable to browse data")
 				}
 			}
@@ -99,6 +115,7 @@ func create(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch coupling after this day")
 	cmd.Flags().StringVarP(&filename, "filename", "f", "storyboard"+date.Today()+".avi", "storyboard file name")
+	cmd.Flags().StringVarP(&analysis, "analysis", "", "hotspots", "analysis to storyboard between revisions|hotspots|coupling|code-churn|modus-operandi|knowledge-map")
 	cmd.Flags().IntVarP(&fps, "fps", "", 8, "number of frames per second")
 	cmd.Flags().IntVarP(&interval, "interval", "", 1, "interval in days between two sets of measures")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
@@ -148,13 +165,14 @@ func pngToJpeg(buf []byte) (*image.RGBA, error) {
 	return jpg, nil
 }
 
-func tasks(endpoint string, sceneId string, appId string, min string, max string, buf *[]byte) chromedp.Tasks {
+func tasks(endpoint string, sceneId string, appId string, min string, max string, buf *[]byte, analysisId string) chromedp.Tasks {
 	url := endpoint + `scenes/` + sceneId + `/apps/` + appId + `?after=` + min + `&before=` + max
 
 	tasks := chromedp.Tasks{
 		chromedp.Navigate(url),
-		chromedp.WaitVisible(".Chart", chromedp.ByQuery),
-		chromedp.Screenshot(".Chart", buf, chromedp.NodeVisible),
+		chromedp.Click("#tabs_header_" +analysisId+ " > span", chromedp.ByQuery),
+		chromedp.WaitVisible(".js-viz", chromedp.ByQuery),
+		chromedp.Screenshot(".js-viz", buf, chromedp.NodeVisible),
 	}
 
 	return tasks

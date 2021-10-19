@@ -40,7 +40,7 @@ export function AppDetails() {
     return (
         <>
             <div><h3 className="p-ml-4 ml-4">{application?.name}</h3></div>
-            <TabView renderActiveOnly={true}>
+            <TabView renderActiveOnly={true} id="tabs">
                 <TabPanel header="Revisions">
                     <Revisions sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
