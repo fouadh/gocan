@@ -5,6 +5,7 @@ import (
 	"com.fha.gocan/foundation/db"
 	"fmt"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -88,17 +89,70 @@ ORDER BY numberOfRevisions DESC;
 `
 
 	data := struct {
-		AppId    string    `db:"app_id"`
-		Before   time.Time `db:"before"`
-		After    time.Time `db:"after"`
+		AppId  string    `db:"app_id"`
+		Before time.Time `db:"before"`
+		After  time.Time `db:"after"`
 	}{
-		AppId:    appId,
-		Before:   before,
-		After:    after,
+		AppId:  appId,
+		Before: before,
+		After:  after,
 	}
 
 	query := fmt.Sprintf(q, caseWhen, caseWhen, caseWhen, caseWhen)
 	var results []Revision
 	err := db.NamedQuerySlice(s.connection, query, data, &results)
 	return results, err
+}
+
+func (s Store) CreateTrend(trend NewRevisionTrends) error {
+	tx := s.connection.MustBegin()
+
+	const q1 = `insert into revision_trends(id, name, boundary_id) values(:id, :name, :boundary_id)`
+	if _, err := tx.NamedExec(q1, trend); err != nil {
+		if err := tx.Rollback(); err != nil {
+			return errors.Wrap(err, "Unable to rollback after trying saving trends")
+		}
+		return errors.Wrap(err, "Unable to insert new trends")
+	}
+
+	const q2 = `insert into revision_trend_entries(
+	id,
+	revision_trend_id,
+	date
+) values(
+         :id,
+         :revision_trend_id,
+         :date
+)`
+
+	const q3 = `insert into revision_trend_entry_revisions(
+	entry_id,
+	entity,
+	number_of_revisions)
+values(
+    :entry_id,
+	:entity,
+	:number_of_revisions
+)`
+
+	for _, entry := range trend.Entries {
+		if _, err := tx.NamedExec(q2, entry); err != nil {
+			if err := tx.Rollback(); err != nil {
+				return errors.Wrap(err, "Unable to rollback")
+			}
+			return errors.Wrap(err, "Unable to insert trend entry")
+		}
+
+		for _, rev := range entry.Revisions {
+			if _, err := tx.NamedExec(q3, rev); err != nil {
+				if err := tx.Rollback(); err != nil {
+					return errors.Wrap(err, "Unable to rollback")
+				}
+				return errors.Wrap(err, "Unable to insert trend entry revision")
+			}
+		}
+	}
+
+	err := tx.Commit()
+	return err
 }

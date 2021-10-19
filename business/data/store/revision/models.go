@@ -15,6 +15,26 @@ type HotspotHierarchy struct {
 	Size     int                 `json:"size,omitempty"`
 }
 
+type NewRevisionTrends struct {
+	Id         string `db:"id"`
+	Name       string `db:"name"`
+	BoundaryId string `db:"boundary_id"`
+	Entries    []NewRevisionTrend
+}
+
+type TrendRevision struct {
+	EntryId           string `db:"entry_id"`
+	Entity            string `db:"entity"`
+	NumberOfRevisions int    `db:"number_of_revisions"`
+}
+
+type NewRevisionTrend struct {
+	Id              string          `db:"id"`
+	Date            string          `db:"date"`
+	Revisions       []TrendRevision
+	RevisionTrendId string          `db:"revision_trend_id"`
+}
+
 type RevisionTrend struct {
 	Date      string     `json:"date"`
 	Revisions []Revision `json:"revisions"`

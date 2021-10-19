@@ -13,6 +13,7 @@ func Commands(ctx context.Context) []*cobra.Command {
 	return []*cobra.Command{
 		list(ctx),
 		hotspots(ctx),
+		createTrends(ctx),
 		trends(ctx),
 	}
 }
@@ -116,6 +117,60 @@ func hotspots(ctx context.Context) *cobra.Command {
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
 }
+
+func createTrends(ctx context.Context) *cobra.Command {
+	var sceneName string
+	var appName string
+	var boundaryName string
+	var before string
+	var after string
+	var verbose bool
+
+	cmd := cobra.Command{
+		Use: "create-revisions-trends",
+		Aliases: []string{"crt"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.SetVerbose(verbose)
+
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
+
+			c := NewCore(connection)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, appName, before, after)
+			if err != nil {
+				return errors.Wrap(err, "Command failed")
+			}
+
+			b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
+			if err != nil {
+				return errors.Wrap(err, "Boundary not found")
+			}
+
+			ui.Log("Creating revisions trends...")
+			if err := c.CreateRevisionTrends(args[0], a.Id, b, beforeTime, afterTime); err != nil {
+				return errors.Wrap(err, "Cannot create revisions trends")
+			}
+
+			ui.Ok()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the hotspots before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the hotspots after this day")
+	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	return &cmd
+}
+
 
 func trends(ctx context.Context) *cobra.Command {
 	var sceneName string

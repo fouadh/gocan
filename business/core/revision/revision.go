@@ -6,6 +6,7 @@ import (
 	"com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/business/data/store/scene"
 	"github.com/jmoiron/sqlx"
+	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
 	"strings"
 	"time"
@@ -58,6 +59,52 @@ func (c Core) RevisionTrends(appId string, b boundary.Boundary, before time.Time
 	}
 
 	return results, nil
+}
+
+func (c Core) CreateRevisionTrends(name string, appId string, b boundary.Boundary, before time.Time, after time.Time) error {
+	daysInRange := before.Sub(after).Hours() / 24
+
+	trendId := uuid.New()
+	entries := []revision.NewRevisionTrend{}
+	for i := 0; i <= int(daysInRange); i++ {
+		day := after.AddDate(0, 0, i)
+		dayRevs, err := c.revision.QueryByBoundary(appId, b, day, after)
+		if err != nil {
+			return errors.Wrap(err, "Unable to get revisions")
+		}
+
+		entryId := uuid.New()
+		trendRevs := make([]revision.TrendRevision, len(dayRevs))
+		for i, rev := range dayRevs {
+			trendRevs[i] = revision.TrendRevision{
+				EntryId:           entryId,
+				Entity:            rev.Entity,
+				NumberOfRevisions: rev.NumberOfRevisions,
+			}
+		}
+
+		entry := revision.NewRevisionTrend{
+			Id:              entryId,
+			RevisionTrendId: trendId,
+			Date:            day.Format("2006-01-02"),
+			Revisions:       trendRevs,
+		}
+
+		entries = append(entries, entry)
+	}
+
+	trend := revision.NewRevisionTrends{
+		Id:         trendId,
+		Name:       name,
+		BoundaryId: b.Id,
+		Entries:    entries,
+	}
+
+	if err := c.revision.CreateTrend(trend); err != nil {
+		return errors.Wrap(err, "Unable to create trend in database")
+	}
+
+	return nil
 }
 
 func buildHotspots(appName string, revisions []revision.Revision) revision.HotspotHierarchy {
