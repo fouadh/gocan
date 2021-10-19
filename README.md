@@ -1,10 +1,10 @@
 # Introduction
 
-Pet project heavily inspired from the excellent book [Your Code as a Crime Scene](https://pragprog.com/titles/atcrime/your-code-as-a-crime-scene/) written by Adam Tornhill.
+`gocan` is a little side project heavily inspired from the excellent book [Your Code as a Crime Scene](https://pragprog.com/titles/atcrime/your-code-as-a-crime-scene/) written by Adam Tornhill.
 
-This cli tool will allow you to build some of the charts described in that book in order to start conversations regarding the design or organisation of some application.
+It provides a cli to build some of the charts described in that book and that can be used to start conversations regarding the design or organisation of some application.
 
-It has very similar interface to [code-maat](https://github.com/adamtornhill/code-maat), the tool created by Adam Tornhill. Here are the main differences:
+It has very similar interface to [code-maat](https://github.com/adamtornhill/code-maat), the tool created by Adam Tornhill. Here are some of the main differences:
 
 - written in golang
 - only support git
@@ -108,9 +108,11 @@ After configuring the database, execute the next command to create the appropria
 gocan migrate-db
 ```
 
-# A Few Minutes Tutorial
+# A First Tutorial
 
 Let's use one of the examples in the book: analyzing Hibernate ORM.
+
+We'll first define a scene and an application, then import its git history.
 
 ```
 gocan create-scene hibernate
@@ -119,7 +121,9 @@ git clone https://github.com/hibernate/hibernate-orm.git
 gocan import-history orm -s hibernate --after 2011-01-01 --before 2013-09-04 --directory ./hibernate-orm
 ```
 
-Run the UI to visualize the hotspots:
+**Note:** `gocan` does not store the source code in its database, just the statistics about it.
+
+We can then run the UI to see some of the visualisations:
 
 ```
 gocan ui --port 1234
@@ -129,16 +133,22 @@ gocan ui --port 1234
 * Select the `hibernate` scene
 * A short summary of the apps will be displayed
 * Select the `orm` application
-* The `Revisions` tab will be displayed: it might take a few seconds to display the chart, be patient (until we improve the performance) :-)
+* The `Revisions` tab will be displayed: it might take a few seconds to display the chart, be patient :-)
 
 ![Revisions](doc/images/revisions.png)
 
-* Select the `Hotspots` tab to visualize the hotspots like in the book. You can zoom-in in the hierarchy by clicking on
-the different zones.
+You'll notice that there are some date selectors on the page that can be use to specify the analysis range. Those selectors
+are present in most of the analyses tabs.
+
+* Select the `Hotspots` tab to visualize the hotspots of hibernate for the considered period. You can zoom-in in the hierarchy by clicking on
+the different zones to find more specifically the files suspects.
 
 ![Hotspots](doc/images/hotspots.png)
 
 * Mine the data with the `revisions` command:
+
+This command displays the application files sorted by number of revisions as well as their complexity (in the `code` column).
+It is another way to identify the potential suspects.
 
 ```
 gocan revisions orm -s hibernate
@@ -158,6 +168,8 @@ The `directory` argument specifies the local folder where the git repo can be fo
 
 The command will return the complexity calculated of that file for the specified time period.
 
+**Note:** to execute that command, you will need to have access to the source code again.
+
 ![Complexity](doc/images/complexity2.png)
 
 We can see here that there is a maximum number of 14 indentations in some line(s) which might indicated some complicated code there.
@@ -168,15 +180,46 @@ Now, if you go to the `Complexity` tab in the UI, you should be able to select t
 
 We can see how the complexity increased with time.
 
-Now, let's take a look at change coupling: the files that have a tendency to be commited together, thanks to the following command.
+# A Second Tutorial
+
+Let's use another example from the book: [Craft.Net](https://github.com/ddevault/Craft.Net). This project is not maintained
+anymore so we'll have to specify appropriate dates in our commands.
+
+Let's create the app.
 
 ```
-gocan coupling orm -s hibernate -r 20
+gocan create-scene craft
+gocan create-app craft -s craft
+git clone https://github.com/SirCmpwn/Craft.Net.git craft
 ```
 
-The `-r` flag allows to limit to the query to files that has been modified at least 20 times in average.
+We are importing two periods of the application code that we want to compare:
 
-![coupling](doc/images/coupling.png)
+```
+cd craft
+gocan import-history craft -s craft --after 2012-07-01 --before 2013-01-01
+gocan import-history craft -s craft --after 2013-01-01 --before 2014-08-08
+```
+
+For each of the imported period, a complexity analysis is performed.
+
+Let's get a sum of coupling analysis:
+
+```
+gocan soc craft -s craft
+```
+
+We are going to focus on the `MinecraftServer` file during two periods of time: before and after 2013-01-01.
+
+Let's open the `Entity Coupling` tab and enter the following information:
+
+* in `Entity` field: `Craft.Net.Server/MinecraftServer.cs`
+* in `Min Date` field: `2012-06-30`
+* in `Max Date` field: `2013-01-01`
+
+And click on `Submit`. You should visualize the following figure:
+
+
 
 # Building the app
 
