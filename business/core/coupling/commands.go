@@ -13,7 +13,7 @@ import (
 func Commands(ctx foundation.Context) []*cobra.Command {
 	return []*cobra.Command{
 		list(ctx),
-		summary(ctx),
+		sum(ctx),
 		hierarchy(ctx),
 	}
 }
@@ -87,7 +87,7 @@ gocan coupling myapp --scene myscene
 	return &cmd
 }
 
-func summary(ctx foundation.Context) *cobra.Command {
+func sum(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -95,14 +95,14 @@ func summary(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use:  "summary-of-coupling",
+		Use:  "sum-of-coupling",
 		Aliases: []string{"soc"},
 		Args: cobra.ExactArgs(1),
-		Short: "Get a summary of coupling for an application",
+		Short: "Get a sum of coupling for an application",
 		Example: `
-gocan summary-of-coupling myapp --scene myscene --after 2021-01-01 --before 2021-02-01
-gocan summary-of-coupling myapp --scene myscene --after 2021-01-01
-gocan summary-of-coupling myapp --scene myscene
+gocan sum-of-coupling myapp --scene myscene --after 2021-01-01 --before 2021-02-01
+gocan sum-of-coupling myapp --scene myscene --after 2021-01-01
+gocan sum-of-coupling myapp --scene myscene
 `,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -113,7 +113,7 @@ gocan summary-of-coupling myapp --scene myscene
 			}
 			defer connection.Close()
 
-			ui.Log("Retrieving summary...")
+			ui.Log("Retrieving sum...")
 
 			c := NewCore(connection)
 
@@ -125,7 +125,7 @@ gocan summary-of-coupling myapp --scene myscene
 			data, err := c.QuerySoc(a.Id, beforeTime, afterTime)
 
 			if err != nil {
-				return errors.Wrap(err, "Cannot retrieve summary of coupling")
+				return errors.Wrap(err, "Cannot retrieve sum of coupling")
 			}
 
 			ui.Ok()
@@ -141,8 +141,8 @@ gocan summary-of-coupling myapp --scene myscene
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the summary of coupling before this day")
-	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the summary of coupling after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the sum of coupling before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the sum of coupling after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 	return &cmd
@@ -169,7 +169,7 @@ func hierarchy(ctx foundation.Context) *cobra.Command {
 			}
 			defer connection.Close()
 
-			ui.Log("Retrieving summary...")
+			ui.Log("Retrieving sum of coupling...")
 
 			c := NewCore(connection)
 
