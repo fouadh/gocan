@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"sort"
 	"time"
 )
 
@@ -238,11 +239,16 @@ WHERE revision_trend_id = :id
 	for _, rt := range mapResults {
 		results = append(results, *rt)
 	}
+
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Date < results[j].Date
+	})
+
 	return results, nil
 }
 
 func (s Store) QueryTrendsByAppId(appId string) ([]RevisionTrends, error) {
-	const q = `SELECT id, name, boundary_id FROM revision_trends WHERE app_id=:app_id`
+	const q = `SELECT id, name, boundary_id FROM revision_trends WHERE app_id=:app_id ORDER BY name ASC`
 	data := struct {
 		AppId string `db:"app_id"`
 	}{

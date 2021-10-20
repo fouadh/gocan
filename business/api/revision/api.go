@@ -99,5 +99,11 @@ func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, 
 		return err
 	}
 
-	return web.Respond(w, trends, 200)
+	payload := struct {
+		Trends []revision2.RevisionTrends `json:"trends"`
+	}{
+		Trends: trends,
+	}
+
+	return web.Respond(w, payload, 200)
 }

@@ -35,7 +35,11 @@ export const handlers = [
                         numberOfCommits: 123,
                         numberOfEntities: 45,
                         numberOfEntitiesChanged: 67,
-                        numberOfAuthors: 89
+                        numberOfAuthors: 89,
+                        dateRange: {
+                            minDate: "2020-01-01",
+                            maxDate: "2020-12-31",
+                        }
                     }
                 ]
             })
@@ -271,7 +275,15 @@ export const handlers = [
         }))
     }),
 
-    rest.get('/api/scenes/s123/apps/a1/revisions-trends?boundaryId=b123', (req, res, ctx) => {
+    rest.get('/api/scenes/s123/apps/a1/revisions-trends', (req, res, ctx) => {
+        return res(ctx.json({
+            trends: [
+                {id: "trend1", name: "architecture-trends"}
+            ]
+        }))
+    }),
+
+    rest.get('/api/scenes/s123/apps/a1/revisions-trends/trend1', (req, res, ctx) => {
         return res(ctx.json({
             trends: [
                 {

@@ -1,19 +1,32 @@
 import {useEffect, useState} from "react";
 import axios from "axios";
 import * as d3 from "d3";
-import {BoundarySelector} from "./BoundarySelector";
 import {MultiLineChart} from "../components/MultiLineChart";
+import {Dropdown} from "primereact/dropdown";
 
 export function RevisionTrends({sceneId, appId}) {
-    const [boundary, setBoundary] = useState();
+    const [trendName, setTrendName] = useState();
+    const [trendNames, setTrendNames] = useState();
     const [trends, setTrends] = useState([]);
     const [transformations, setTransformations] = useState([]);
 
     useEffect(() => {
         let subscribed = true;
-        if (boundary) {
-            console.log({boundary});
-            axios.get(`/api/scenes/${sceneId}/apps/${appId}/revisions-trends?boundaryId=${boundary}`)
+        axios.get(`/api/scenes/${sceneId}/apps/${appId}/revisions-trends`)
+            .then(it => it.data)
+            .then(it => it.trends)
+            .then((it) => {
+                if (subscribed) {
+                    setTrendNames(it);
+                }
+            });
+        return () => subscribed = false;
+    }, [sceneId, appId])
+
+    useEffect(() => {
+        let subscribed = true;
+        if (trendName) {
+            axios.get(`/api/scenes/${sceneId}/apps/${appId}/revisions-trends/${trendName}`)
                 .then(it => it.data)
                 .then(it => it.trends)
                 .then(it => {
@@ -43,7 +56,7 @@ export function RevisionTrends({sceneId, appId}) {
             setTrends({});
         }
         return () => subscribed = false;
-    }, [boundary, sceneId, appId]);
+    }, [trendName, sceneId, appId]);
 
     let chart;
     if (trends && trends.length > 0) {
@@ -59,7 +72,18 @@ export function RevisionTrends({sceneId, appId}) {
     }
 
     return <div>
-        <BoundarySelector sceneId={sceneId} appId={appId} onChange={(e) => setBoundary(e.value)}/>
+        <div>
+            <label className="p-mr-2">Trend Name:</label>
+            <Dropdown optionLabel="name"
+                      optionValue="id"
+                      options={trendNames}
+                      placeholder="Select a trend"
+                      value={trendName}
+                      showClear={true}
+                      onChange={(e) => {
+                          setTrendName(e.value);
+                      }}/>
+        </div>
         { chart }
     </div>;
 }
