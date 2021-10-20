@@ -11,7 +11,6 @@ import (
 	"com.fha.gocan/foundation"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
-	"time"
 )
 
 type Core struct {
@@ -34,7 +33,7 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Import(appId string, path string, before time.Time, after time.Time, ctx foundation.Context) error {
+func (c Core) Import(appId string, path string, before string, after string, ctx foundation.Context) error {
 	commits, err := git.GetCommits(path, before, after, ctx)
 	if err != nil {
 		return errors.Wrap(err, "Unable to retrieve commits")

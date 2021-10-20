@@ -15,10 +15,22 @@ import (
 	"time"
 )
 
-func GetCommits(path string, before time.Time, after time.Time, ctx foundation.Context) ([]commit.Commit, error) {
-	ctx.Ui.Log("looking for commits between " + date.FormatDay(after) + " and " + date.FormatDay(before))
-	cmd := exec.Command("git", "log", "--after", date.FormatDay(after), "--before", date.FormatDay(before),
-		"--date=iso", "--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},")
+func GetCommits(path string, before string, after string, ctx foundation.Context) ([]commit.Commit, error) {
+	ctx.Ui.Log("looking for commits between " + after + " and " + before)
+
+	args := []string{
+		"log",
+		"--before",
+		before,
+		"--date=iso",
+		"--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},",
+	}
+
+	if after != "" {
+		args = append(args, "--after", after)
+	}
+
+	cmd := exec.Command("git", args...)
 	cmd.Dir = path
 	out, err := cmd.Output()
 	if err != nil {
@@ -43,9 +55,33 @@ func GetCommits(path string, before time.Time, after time.Time, ctx foundation.C
 	}
 
 	commits := []commit.Commit{}
+
+	beforeTime, err := date.ParseDay(before)
+	if err != nil {
+		return []commit.Commit{}, errors.Wrap(err, "Unable to parse before date")
+	}
+
+	var afterTime time.Time
+
+	if after != "" {
+		afterTime, err = date.ParseDay(after)
+		if err != nil {
+			return []commit.Commit{}, errors.Wrap(err, "Unable to parse after date")
+		}
+	}
+
 	for _, gc := range gitCommits {
 		date, _ := time.Parse("2006-01-02 15:04:05 -0700", gc.Date)
-		if date.After(after) && date.Before(before) {
+		if after != "" {
+			if date.After(afterTime) && date.Before(beforeTime) {
+				commits = append(commits, commit.Commit{
+					Id:      gc.Id,
+					Author:  gc.Author,
+					Date:    date,
+					Message: gc.Message,
+				})
+			}
+		} else {
 			commits = append(commits, commit.Commit{
 				Id:      gc.Id,
 				Author:  gc.Author,
@@ -58,9 +94,19 @@ func GetCommits(path string, before time.Time, after time.Time, ctx foundation.C
 	return commits, nil
 }
 
-func GetStats(path string, before time.Time, after time.Time, commitsMap map[string]commit.Commit, ctx foundation.Context) ([]stat.Stat, error) {
+func GetStats(path string, before string, after string, commitsMap map[string]commit.Commit, ctx foundation.Context) ([]stat.Stat, error) {
 	ctx.Ui.Log("Getting the git logs to extract stats")
-	cmd := exec.Command("git", "log", "--after", date.FormatDay(after), "--before", date.FormatDay(before), "--numstat", "--format=%H")
+	args := []string{
+		"log",
+		"--before",
+		before,
+		"--numstat",
+		"--format=%H",
+	}
+	if after != "" {
+		args = append(args, "--after", after)
+	}
+	cmd := exec.Command("git", args...)
 	cmd.Dir = path
 	out, err := cmd.Output()
 	if err != nil {
