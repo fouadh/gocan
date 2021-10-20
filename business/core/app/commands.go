@@ -149,7 +149,8 @@ func summary(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "app-summary",
+		Use: "app",
+		Aliases: []string{"app-summary"},
 		Short: "Get an application summary information",
 		Example: `
 gocan app-summary myapp --scene myscene --after 2021-01-01 --before 2021-02-01
