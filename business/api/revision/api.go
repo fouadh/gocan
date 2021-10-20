@@ -8,7 +8,6 @@ import (
 	revision2 "com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
-	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -78,26 +77,8 @@ func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params 
 }
 
 func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, params map[string]string) error {
-	appId := params["appId"]
-	a, err := h.App.QueryById(appId)
-	if err != nil {
-		return err
-	}
-
-	query := r.URL.Query()
-	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
-	if err != nil {
-		return err
-	}
-
-	query = r.URL.Query()
-	boundaryId := query.Get("boundaryId")
-	b, err := h.Boundary.QueryByBoundaryId(boundaryId)
-	if err != nil {
-		return errors.Wrap(err, "Boundary not found")
-	}
-
-	trends, err := h.Revision.RevisionTrends(a.Id, b, beforeTime, afterTime)
+	trendId := params["trendId"]
+	trends, err := h.Revision.RevisionTrendsById(trendId)
 	if err != nil {
 		return err
 	}

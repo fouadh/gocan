@@ -65,6 +65,11 @@ func (c Core) RevisionTrendsByName(name string, appId string) (revision.Revision
 	return c.revision.QueryTrendsByName(name, appId)
 }
 
+func (c Core) RevisionTrendsById(trendId string) ([]revision.RevisionTrend, error) {
+	return c.revision.QueryTrends(trendId)
+}
+
+
 func (c Core) CreateRevisionTrends(name string, appId string, b boundary.Boundary, before time.Time, after time.Time) error {
 	daysInRange := before.Sub(after).Hours() / 24
 
