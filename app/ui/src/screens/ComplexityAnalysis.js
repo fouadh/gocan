@@ -130,7 +130,7 @@ export function ComplexityAnalysis({sceneId, appId}) {
     } else {
         analysisSelector = <>
             <p>
-                To create complexity analyses, please use the <strong> gocan create-complexity-analysis </strong> command.
+                To visualize complexity analyses, please use the <strong> gocan create-complexity-analysis </strong> command first.
             </p>
         </>
     }

@@ -72,7 +72,7 @@ export function RevisionTrends({sceneId, appId}) {
     }
 
     return <div>
-        <div>
+        {trendNames && <div>
             <label className="p-mr-2">Trend Name:</label>
             <Dropdown optionLabel="name"
                       optionValue="id"
@@ -83,7 +83,12 @@ export function RevisionTrends({sceneId, appId}) {
                       onChange={(e) => {
                           setTrendName(e.value);
                       }}/>
-        </div>
+        </div>}
+        {!trendNames && <div>
+            <p>
+                To visualize revision trends, please use the <strong> gocan create-revision-trends </strong> command first.
+            </p>
+        </div>}
         { chart }
     </div>;
 }
