@@ -61,8 +61,8 @@ func (c Core) RevisionTrends(appId string, b boundary.Boundary, before time.Time
 	return results, nil
 }
 
-func (c Core) RevisionTrendsByName(name string, boundaryId string) (revision.RevisionTrends, error) {
-	return c.revision.QueryTrendsByName(name, boundaryId)
+func (c Core) RevisionTrendsByName(name string, appId string) (revision.RevisionTrends, error) {
+	return c.revision.QueryTrendsByName(name, appId)
 }
 
 func (c Core) CreateRevisionTrends(name string, appId string, b boundary.Boundary, before time.Time, after time.Time) error {
@@ -101,6 +101,7 @@ func (c Core) CreateRevisionTrends(name string, appId string, b boundary.Boundar
 		Id:         trendId,
 		Name:       name,
 		BoundaryId: b.Id,
+		AppId: appId,
 		Entries:    entries,
 	}
 

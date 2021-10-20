@@ -107,7 +107,7 @@ ORDER BY numberOfRevisions DESC;
 func (s Store) CreateTrend(trend NewRevisionTrends) error {
 	tx := s.connection.MustBegin()
 
-	const q1 = `insert into revision_trends(id, name, boundary_id) values(:id, :name, :boundary_id)`
+	const q1 = `insert into revision_trends(id, name, boundary_id, app_id) values(:id, :name, :boundary_id, :app_id)`
 	if _, err := tx.NamedExec(q1, trend); err != nil {
 		if err := tx.Rollback(); err != nil {
 			return errors.Wrap(err, "Unable to rollback after trying saving trends")
@@ -165,17 +165,17 @@ type flatRevisionTrend struct {
 	NumberOfRevisions int    `db:"number_of_revisions"`
 }
 
-func (s Store) QueryTrendsByName(name string, boundaryId string) (RevisionTrends, error) {
+func (s Store) QueryTrendsByName(name string, appId string) (RevisionTrends, error) {
 	const q = `
-SELECT id, name FROM revision_trends
-WHERE name=:name AND boundary_id=:boundary_id`
+SELECT id, name, boundary_id FROM revision_trends
+WHERE name=:name AND app_id=:app_id`
 
 	data := struct {
 		Name string `db:"name"`
-		BoundaryId string `db:"boundary_id"`
+		AppId string `db:"app_id"`
 	}{
 		Name: name,
-		BoundaryId: boundaryId,
+		AppId: appId,
 	}
 
 	var trends RevisionTrends

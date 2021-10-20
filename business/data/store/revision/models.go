@@ -19,12 +19,14 @@ type NewRevisionTrends struct {
 	Id         string `db:"id"`
 	Name       string `db:"name"`
 	BoundaryId string `db:"boundary_id"`
+	AppId      string `db:"app_id"`
 	Entries    []NewRevisionTrend
 }
 
 type RevisionTrends struct {
 	Id         string `db:"id"`
 	Name       string `db:"name"`
+	BoundaryId string `db:"boundary_id"`
 	Entries    []RevisionTrend
 }
 

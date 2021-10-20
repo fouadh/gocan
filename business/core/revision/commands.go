@@ -175,7 +175,6 @@ func createTrends(ctx context.Context) *cobra.Command {
 func trends(ctx context.Context) *cobra.Command {
 	var sceneName string
 	var appName string
-	var boundaryName string
 	var csv bool
 	var verbose bool
 
@@ -200,21 +199,19 @@ func trends(ctx context.Context) *cobra.Command {
 				return errors.Wrap(err, "Command failed")
 			}
 
-			b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
-			if err != nil {
-				return errors.Wrap(err, "Boundary not found")
-			}
 
 			ui.Log("Getting revisions trends...")
-			ui.Log("Trend name is [" + args[0] + "]")
-			ui.Log("Boundary Id is [" + b.Id + "]")
-			trends, err := c.RevisionTrendsByName(args[0], b.Id)
+			trends, err := c.RevisionTrendsByName(args[0], a.Id)
 			if err != nil {
 				return errors.Wrap(err, "Cannot get revisions trends")
 			}
 
 			ui.Ok()
 
+			b, err := c.boundary.QueryById(trends.BoundaryId)
+			if err != nil {
+				return errors.Wrap(err, "Boundary not found")
+			}
 			headers := []string{"date"}
 			for _, t := range b.Transformations {
 				headers = append(headers, t.Name)
@@ -235,7 +232,6 @@ func trends(ctx context.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
-	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
