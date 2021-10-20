@@ -2,6 +2,7 @@ package revision
 
 import (
 	"com.fha.gocan/business/core"
+	"com.fha.gocan/business/core/app"
 	context "com.fha.gocan/foundation"
 	"encoding/json"
 	"github.com/pkg/errors"
@@ -26,8 +27,8 @@ func list(ctx context.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use:  "revisions",
-		Args: cobra.ExactArgs(1),
+		Use:   "revisions",
+		Args:  cobra.ExactArgs(1),
 		Short: "Get the entities of an application ordered by their number of revisions",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -80,8 +81,8 @@ func hotspots(ctx context.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "hotspots",
-		Args: cobra.ExactArgs(1),
+		Use:   "hotspots",
+		Args:  cobra.ExactArgs(1),
 		Short: "Get the hotspots of an application in JSON formatted for d3.js",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -127,7 +128,7 @@ func createTrends(ctx context.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "create-revisions-trends",
+		Use:     "create-revisions-trends",
 		Aliases: []string{"crt"},
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -171,20 +172,18 @@ func createTrends(ctx context.Context) *cobra.Command {
 	return &cmd
 }
 
-
 func trends(ctx context.Context) *cobra.Command {
 	var sceneName string
+	var appName string
 	var boundaryName string
-	var before string
-	var after string
 	var csv bool
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "revision-trends",
+		Use:     "revision-trends",
 		Aliases: []string{"revisions-trends", "rt"},
-		Short: "Get the revision trends for a boundary",
-		Args: cobra.ExactArgs(1),
+		Short:   "Get the revision trends for a boundary",
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.SetVerbose(verbose)
@@ -196,7 +195,7 @@ func trends(ctx context.Context) *cobra.Command {
 			defer connection.Close()
 
 			c := NewCore(connection)
-			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
 			if err != nil {
 				return errors.Wrap(err, "Command failed")
 			}
@@ -207,7 +206,9 @@ func trends(ctx context.Context) *cobra.Command {
 			}
 
 			ui.Log("Getting revisions trends...")
-			trends, err := c.RevisionTrends(a.Id, b, beforeTime, afterTime)
+			ui.Log("Trend name is [" + args[0] + "]")
+			ui.Log("Boundary Id is [" + b.Id + "]")
+			trends, err := c.RevisionTrendsByName(args[0], b.Id)
 			if err != nil {
 				return errors.Wrap(err, "Cannot get revisions trends")
 			}
@@ -219,7 +220,7 @@ func trends(ctx context.Context) *cobra.Command {
 				headers = append(headers, t.Name)
 			}
 			table := ui.Table(headers, csv)
-			for _, rt := range trends {
+			for _, rt := range trends.Entries {
 				cols := []string{rt.Date}
 				for _, t := range b.Transformations {
 					cols = append(cols, strconv.Itoa(rt.FindEntityRevision(t.Name).NumberOfRevisions))
@@ -233,8 +234,7 @@ func trends(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the hotspots before this day")
-	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the hotspots after this day")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")

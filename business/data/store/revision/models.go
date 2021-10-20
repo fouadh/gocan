@@ -22,6 +22,12 @@ type NewRevisionTrends struct {
 	Entries    []NewRevisionTrend
 }
 
+type RevisionTrends struct {
+	Id         string `db:"id"`
+	Name       string `db:"name"`
+	Entries    []RevisionTrend
+}
+
 type TrendRevision struct {
 	EntryId           string `db:"entry_id"`
 	Entity            string `db:"entity"`
@@ -29,23 +35,23 @@ type TrendRevision struct {
 }
 
 type NewRevisionTrend struct {
-	Id              string          `db:"id"`
-	Date            string          `db:"date"`
+	Id              string `db:"id"`
+	Date            string `db:"date"`
 	Revisions       []TrendRevision
-	RevisionTrendId string          `db:"revision_trend_id"`
+	RevisionTrendId string `db:"revision_trend_id"`
 }
 
 type RevisionTrend struct {
-	Date      string     `json:"date"`
-	Revisions []Revision `json:"revisions"`
+	Date      string          `json:"date"`
+	Revisions []TrendRevision `json:"revisions"`
 }
 
-func (rt RevisionTrend) FindEntityRevision(entityName string) Revision {
+func (rt RevisionTrend) FindEntityRevision(entityName string) TrendRevision {
 	for _, r := range rt.Revisions {
 		if r.Entity == entityName {
 			return r
 		}
 	}
 
-	return Revision{}
+	return TrendRevision{}
 }

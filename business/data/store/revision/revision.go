@@ -156,3 +156,87 @@ values(
 	err := tx.Commit()
 	return err
 }
+
+type flatRevisionTrend struct {
+	Id                string `db:"id"`
+	Revision_trend_id string `db:"revision_trend_id"`
+	Date              string `db:"date"`
+	Entity            string `db:"entity"`
+	NumberOfRevisions int    `db:"number_of_revisions"`
+}
+
+func (s Store) QueryTrendsByName(name string, boundaryId string) (RevisionTrends, error) {
+	const q = `
+SELECT id, name FROM revision_trends
+WHERE name=:name AND boundary_id=:boundary_id`
+
+	data := struct {
+		Name string `db:"name"`
+		BoundaryId string `db:"boundary_id"`
+	}{
+		Name: name,
+		BoundaryId: boundaryId,
+	}
+
+	var trends RevisionTrends
+	if err := db.NamedQueryStruct(s.connection, q, data, &trends); err != nil {
+		return RevisionTrends{}, errors.Wrap(err, "Unable to fetch revision trends by name")
+	}
+
+	entries, err := s.QueryTrends(trends.Id)
+	if err != nil {
+		return RevisionTrends{}, errors.Wrap(err, "Unable to fetch revision trends entries")
+	}
+
+	trends.Entries = entries
+	return trends, nil
+}
+
+func (s Store) QueryTrends(id string) ([]RevisionTrend, error) {
+	const q = `
+SELECT id, revision_trend_id, date, entity, number_of_revisions
+FROM revision_trend_entries
+INNER JOIN revision_trend_entry_revisions ON revision_trend_entry_revisions.entry_id = revision_trend_entries.id
+WHERE revision_trend_id = :id
+`
+	data := struct {
+		Id string `db:"id"`
+	}{
+		Id: id,
+	}
+
+	var rows []flatRevisionTrend
+
+	if err := db.NamedQuerySlice(s.connection, q, data, &rows); err != nil {
+		return []RevisionTrend{}, errors.Wrap(err, "Unable to fetch revision trends")
+	}
+
+	mapResults := make(map[string](*RevisionTrend))
+	for _, row := range rows {
+		if trend, ok := mapResults[row.Date]; ok {
+			trend.Revisions = append(trend.Revisions, TrendRevision{
+				EntryId:           row.Id,
+				Entity:            row.Entity,
+				NumberOfRevisions: row.NumberOfRevisions,
+			})
+		} else {
+			revisions := []TrendRevision{
+				{
+					EntryId:           row.Id,
+					Entity:            row.Entity,
+					NumberOfRevisions: row.NumberOfRevisions,
+				},
+			}
+			mapResults[row.Date] = &RevisionTrend{
+				Date:      row.Date,
+				Revisions: revisions,
+			}
+		}
+	}
+
+	var results []RevisionTrend
+	for _, rt := range mapResults {
+		results = append(results, *rt)
+	}
+	return results, nil
+}

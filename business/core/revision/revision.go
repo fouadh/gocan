@@ -47,18 +47,22 @@ func (c Core) RevisionTrends(appId string, b boundary.Boundary, before time.Time
 	results := []revision.RevisionTrend{}
 	for i := 0; i <= int(daysInRange); i++ {
 		day := after.AddDate(0, 0, i)
-		dayRevs, err := c.revision.QueryByBoundary(appId, b, day, after)
+		_, err := c.revision.QueryByBoundary(appId, b, day, after)
 		if err != nil {
 			return []revision.RevisionTrend{}, err
 		}
 
 		results = append(results, revision.RevisionTrend{
 			Date:      day.Format("2006-01-02"),
-			Revisions: dayRevs,
+			Revisions: []revision.TrendRevision{},
 		})
 	}
 
 	return results, nil
+}
+
+func (c Core) RevisionTrendsByName(name string, boundaryId string) (revision.RevisionTrends, error) {
+	return c.revision.QueryTrendsByName(name, boundaryId)
 }
 
 func (c Core) CreateRevisionTrends(name string, appId string, b boundary.Boundary, before time.Time, after time.Time) error {
