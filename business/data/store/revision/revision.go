@@ -240,3 +240,19 @@ WHERE revision_trend_id = :id
 	}
 	return results, nil
 }
+
+func (s Store) QueryTrendsByAppId(appId string) ([]RevisionTrends, error) {
+	const q = `SELECT id, name, boundary_id FROM revision_trends WHERE app_id=:app_id`
+	data := struct {
+		AppId string `db:"app_id"`
+	}{
+		AppId: appId,
+	}
+
+	var results []RevisionTrends
+	if err := db.NamedQuerySlice(s.connection, q, data, &results); err != nil {
+		return []RevisionTrends{}, errors.Wrap(err, "Unable to fetch trends")
+	}
+
+	return results, nil
+}

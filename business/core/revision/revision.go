@@ -117,6 +117,10 @@ func (c Core) CreateRevisionTrends(name string, appId string, b boundary.Boundar
 	return nil
 }
 
+func (c Core) RevisionTrendsByAppId(appId string) ([]revision.RevisionTrends, error) {
+	return c.revision.QueryTrendsByAppId(appId)
+}
+
 func buildHotspots(appName string, revisions []revision.Revision) revision.HotspotHierarchy {
 	root := revision.HotspotHierarchy{
 		Name:     appName,

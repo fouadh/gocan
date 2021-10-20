@@ -76,7 +76,7 @@ func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params 
 	return web.Respond(w, payload, 200)
 }
 
-func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *Handlers) QueryRevisionsTrendsById(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	trendId := params["trendId"]
 	trends, err := h.Revision.RevisionTrendsById(trendId)
 	if err != nil {
@@ -90,4 +90,14 @@ func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, 
 	}
 
 	return web.Respond(w, payload, 200)
+}
+
+func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+	trends, err := h.Revision.RevisionTrendsByAppId(appId)
+	if err != nil {
+		return err
+	}
+
+	return web.Respond(w, trends, 200)
 }

@@ -24,16 +24,16 @@ type NewRevisionTrends struct {
 }
 
 type RevisionTrends struct {
-	Id         string `db:"id"`
-	Name       string `db:"name"`
-	BoundaryId string `db:"boundary_id"`
-	Entries    []RevisionTrend
+	Id         string `json:"id" db:"id"`
+	Name       string `json:"name" db:"name"`
+	BoundaryId string `json:"boundaryId" db:"boundary_id"`
+	Entries    []RevisionTrend `json:"entries,omitempty"`
 }
 
 type TrendRevision struct {
-	EntryId           string `db:"entry_id"`
-	Entity            string `db:"entity"`
-	NumberOfRevisions int    `db:"number_of_revisions"`
+	EntryId           string `json:"entryId" db:"entry_id"`
+	Entity            string `json:"entity" db:"entity"`
+	NumberOfRevisions int    `json:"numberOfRevisions" db:"number_of_revisions"`
 }
 
 type NewRevisionTrend struct {
