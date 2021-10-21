@@ -3,6 +3,7 @@ package revision
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/business/core/app"
+	"com.fha.gocan/business/data/store/revision"
 	context "com.fha.gocan/foundation"
 	"encoding/json"
 	"github.com/pkg/errors"
@@ -23,6 +24,7 @@ func list(ctx context.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
+	var boundaryName string
 	var csv bool
 	var verbose bool
 
@@ -44,7 +46,17 @@ func list(ctx context.Context) *cobra.Command {
 			c := NewCore(connection)
 			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
 
-			revisions, err := c.Query(a.Id, beforeTime, afterTime)
+			var revisions []revision.Revision
+
+			if boundaryName == "" {
+				revisions, err = c.Query(a.Id, beforeTime, afterTime)
+			} else {
+				b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
+				if err != nil {
+					return errors.Wrap(err, "Unable to get boundary")
+				}
+				revisions, err = c.QueryByBoundary(a.Id, b, beforeTime, afterTime)
+			}
 
 			if err != nil {
 				ui.Failed("Cannot fetch revisions: " + err.Error())
@@ -67,6 +79,7 @@ func list(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Optional boundary name to get the analysis for a specific boundary")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the revisions before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the revisions after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")

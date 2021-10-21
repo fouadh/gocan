@@ -34,3 +34,7 @@ $GOCAN soc maat --scene maat | head -n 10
 
 echo "Measuring coupling"
 $GOCAN coupling maat --scene maat
+
+echo "Creating src vs test boundaries"
+create-boundary src_test_boundaries --scene maat --app maat --transformation Code:src/code_maat --transformation Test:test/code_maat
+

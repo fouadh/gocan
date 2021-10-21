@@ -100,6 +100,10 @@ func (c Core) RevisionTrendsByAppId(appId string) ([]revision.RevisionTrends, er
 	return c.revision.QueryTrendsByAppId(appId)
 }
 
+func (c Core) QueryByBoundary(appId string, b boundary.Boundary, before time.Time, after time.Time) ([]revision.Revision, error) {
+	return c.revision.QueryByBoundary(appId, b, before, after)
+}
+
 func buildHotspots(appName string, revisions []revision.Revision) revision.HotspotHierarchy {
 	root := revision.HotspotHierarchy{
 		Name:     appName,
