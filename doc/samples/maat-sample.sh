@@ -35,7 +35,7 @@ $GOCAN soc maat --scene maat | head -n 10
 echo "Measuring coupling"
 $GOCAN coupling maat --scene maat
 
-echo "Creating src vs test boundaries"
+echo "Create src vs test boundaries"
 $GOCAN create-boundary src_test_boundaries --scene maat --app maat --transformation Code:src/code_maat --transformation Test:test/code_maat
 
 echo "Perform architectural analysis on boundaries"
@@ -60,3 +60,13 @@ $GOCAN create-revisions-trends src_test --scene maat --app maat --boundary src_t
 
 echo "Visualize the revisions trends"
 $GOCAN revisions-trends src_test --scene maat --app maat
+
+echo "Create software architecture boundaries"
+$GOCAN create-boundary pipes_filter_boundaries --scene maat --app maat \
+        --transformation Parse:src/code_maat/parsers \
+        --transformation Analyze:src/code_maat/analysis \
+        --transformation Output:src/code_maat/output \
+        --transformation Application:src/code_maat/app
+
+echo "Perform architectural analysis on the pipes filter architecture"
+$GOCAN coupling maat --scene maat --boundary pipes_filter_boundaries
