@@ -39,3 +39,5 @@ $GOCAN modus-operandi orm -s hibernate | head -n 10
 
 echo "Looking for the relationships between authors and entities"
 $GOCAN revisions-authors orm -s hibernate | head -n 10
+
+$GOCAN coupling orm -s hibernate --min-revisions-average 20 | grep AbstractEntityPersister

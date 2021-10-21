@@ -23,6 +23,7 @@ func list(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var minCoupling int
 	var minRevsAvg int
+	var temporalPeriod int
 	var boundaryName string
 	var before string
 	var after string
@@ -59,7 +60,7 @@ gocan coupling myapp --scene myscene
 			var data []coupling.Coupling
 
 			if boundaryName == "" {
-				data, err = c.Query(a.Id, float64(minCoupling)/100, minRevsAvg, beforeTime, afterTime)
+				data, err = c.Query(a.Id, float64(minCoupling)/100, minRevsAvg, temporalPeriod, beforeTime, afterTime)
 			} else {
 				data, err = c.QueryByBoundary(a.Id, boundaryName, float64(minCoupling)/100, minRevsAvg, beforeTime, afterTime)
 			}
@@ -89,6 +90,7 @@ gocan coupling myapp --scene myscene
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Optional boundary name to get the analysis for a specific boundary")
 	cmd.Flags().IntVarP(&minCoupling, "min-degree", "d", 30, "minimal degree of coupling wanted (in percent)")
 	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
+	cmd.Flags().IntVarP(&temporalPeriod, "temporal-period", "", 1, "number of days to treat commits within as a single change")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch coupling after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")

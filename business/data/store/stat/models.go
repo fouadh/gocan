@@ -7,3 +7,8 @@ type Stat struct {
 	Deletions  int    `db:"deletions"`
 	File       string `db:"file"`
 }
+
+type StatInfo struct {
+	CommitId   string `db:"commit_id"`
+	File       string `db:"file"`
+}

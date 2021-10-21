@@ -3,12 +3,11 @@ package coupling
 import (
 	"com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/business/data/store/stat"
-	"reflect"
 	"testing"
 )
 
 func TestCouplingForTwoFiles(t *testing.T) {
-	stats := []stat.Stat{
+	stats := []stat.StatInfo{
 		{CommitId: "123", File: "file1"},
 		{CommitId: "123", File: "file2"},
 		{CommitId: "456", File: "file1"},
@@ -22,13 +21,13 @@ func TestCouplingForTwoFiles(t *testing.T) {
 			AverageRevisions: 1.5,
 		},
 	}
-	got := CalculateCouplings(stats, 0, 0)
+	got := CalculateCouplings(stats, 0, 0, 0)
 
 	assertEqual(t, want, got)
 }
 
 func TestCouplingForManyFiles(t *testing.T) {
-	stats := []stat.Stat{
+	stats := []stat.StatInfo{
 		{CommitId: "123", File: "file1"},
 		{CommitId: "123", File: "file2"},
 
@@ -80,7 +79,7 @@ func TestCouplingForManyFiles(t *testing.T) {
 			AverageRevisions: 3,
 		},
 	}
-	got := CalculateCouplings(stats, 0, 0)
+	got := CalculateCouplings(stats, 0, 0, 0)
 
 	assertEqual(t, want, got)
 }
@@ -108,19 +107,4 @@ func assertEqual(t *testing.T, want []coupling.Coupling, got []coupling.Coupling
 			t.Errorf("Wanted %v, got %v", expected, actual)
 		}
 	}
-}
-
-func isEqual(aa, bb []coupling.Coupling) bool {
-	eqCtr := 0
-	for _, a := range aa {
-		for _, b := range bb {
-			if reflect.DeepEqual(a, b) {
-				eqCtr++
-			}
-		}
-	}
-	if eqCtr != len(bb) || len(aa) != len(bb) {
-		return false
-	}
-	return true
 }

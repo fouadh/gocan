@@ -38,13 +38,13 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Query(appId string, minimalCoupling float64, minimalRevisionsAverage int, beforeTime time.Time, afterTime time.Time) ([]coupling.Coupling, error) {
+func (c Core) Query(appId string, minimalCoupling float64, minimalRevisionsAverage int, temporalPeriod int, beforeTime time.Time, afterTime time.Time) ([]coupling.Coupling, error) {
 	stats, err := c.stat.Query(appId, beforeTime, afterTime)
 	if err != nil {
 		return []coupling.Coupling{}, err
 	}
 
-	couplings := CalculateCouplings(stats, minimalCoupling, float64(minimalRevisionsAverage))
+	couplings := CalculateCouplings(stats, minimalCoupling, float64(minimalRevisionsAverage), temporalPeriod)
 	return couplings, nil
 }
 
@@ -59,12 +59,12 @@ func (c Core) QueryByBoundary(appId string, boundaryName string, minimalCoupling
 		return []coupling.Coupling{}, errors.Wrap(err, "Unable to find boundary")
 	}
 
-	statsByBoundaryMap := make(map[string](map[string]stat.Stat))
+	statsByBoundaryMap := make(map[string](map[string]stat.StatInfo))
 	transformations := b.Transformations
 
 	for _, s := range stats {
 		if _, ok := statsByBoundaryMap[s.CommitId]; !ok {
-			statsByBoundaryMap[s.CommitId] = make(map[string]stat.Stat)
+			statsByBoundaryMap[s.CommitId] = make(map[string]stat.StatInfo)
 		}
 		commits := statsByBoundaryMap[s.CommitId]
 
@@ -77,34 +77,21 @@ func (c Core) QueryByBoundary(appId string, boundaryName string, minimalCoupling
 		}
 
 		if transformation != "" {
-			if sb, ok := commits[transformation]; ok {
-				commits[transformation] = stat.Stat{
-					AppId:      s.AppId,
-					CommitId:   s.CommitId,
-					Insertions: s.Insertions + sb.Insertions,
-					Deletions:  s.Deletions + sb.Deletions,
-					File:       transformation,
-				}
-			} else {
-				commits[transformation] = stat.Stat{
-					AppId:      s.AppId,
-					CommitId:   s.CommitId,
-					Insertions: s.Insertions,
-					Deletions:  s.Deletions,
-					File:       transformation,
-				}
+			commits[transformation] = stat.StatInfo{
+				CommitId:   s.CommitId,
+				File:       transformation,
 			}
 		}
 	}
 
-	statsByBoundary := []stat.Stat{}
+	statsByBoundary := []stat.StatInfo{}
 	for _, commits := range statsByBoundaryMap {
 		for _, s := range commits {
 			statsByBoundary = append(statsByBoundary, s)
 		}
 	}
 
-	couplings := CalculateCouplings(statsByBoundary, minimalCoupling, float64(minimalRevisionsAverage))
+	couplings := CalculateCouplings(statsByBoundary, minimalCoupling, float64(minimalRevisionsAverage), 0)
 	return couplings, nil
 }
 
@@ -113,7 +100,7 @@ func (c Core) QuerySoc(appId string, before time.Time, after time.Time) ([]coupl
 }
 
 func (c Core) BuildCouplingHierarchy(a app.App, minimalCoupling float64, minimalRevisionsAverage int, beforeTime time.Time, afterTime time.Time) (coupling.CouplingHierarchy, error) {
-	couplings, err := c.Query(a.Id, minimalCoupling, minimalRevisionsAverage, beforeTime, afterTime)
+	couplings, err := c.Query(a.Id, minimalCoupling, minimalRevisionsAverage, 0, beforeTime, afterTime)
 	if err != nil {
 		return coupling.CouplingHierarchy{}, errors.Wrap(err, "Unable to fetch couplings")
 	}
@@ -139,7 +126,7 @@ func (c Core) BuildEntityCouplingHierarchy(a app.App, entity string, minimalCoup
 		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
 	}
 
-	couplings, err := c.Query(a.Id, minimalCoupling, minimalRevisionsAverage, before, after)
+	couplings, err := c.Query(a.Id, minimalCoupling, minimalRevisionsAverage, 0, before, after)
 	if err != nil {
 		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch couplings")
 	}
@@ -164,7 +151,7 @@ func (c Core) BuildEntityCouplingHierarchy(a app.App, entity string, minimalCoup
 
 	for _, revision := range revisions {
 		path := strings.Split(revision.Entity, "/")
-		buildEntityCouplingNode(path, &root, revision, couplingsMap[revision.Entity] / maxDegree)
+		buildEntityCouplingNode(path, &root, revision, couplingsMap[revision.Entity]/maxDegree)
 	}
 
 	return root, nil
@@ -296,7 +283,7 @@ func (p *pair) onCoupling() {
 	p.count++
 }
 
-func CalculateCouplings(stats []stat.Stat, minimalCoupling float64, average float64) []coupling.Coupling {
+func CalculateCouplings(stats []stat.StatInfo, minimalCoupling float64, average float64, period int) []coupling.Coupling {
 	pairs := calculateCouplingStats(stats)
 	couplings := buildCouplings(pairs, minimalCoupling, average)
 	sort.Slice(couplings, func(i, j int) bool {
@@ -305,7 +292,7 @@ func CalculateCouplings(stats []stat.Stat, minimalCoupling float64, average floa
 	return couplings
 }
 
-func calculateCouplingStats(stats []stat.Stat) []*pair {
+func calculateCouplingStats(stats []stat.StatInfo) []*pair {
 	commits := organizeEntitiesPerCommit(stats)
 	pairsMap := make(map[pair](info))
 	revisions := make(map[string](int))
@@ -371,7 +358,7 @@ func buildCouplings(pairs []*pair, minimalCoupling float64, minimalAverage float
 	return couplings
 }
 
-func organizeEntitiesPerCommit(stats []stat.Stat) map[string]map[string]bool {
+func organizeEntitiesPerCommit(stats []stat.StatInfo) map[string]map[string]bool {
 	commits := make(map[string](map[string](bool)))
 	for _, s := range stats {
 		if _, ok := commits[s.CommitId]; ok {

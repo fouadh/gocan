@@ -17,10 +17,10 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
-func (s Store) Query(appId string, before time.Time, after time.Time) ([]Stat, error) {
+func (s Store) Query(appId string, before time.Time, after time.Time) ([]StatInfo, error) {
 	const q = `
 	SELECT 
-		s.app_id, commit_id, insertions, deletions, file
+		commit_id, file
 	FROM
 		stats s
 		INNER JOIN commits c ON c.id=s.commit_id AND c.date between :after and :before
@@ -41,16 +41,16 @@ func (s Store) Query(appId string, before time.Time, after time.Time) ([]Stat, e
 
 	 rows, err := s.connection.NamedQuery(q, data)
 	 if err != nil {
-	 	return []Stat{}, errors.Wrap(err, "Unable to execute query")
+	 	return []StatInfo{}, errors.Wrap(err, "Unable to execute query")
 	 }
 	 defer rows.Close()
 
-	 results := []Stat{}
+	 results := []StatInfo{}
 
 	for rows.Next() {
-		var item Stat
+		var item StatInfo
 		if err := rows.StructScan(&item); err != nil {
-			return []Stat{}, err
+			return []StatInfo{}, err
 		}
 		results = append(results, item)
 	}
