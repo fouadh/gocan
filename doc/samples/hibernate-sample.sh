@@ -34,3 +34,5 @@ $GOCAN create-complexity-analysis configuration-analysis \
       --filename hibernate-core/src/main/java/org/hibernate/cfg/Configuration.java \
       --directory $tmp_dir/orm/
 
+echo "Looking for the modus operandi"
+$GOCAN modus-operandi orm -s hibernate | head -n 10
