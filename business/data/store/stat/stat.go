@@ -20,7 +20,7 @@ func NewStore(connection *sqlx.DB) Store {
 func (s Store) Query(appId string, before time.Time, after time.Time) ([]StatInfo, error) {
 	const q = `
 	SELECT 
-		commit_id, file
+		date, commit_id, file
 	FROM
 		stats s
 		INNER JOIN commits c ON c.id=s.commit_id AND c.date between :after and :before

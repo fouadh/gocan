@@ -78,8 +78,9 @@ func (c Core) QueryByBoundary(appId string, boundaryName string, minimalCoupling
 
 		if transformation != "" {
 			commits[transformation] = stat.StatInfo{
-				CommitId:   s.CommitId,
-				File:       transformation,
+				Date:     s.Date,
+				CommitId: s.CommitId,
+				File:     transformation,
 			}
 		}
 	}

@@ -1,5 +1,7 @@
 package stat
 
+import "time"
+
 type Stat struct {
 	AppId      string `db:"app_id"`
 	CommitId   string `db:"commit_id"`
@@ -9,6 +11,7 @@ type Stat struct {
 }
 
 type StatInfo struct {
-	CommitId   string `db:"commit_id"`
-	File       string `db:"file"`
+	Date     time.Time `db:"date"`
+	CommitId string    `db:"commit_id"`
+	File     string    `db:"file"`
 }

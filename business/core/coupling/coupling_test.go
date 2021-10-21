@@ -4,13 +4,14 @@ import (
 	"com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/business/data/store/stat"
 	"testing"
+	"time"
 )
 
 func TestCouplingForTwoFiles(t *testing.T) {
 	stats := []stat.StatInfo{
-		{CommitId: "123", File: "file1"},
-		{CommitId: "123", File: "file2"},
-		{CommitId: "456", File: "file1"},
+		{CommitId: "123", File: "file1", Date: time.Now()},
+		{CommitId: "123", File: "file2", Date: time.Now()},
+		{CommitId: "456", File: "file1", Date: time.Now()},
 	}
 
 	want := []coupling.Coupling{
@@ -28,23 +29,23 @@ func TestCouplingForTwoFiles(t *testing.T) {
 
 func TestCouplingForManyFiles(t *testing.T) {
 	stats := []stat.StatInfo{
-		{CommitId: "123", File: "file1"},
-		{CommitId: "123", File: "file2"},
+		{CommitId: "123", File: "file1", Date: time.Now()},
+		{CommitId: "123", File: "file2", Date: time.Now()},
 
-		{CommitId: "456", File: "file1"},
-		{CommitId: "456", File: "file3"},
-		{CommitId: "456", File: "file4"},
+		{CommitId: "456", File: "file1", Date: time.Now()},
+		{CommitId: "456", File: "file3", Date: time.Now()},
+		{CommitId: "456", File: "file4", Date: time.Now()},
 
-		{CommitId: "789", File: "file4"},
-		{CommitId: "789", File: "file2"},
-		{CommitId: "789", File: "file1"},
+		{CommitId: "789", File: "file4", Date: time.Now()},
+		{CommitId: "789", File: "file2", Date: time.Now()},
+		{CommitId: "789", File: "file1", Date: time.Now()},
 
-		{CommitId: "876", File: "file4"},
-		{CommitId: "876", File: "file1"},
-		{CommitId: "876", File: "file2"},
+		{CommitId: "876", File: "file4", Date: time.Now()},
+		{CommitId: "876", File: "file1", Date: time.Now()},
+		{CommitId: "876", File: "file2", Date: time.Now()},
 
-		{CommitId: "888", File: "file4"},
-		{CommitId: "888", File: "file3"},
+		{CommitId: "888", File: "file4", Date: time.Now()},
+		{CommitId: "888", File: "file3", Date: time.Now()},
 	}
 
 	want := []coupling.Coupling{
