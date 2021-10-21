@@ -36,3 +36,6 @@ $GOCAN create-complexity-analysis configuration-analysis \
 
 echo "Looking for the modus operandi"
 $GOCAN modus-operandi orm -s hibernate | head -n 10
+
+echo "Looking for the relationships between authors and entities"
+$GOCAN revisions-authors orm -s hibernate | head -n 10

@@ -8,16 +8,89 @@ import (
 	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"sort"
 	"strconv"
 )
 
 func Commands(ctx context.Context) []*cobra.Command {
 	return []*cobra.Command{
 		list(ctx),
+		authors(ctx),
 		hotspots(ctx),
 		createTrends(ctx),
 		trends(ctx),
 	}
+}
+
+func authors(ctx context.Context) *cobra.Command {
+	var sceneName string
+	var before string
+	var after string
+	var boundaryName string
+	var csv bool
+	var verbose bool
+
+	cmd := cobra.Command{
+		Use:   "revisions-authors",
+		Args:  cobra.ExactArgs(1),
+		Short: "Get the entities of an application ordered by their number of authors",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.SetVerbose(verbose)
+			ui.Log("Getting app revisions...")
+
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
+
+			c := NewCore(connection)
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+
+			var revisions []revision.Revision
+
+			if boundaryName == "" {
+				revisions, err = c.Query(a.Id, beforeTime, afterTime)
+			} else {
+				b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
+				if err != nil {
+					return errors.Wrap(err, "Unable to get boundary")
+				}
+				revisions, err = c.QueryByBoundary(a.Id, b, beforeTime, afterTime)
+			}
+
+			if err != nil {
+				ui.Failed("Cannot fetch revisions: " + err.Error())
+				return err
+			}
+
+			ui.Ok()
+
+			sort.Slice(revisions, func(i, j int) bool {
+				return revisions[i].NumberOfAuthors > revisions[j].NumberOfAuthors
+			})
+
+			table := ui.Table([]string{
+				"entity",
+				"n-authors",
+				"n-revs",
+			}, csv)
+			for _, revision := range revisions {
+				table.Add(revision.Entity, strconv.Itoa(revision.NumberOfAuthors), strconv.Itoa(revision.NumberOfRevisions))
+			}
+			table.Print()
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Optional boundary name to get the analysis for a specific boundary")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the revisions before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the revisions after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+	return &cmd
 }
 
 func list(ctx context.Context) *cobra.Command {
