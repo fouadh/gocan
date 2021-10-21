@@ -41,26 +41,6 @@ func (c Core) QueryHotspots(a app.App, before time.Time, after time.Time) (revis
 	return buildHotspots(a.Name, revs), nil
 }
 
-func (c Core) RevisionTrends(appId string, b boundary.Boundary, before time.Time, after time.Time) ([]revision.RevisionTrend, error) {
-	daysInRange := before.Sub(after).Hours() / 24
-
-	results := []revision.RevisionTrend{}
-	for i := 0; i <= int(daysInRange); i++ {
-		day := after.AddDate(0, 0, i)
-		_, err := c.revision.QueryByBoundary(appId, b, day, after)
-		if err != nil {
-			return []revision.RevisionTrend{}, err
-		}
-
-		results = append(results, revision.RevisionTrend{
-			Date:      day.Format("2006-01-02"),
-			Revisions: []revision.TrendRevision{},
-		})
-	}
-
-	return results, nil
-}
-
 func (c Core) RevisionTrendsByName(name string, appId string) (revision.RevisionTrends, error) {
 	return c.revision.QueryTrendsByName(name, appId)
 }
@@ -68,7 +48,6 @@ func (c Core) RevisionTrendsByName(name string, appId string) (revision.Revision
 func (c Core) RevisionTrendsById(trendId string) ([]revision.RevisionTrend, error) {
 	return c.revision.QueryTrends(trendId)
 }
-
 
 func (c Core) CreateRevisionTrends(name string, appId string, b boundary.Boundary, before time.Time, after time.Time) error {
 	daysInRange := before.Sub(after).Hours() / 24
