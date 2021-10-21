@@ -2,6 +2,7 @@ package coupling
 
 import (
 	"com.fha.gocan/business/core"
+	"com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/foundation"
 	"encoding/json"
 	"fmt"
@@ -22,6 +23,7 @@ func list(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var minCoupling int
 	var minRevsAvg int
+	var boundaryName string
 	var before string
 	var after string
 	var csv bool
@@ -54,7 +56,13 @@ gocan coupling myapp --scene myscene
 				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
-			data, err := c.Query(a.Id, float64(minCoupling)/100, minRevsAvg, beforeTime, afterTime)
+			var data []coupling.Coupling
+
+			if boundaryName == "" {
+				data, err = c.Query(a.Id, float64(minCoupling)/100, minRevsAvg, beforeTime, afterTime)
+			} else {
+				data, err = c.QueryByBoundary(a.Id, boundaryName, float64(minCoupling)/100, minRevsAvg, beforeTime, afterTime)
+			}
 
 			if err != nil {
 				return errors.Wrap(err, "Cannot retrieve couplings")
@@ -78,6 +86,7 @@ gocan coupling myapp --scene myscene
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Optional boundary name to get the analysis for a specific boundary")
 	cmd.Flags().IntVarP(&minCoupling, "min-degree", "d", 30, "minimal degree of coupling wanted (in percent)")
 	cmd.Flags().IntVarP(&minRevsAvg, "min-revisions-average", "r", 5, "minimal number of average revisions wanted (in percent)")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch coupling before this day")

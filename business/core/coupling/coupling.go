@@ -2,6 +2,7 @@ package coupling
 
 import (
 	"com.fha.gocan/business/data/store/app"
+	"com.fha.gocan/business/data/store/boundary"
 	"com.fha.gocan/business/data/store/commit"
 	"com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/business/data/store/revision"
@@ -22,6 +23,7 @@ type Core struct {
 	stat     stat.Store
 	commit   commit.Store
 	revision revision.Store
+	boundary boundary.Store
 }
 
 func NewCore(connection *sqlx.DB) Core {
@@ -32,6 +34,7 @@ func NewCore(connection *sqlx.DB) Core {
 		stat:     stat.NewStore(connection),
 		commit:   commit.NewStore(connection),
 		revision: revision.NewStore(connection),
+		boundary: boundary.NewStore(connection),
 	}
 }
 
@@ -42,6 +45,66 @@ func (c Core) Query(appId string, minimalCoupling float64, minimalRevisionsAvera
 	}
 
 	couplings := CalculateCouplings(stats, minimalCoupling, float64(minimalRevisionsAverage))
+	return couplings, nil
+}
+
+func (c Core) QueryByBoundary(appId string, boundaryName string, minimalCoupling float64, minimalRevisionsAverage int, before time.Time, after time.Time) ([]coupling.Coupling, error) {
+	stats, err := c.stat.Query(appId, before, after)
+	if err != nil {
+		return []coupling.Coupling{}, errors.Wrap(err, "Unable to find stats")
+	}
+
+	b, err := c.boundary.QueryByAppIdAndName(appId, boundaryName)
+	if err != nil {
+		return []coupling.Coupling{}, errors.Wrap(err, "Unable to find boundary")
+	}
+
+	statsByBoundaryMap := make(map[string](map[string]stat.Stat))
+	transformations := b.Transformations
+
+	for _, s := range stats {
+		if _, ok := statsByBoundaryMap[s.CommitId]; !ok {
+			statsByBoundaryMap[s.CommitId] = make(map[string]stat.Stat)
+		}
+		commits := statsByBoundaryMap[s.CommitId]
+
+		var transformation string
+		for _, t := range transformations {
+			if strings.HasPrefix(s.File, t.Path) {
+				transformation = t.Name
+				break
+			}
+		}
+
+		if transformation != "" {
+			if sb, ok := commits[transformation]; ok {
+				commits[transformation] = stat.Stat{
+					AppId:      s.AppId,
+					CommitId:   s.CommitId,
+					Insertions: s.Insertions + sb.Insertions,
+					Deletions:  s.Deletions + sb.Deletions,
+					File:       transformation,
+				}
+			} else {
+				commits[transformation] = stat.Stat{
+					AppId:      s.AppId,
+					CommitId:   s.CommitId,
+					Insertions: s.Insertions,
+					Deletions:  s.Deletions,
+					File:       transformation,
+				}
+			}
+		}
+	}
+
+	statsByBoundary := []stat.Stat{}
+	for _, commits := range statsByBoundaryMap {
+		for _, s := range commits {
+			statsByBoundary = append(statsByBoundary, s)
+		}
+	}
+
+	couplings := CalculateCouplings(statsByBoundary, minimalCoupling, float64(minimalRevisionsAverage))
 	return couplings, nil
 }
 
