@@ -39,7 +39,7 @@ func NewCore(connection *sqlx.DB) Core {
 }
 
 func (c Core) Query(appId string, minimalCoupling float64, minimalRevisionsAverage int, temporalPeriod int, beforeTime time.Time, afterTime time.Time) ([]coupling.Coupling, error) {
-	stats, err := c.stat.Query(appId, beforeTime, afterTime, temporalPeriod)
+	stats, err := c.stat.Query(appId, beforeTime, afterTime, temporalPeriod, boundary.Boundary{})
 	if err != nil {
 		return []coupling.Coupling{}, err
 	}
@@ -49,50 +49,17 @@ func (c Core) Query(appId string, minimalCoupling float64, minimalRevisionsAvera
 }
 
 func (c Core) QueryByBoundary(appId string, boundaryName string, minimalCoupling float64, minimalRevisionsAverage int, period int, before time.Time, after time.Time) ([]coupling.Coupling, error) {
-	stats, err := c.stat.Query(appId, before, after, period)
-	if err != nil {
-		return []coupling.Coupling{}, errors.Wrap(err, "Unable to find stats")
-	}
-
 	b, err := c.boundary.QueryByAppIdAndName(appId, boundaryName)
 	if err != nil {
 		return []coupling.Coupling{}, errors.Wrap(err, "Unable to find boundary")
 	}
 
-	statsByBoundaryMap := make(map[string](map[string]stat.StatInfo))
-	transformations := b.Transformations
-
-	for _, s := range stats {
-		if _, ok := statsByBoundaryMap[s.CommitId]; !ok {
-			statsByBoundaryMap[s.CommitId] = make(map[string]stat.StatInfo)
-		}
-		commits := statsByBoundaryMap[s.CommitId]
-
-		var transformation string
-		for _, t := range transformations {
-			if strings.HasPrefix(s.File, t.Path) {
-				transformation = t.Name
-				break
-			}
-		}
-
-		if transformation != "" {
-			commits[transformation] = stat.StatInfo{
-				Date:     s.Date,
-				CommitId: s.CommitId,
-				File:     transformation,
-			}
-		}
+	stats, err := c.stat.Query(appId, before, after, period, b)
+	if err != nil {
+		return []coupling.Coupling{}, errors.Wrap(err, "Unable to find stats")
 	}
 
-	statsByBoundary := []stat.StatInfo{}
-	for _, commits := range statsByBoundaryMap {
-		for _, s := range commits {
-			statsByBoundary = append(statsByBoundary, s)
-		}
-	}
-
-	couplings := CalculateCouplings(statsByBoundary, minimalCoupling, float64(minimalRevisionsAverage))
+	couplings := CalculateCouplings(stats, minimalCoupling, float64(minimalRevisionsAverage))
 	return couplings, nil
 }
 

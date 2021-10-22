@@ -1,11 +1,13 @@
 package stat
 
 import (
+	"com.fha.gocan/business/data/store/boundary"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"strings"
 	"sync"
 	"time"
 )
@@ -18,7 +20,7 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
-func (s Store) Query(appId string, before time.Time, after time.Time, period int) ([]StatInfo, error) {
+func (s Store) Query(appId string, before time.Time, after time.Time, period int, b boundary.Boundary) ([]StatInfo, error) {
 	const q = `
 	SELECT 
 		date, commit_id, file
@@ -57,7 +59,11 @@ func (s Store) Query(appId string, before time.Time, after time.Time, period int
 	}
 
 	if (period > 0) {
-		return aggregateCommitsPerPeriod(results, period), nil
+		results = aggregateCommitsPerPeriod(results, period)
+	}
+
+	if (b.Id != "") {
+		results = aggregateCommitsPerBoundary(b, results)
 	}
 
 	return results, nil
@@ -132,4 +138,40 @@ func aggregateCommitsPerPeriod(stats []StatInfo, period int) []StatInfo {
 	}
 
 	return stats
+}
+
+func aggregateCommitsPerBoundary(b boundary.Boundary, stats []StatInfo) []StatInfo {
+	statsByBoundaryMap := make(map[string](map[string]StatInfo))
+	transformations := b.Transformations
+
+	for _, s := range stats {
+		if _, ok := statsByBoundaryMap[s.CommitId]; !ok {
+			statsByBoundaryMap[s.CommitId] = make(map[string]StatInfo)
+		}
+		commits := statsByBoundaryMap[s.CommitId]
+
+		var transformation string
+		for _, t := range transformations {
+			if strings.HasPrefix(s.File, t.Path) {
+				transformation = t.Name
+				break
+			}
+		}
+
+		if transformation != "" {
+			commits[transformation] = StatInfo{
+				Date:     s.Date,
+				CommitId: s.CommitId,
+				File:     transformation,
+			}
+		}
+	}
+
+	statsByBoundary := []StatInfo{}
+	for _, commits := range statsByBoundaryMap {
+		for _, s := range commits {
+			statsByBoundary = append(statsByBoundary, s)
+		}
+	}
+	return statsByBoundary
 }
