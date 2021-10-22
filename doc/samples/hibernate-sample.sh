@@ -40,4 +40,16 @@ $GOCAN modus-operandi orm -s hibernate | head -n 10
 echo "Looking for the relationships between authors and entities"
 $GOCAN revisions-authors orm -s hibernate | head -n 10
 
-$GOCAN coupling orm -s hibernate --min-revisions-average 20 | grep AbstractEntityPersister
+echo "Measure temporal coupling for AbstractEntityPersister"
+$GOCAN coupling orm --scene hibernate --min-revisions-average 20 | grep AbstractEntityPersister
+
+echo "Identify main developer of AbstractEntityPersister"
+$GOCAN main-devs orm --scene hibernate | grep AbstractEntityPersister
+
+echo "Identify developers of the modules coupled to AbstractEntityPersister"
+$GOCAN main-devs orm --scene hibernate | grep CustomPersister
+$GOCAN main-devs orm --scene hibernate | grep EntityPersister
+$GOCAN main-devs orm --scene hibernate | grep GoofyPersisterClassProvider
+
+echo "Calculate individual contributions to EntityPersister"
+$GOCAN devs orm --scene hibernate | grep entity/EntityPersister
