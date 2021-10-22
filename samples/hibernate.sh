@@ -32,13 +32,14 @@ $GOCAN create-complexity-analysis configuration-analysis \
       --app orm \
       --scene hibernate \
       --filename hibernate-core/src/main/java/org/hibernate/cfg/Configuration.java \
-      --directory $tmp_dir/orm/
+      --directory $tmp_dir/orm/ \
+      --spaces 4
 
 echo "Looking for the modus operandi"
-$GOCAN modus-operandi orm -s hibernate | head -n 10
+$GOCAN modus-operandi orm --scene hibernate | head -n 10
 
 echo "Looking for the relationships between authors and entities"
-$GOCAN revisions-authors orm -s hibernate | head -n 10
+$GOCAN revisions-authors orm --scene hibernate | head -n 10
 
 echo "Measure temporal coupling for AbstractEntityPersister"
 $GOCAN coupling orm --scene hibernate --min-revisions-average 20 | grep AbstractEntityPersister

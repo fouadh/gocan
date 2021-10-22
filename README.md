@@ -108,9 +108,11 @@ After configuring the database, execute the next command to create the appropria
 gocan migrate-db
 ```
 
-# A First Tutorial
+# A Tutorial
 
 Let's use one of the examples in the book: analyzing Hibernate ORM.
+
+## Creating the scene
 
 We'll first define a scene and an application, then import its git history.
 
@@ -123,15 +125,22 @@ gocan import-history orm -s hibernate --after 2011-01-01 --before 2013-09-04 --d
 
 **Note:** `gocan` does not store the source code in its database, just the statistics about it.
 
-We can then run the UI to see some of the visualisations:
+Let's get a summary of what has been imported:
 
 ```
-gocan ui --port 1234
+gocan app-summary orm --scene hibernate
 ```
 
-* Open your browser at the appropriate location (here, it will be http://localhost:1234).
+## Studying the hotspots
+
+We can also run the UI to see some visualisations:
+
+```
+gocan ui
+```
+
+* Open your browser at the appropriate location (here, it will be http://localhost:1233).
 * Select the `hibernate` scene
-* A short summary of the apps will be displayed
 * Select the `orm` application
 * The `Revisions` tab will be displayed: it might take a few seconds to display the chart, be patient :-)
 
@@ -156,6 +165,8 @@ gocan revisions orm -s hibernate
 
 ![Revisions](doc/images/mining-revisions.png)
 
+## Focusing on a suspect
+
 We are going to focus on the `Configuration` class that has a big number of lines for a file related to configuration and that also has been revised quite a lot.
 
 Let's analyze the complexity of this file by running the following command:
@@ -178,48 +189,152 @@ Now, if you go to the `Complexity` tab in the UI, you should be able to select t
 
 ![Complexity](doc/images/complexity.png)
 
-We can see how the complexity increased with time.
+We can see how the complexity increased with time for the analyzed file.
 
-# A Second Tutorial
+## Analyzing the modus operandi
 
-Let's use another example from the book: [Craft.Net](https://github.com/ddevault/Craft.Net). This project is not maintained
-anymore so we'll have to specify appropriate dates in our commands.
+It is possible to get a list of the most used words in the commit messages.
 
-Let's create the app.
-
-```
-gocan create-scene craft
-gocan create-app craft -s craft
-git clone https://github.com/SirCmpwn/Craft.Net.git craft
-```
-
-We are importing two periods of the application code that we want to compare:
+Either from the terminal with the command:
 
 ```
-cd craft
-gocan import-history craft -s craft --after 2012-07-01 --before 2013-01-01
-gocan import-history craft -s craft --after 2013-01-01 --before 2014-08-08
+gocan modus-operandi orm --scene hibernate | head -n 10
 ```
 
-For each of the imported period, a complexity analysis is performed.
+Either from the ui:
 
-Let's get a sum of coupling analysis:
+![Modus Operandi](doc/images/modus-operandi.png)
+
+## Looking for relationships between authors and entities
+
+Let's identify the files modified by multiple programmers:
 
 ```
-gocan soc craft -s craft
+gocan revisions-authors orm --scene hibernate --csv | head -n 10
 ```
 
-We are going to focus on the `MinecraftServer` file during two periods of time: before and after 2013-01-01.
+```
+entity,n-authors,n-revs
+hibernate-core/src/main/java/org/hibernate/persister/entity/AbstractEntityPersister.java,13,42
+libraries.gradle,11,28
+hibernate-core/src/main/java/org/hibernate/loader/Loader.java,10,23
+hibernate-core/src/main/java/org/hibernate/internal/SessionImpl.java,9,34
+hibernate-core/src/main/java/org/hibernate/mapping/Table.java,9,28
+hibernate-core/src/main/java/org/hibernate/cfg/Configuration.java,8,39
+build.gradle,8,79
+hibernate-core/src/main/java/org/hibernate/cfg/HbmBinder.java,8,20
+hibernate-core/src/main/java/org/hibernate/cfg/annotations/CollectionBinder.java,7,21
+```
 
-Let's open the `Entity Coupling` tab and enter the following information:
+Notice how we used the `--csv` flag that time in order to get the results in csv format. This flag is
+available for almost all the commands that return list of data.
 
-* in `Entity` field: `Craft.Net.Server/MinecraftServer.cs`
-* in `Min Date` field: `2012-06-30`
-* in `Max Date` field: `2013-01-01`
+We notice here that `AbstractEntityPersister` has been modified by a lot of programmers. Let see the impact on the communication between developers (if you looked carefully at the visualisation, you might have noticed that this file was also a hotspot)
 
-And click on `Submit`. You should visualize the following figure:
+## Identify the files that are coupled with AbstractEntityPersister
 
+```
+gocan coupling orm --scene hibernate --min-revisions-average 20 | grep AbstractEntityPersister
+```
 
+We find that the three following classes are often commited with `AbstractEntityPersister`:
+
+* `CustomPersister`
+* `EntityPersister`
+* `GoofyPersisterClassProvider`
+
+## Identify the main-developers
+
+Let's try to find out who are the main developers of each of these files:
+
+```
+gocan main-devs orm --scene hibernate | grep AbstractEntityPersister
+gocan main-devs orm --scene hibernate | grep CustomPersister
+gocan main-devs orm --scene hibernate | grep entity/EntityPersister
+gocan main-devs orm --scene hibernate | grep GoofyPersisterClassProvider
+```
+
+The results of those commands show that `Steve Ebersole` is the main developer for each of these files: it looks like there should be no communication issue if he modifies `AbstractEntityPersister`.
+
+But if we check for the individual contributions of the `EntityPersister` class:
+
+```
+gocan main-devs orm --scene hibernate | grep entity/EntityPersister
+```
+
+We'll see that a same author is using two different aliases: `Eric Dalquist` and `edalquist` making the calculation of the main developer wrong for that file.
+
+Let's fix that by renaming the author in the database:
+
+```
+gocan rename-dev --app orm --scene hibernate --current edalquist --new "Eric Dalquist"
+```
+
+(this command can also be useful to anonymize the data)
+
+If we execute again the command to get the main developer of `EntityPersister`:
+
+```
+gocan main-devs orm --scene hibernate | grep entity/EntityPersister
+```
+
+We see now that the main developer of this class is `Eric Dalquist`.
+
+The conclusion is that `Steve Ebersole` would probably have to notify `Eric Dalquist` of any modification on `AbstractEntityPersister` since the two classes are coupled.
+
+## Look into the individual contributions with fractal figures
+
+It is possible to visualize the contributions of each developer on a file with fractal figures, each rectangle being proportional to the developer contribution:
+
+![Fractals](./doc/images/fractals.png)
+
+## Get a global view on the knowledge distribution
+
+It is possible to visualize a knowledge map of the main developers of all the entities:
+
+![Knowledge Map](./doc/images/knowledge-map.png)
+
+## Study the code churn
+
+It is possible to get information about the churn either from the terminal:
+
+```
+gocan  code-churn orm --scene hibernate
+```
+
+or in the UI:
+
+![Churn](./doc/images/churn.png)
+
+## Coupling visualisation
+
+There is a coupling diagram that visualises the relationships between files: it can be a bit hard to read for large projects though
+(still trying to figure out how to make it better, any idea is welcome :-))
+
+![Coupling](./doc/images/coupling-viz.png)
+
+## Entity Coupling
+
+TODO
+
+## Revision Trends
+
+TODO
+
+## Create a storyboard
+
+To visualise the system evolution over time, `gocan` offers the possibility to create videos of some analyses.
+
+For example, to get an evolution of the hotspots:
+
+```
+gocan storyboard orm --scene hibernate --after 2012-01-01 --before 2013-09-04 --filename storyboard.avi --interval 14 --analysis hotspots --fps 8 
+```
+
+# Want More samples ?
+
+Take a look at the [samples](./samples) folder that contains examples of analyses similar to those
+described in the book.
 
 # Building the app
 
