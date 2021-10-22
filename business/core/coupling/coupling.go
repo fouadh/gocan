@@ -39,17 +39,17 @@ func NewCore(connection *sqlx.DB) Core {
 }
 
 func (c Core) Query(appId string, minimalCoupling float64, minimalRevisionsAverage int, temporalPeriod int, beforeTime time.Time, afterTime time.Time) ([]coupling.Coupling, error) {
-	stats, err := c.stat.Query(appId, beforeTime, afterTime)
+	stats, err := c.stat.Query(appId, beforeTime, afterTime, temporalPeriod)
 	if err != nil {
 		return []coupling.Coupling{}, err
 	}
 
-	couplings := CalculateCouplings(stats, minimalCoupling, float64(minimalRevisionsAverage), temporalPeriod)
+	couplings := CalculateCouplings(stats, minimalCoupling, float64(minimalRevisionsAverage))
 	return couplings, nil
 }
 
-func (c Core) QueryByBoundary(appId string, boundaryName string, minimalCoupling float64, minimalRevisionsAverage int, before time.Time, after time.Time) ([]coupling.Coupling, error) {
-	stats, err := c.stat.Query(appId, before, after)
+func (c Core) QueryByBoundary(appId string, boundaryName string, minimalCoupling float64, minimalRevisionsAverage int, period int, before time.Time, after time.Time) ([]coupling.Coupling, error) {
+	stats, err := c.stat.Query(appId, before, after, period)
 	if err != nil {
 		return []coupling.Coupling{}, errors.Wrap(err, "Unable to find stats")
 	}
@@ -92,7 +92,7 @@ func (c Core) QueryByBoundary(appId string, boundaryName string, minimalCoupling
 		}
 	}
 
-	couplings := CalculateCouplings(statsByBoundary, minimalCoupling, float64(minimalRevisionsAverage), 0)
+	couplings := CalculateCouplings(statsByBoundary, minimalCoupling, float64(minimalRevisionsAverage))
 	return couplings, nil
 }
 
@@ -284,7 +284,7 @@ func (p *pair) onCoupling() {
 	p.count++
 }
 
-func CalculateCouplings(stats []stat.StatInfo, minimalCoupling float64, average float64, period int) []coupling.Coupling {
+func CalculateCouplings(stats []stat.StatInfo, minimalCoupling float64, average float64) []coupling.Coupling {
 	pairs := calculateCouplingStats(stats)
 	couplings := buildCouplings(pairs, minimalCoupling, average)
 	sort.Slice(couplings, func(i, j int) bool {
@@ -370,6 +370,7 @@ func organizeEntitiesPerCommit(stats []stat.StatInfo) map[string]map[string]bool
 	}
 	return commits
 }
+
 
 type info struct {
 	count     int

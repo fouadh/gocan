@@ -2,6 +2,7 @@ package stat
 
 import (
 	"com.fha.gocan/foundation"
+	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -17,7 +18,7 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
-func (s Store) Query(appId string, before time.Time, after time.Time) ([]StatInfo, error) {
+func (s Store) Query(appId string, before time.Time, after time.Time, period int) ([]StatInfo, error) {
 	const q = `
 	SELECT 
 		date, commit_id, file
@@ -53,6 +54,10 @@ func (s Store) Query(appId string, before time.Time, after time.Time) ([]StatInf
 			return []StatInfo{}, err
 		}
 		results = append(results, item)
+	}
+
+	if (period > 0) {
+		return aggregateCommitsPerPeriod(results, period), nil
 	}
 
 	return results, nil
@@ -118,4 +123,13 @@ func bulkInsertStats(list *[]Stat, appId string, txn *sqlx.Tx) error {
 		return err
 	}
 	return err
+}
+
+func aggregateCommitsPerPeriod(stats []StatInfo, period int) []StatInfo {
+	for i, s := range stats {
+		s.CommitId = date.FormatDay(s.Date)
+		stats[i] = s
+	}
+
+	return stats
 }

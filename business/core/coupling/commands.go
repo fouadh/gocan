@@ -62,7 +62,7 @@ gocan coupling myapp --scene myscene
 			if boundaryName == "" {
 				data, err = c.Query(a.Id, float64(minCoupling)/100, minRevsAvg, temporalPeriod, beforeTime, afterTime)
 			} else {
-				data, err = c.QueryByBoundary(a.Id, boundaryName, float64(minCoupling)/100, minRevsAvg, beforeTime, afterTime)
+				data, err = c.QueryByBoundary(a.Id, boundaryName, float64(minCoupling)/100, minRevsAvg, temporalPeriod, beforeTime, afterTime)
 			}
 
 			if err != nil {
