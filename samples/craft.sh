@@ -32,3 +32,6 @@ $GOCAN coupling craft --scene craft --before 2013-01-01 --min-degree 40 | grep M
 
 echo "Analyze coupling of MinecraftServer between 2013-01-01 and 2014-08-08"
 $GOCAN coupling craft --scene craft --after 2013-01-01 --min-degree 40 | grep MinecraftServer.cs
+
+echo "Identify modules coupled with MinecraftServer.cs"
+$GOCAN coupling craft --scene craft --min-revisions-average 15 | grep MinecraftServer.cs
