@@ -351,6 +351,21 @@ export const handlers = [
         }))
     }),
 
+    rest.get('/api/scenes/s123/apps/a1/entity-contributions', (req, res, ctx) => {
+        return res(ctx.json({
+            contributions: [
+                {dev: "dev1", contributions: 5},
+                {dev: "dev2", contributions: 2},
+                {dev: "dev3", contributions: 2},
+                {dev: "dev4", contributions: 1},
+                {dev: "dev5", contributions: 1},
+                {dev: "dev6", contributions: 1},
+                {dev: "dev7", contributions: 1},
+                {dev: "dev8", contributions: 1}
+            ]
+        }))
+    }),
+
     rest.get('/api/scenes/s123/apps/a1/complexity-analyses', (req, res, ctx) => {
         return res(ctx.json({
             analyses: [

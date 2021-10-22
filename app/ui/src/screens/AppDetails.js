@@ -70,7 +70,7 @@ export function AppDetails() {
                     <KnowledgeMap sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Entity Contributions">
-                    <EntityContributions />
+                    <EntityContributions sceneId={sceneId} appId={appId} date={dateRange} />
                 </TabPanel>
             </TabView>
         </>
