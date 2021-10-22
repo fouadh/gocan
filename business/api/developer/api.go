@@ -7,6 +7,7 @@ import (
 	developer2 "com.fha.gocan/business/data/store/developer"
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -69,6 +70,47 @@ func (h *Handlers) QueryDevelopers(w http.ResponseWriter, r *http.Request, param
 		Developers []developer2.Developer `json:"authors"`
 	}{
 		Developers: devs,
+	}
+
+	return web.Respond(w, payload, 200)
+}
+
+func (h *Handlers) QueryEntityContributions(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+
+	query := r.URL.Query()
+	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
+	if err != nil {
+		return err
+	}
+
+	entity := query.Get("entity")
+	if entity == "" {
+		return errors.Errorf("Entity must be provided")
+	}
+
+	efforts, err := h.Developer.QueryEntityEffortsForEntity(appId, entity, beforeTime, afterTime)
+	if err != nil {
+		return err
+	}
+
+	type contribution struct {
+		Dev           string `json:"dev"`
+		Contributions int    `json:"contributions"`
+	}
+
+	contributions := make([]contribution, len(efforts))
+	for i, e := range efforts {
+		contributions[i] = contribution{
+			Dev:           e.Author,
+			Contributions: e.AuthorRevisions,
+		}
+	}
+
+	payload := struct {
+		Contributions []contribution `json:"contributions"`
+	}{
+		contributions,
 	}
 
 	return web.Respond(w, payload, 200)

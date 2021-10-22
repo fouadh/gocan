@@ -144,6 +144,7 @@ func createHandlers(connection *sqlx.DB) map[string]func(w http.ResponseWriter, 
 	handlers["/scenes/:sceneId/apps/:appId/active-set"] = activeSetHandlers.Query
 	handlers["/scenes/:sceneId/apps/:appId/developers"] = developerHandlers.QueryDevelopers
 	handlers["/scenes/:sceneId/apps/:appId/knowledge-map"] = developerHandlers.BuildKnowledgeMap
+	handlers["/scenes/:sceneId/apps/:appId/entity-contributions"] = developerHandlers.QueryEntityContributions
 	handlers["/scenes/:sceneId/apps/:appId/complexity-analyses"] = complexityHandlers.QueryAnalyses
 	handlers["/scenes/:sceneId/apps/:appId/complexity-analyses/:complexityId"] = complexityHandlers.QueryAnalysisEntriesById
 	return handlers

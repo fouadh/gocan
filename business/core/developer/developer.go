@@ -7,6 +7,7 @@ import (
 	"com.fha.gocan/business/data/store/scene"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"sort"
 	"strings"
 	"time"
 )
@@ -46,6 +47,26 @@ func (c Core) QueryDevelopers(appId string, before time.Time, after time.Time) (
 
 func (c Core) RenameDeveloper(appId string, current string, new string) error {
 	return c.developer.Rename(appId, current, new)
+}
+
+func (c Core) QueryEntityEffortsForEntity(appId string, entity string, before time.Time, after time.Time) ([]developer.EntityEffort, error) {
+	efforts, err := c.developer.QueryEntityEfforts(appId, before, after)
+	if err != nil {
+		return []developer.EntityEffort{}, nil
+	}
+
+	contributions := []developer.EntityEffort{}
+	for _, e := range efforts {
+		if e.Entity == entity {
+			contributions = append(contributions, e)
+		}
+	}
+
+	sort.Slice(contributions, func(i, j int) bool {
+		return contributions[i].AuthorRevisions > contributions[j].AuthorRevisions
+	})
+
+	return contributions, nil
 }
 
 func buildKnowledgeMap(appName string, revisions []revision.Revision, developers []developer.EntityDeveloper) developer.KnowledgeMapHierarchy {

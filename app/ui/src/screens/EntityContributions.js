@@ -101,6 +101,7 @@ export function EntityContributions({sceneId, appId, date}) {
 
     return <>
         {loading && <Spinner/>}
+        { error && <p>{error}</p> }
         <div className="card mt-4">
             <div className="flex align-items-center">
                 <div className="p-field p-col-12 p-md-4 mr-4">
