@@ -62,3 +62,6 @@ $GOCAN entity-efforts orm --scene hibernate | grep entity/EntityPersister
 
 echo "Verify the main developer of EntityPersister"
 $GOCAN main-devs orm --scene hibernate | grep entity/EntityPersister
+
+echo "Calculate individual contributions to AbstractEntityPersister"
+$GOCAN entity-efforts orm --scene hibernate | grep AbstractEntityPersister
