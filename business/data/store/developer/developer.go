@@ -84,6 +84,25 @@ from developers(:app_id, :before, :after)
 	return results, err
 }
 
+func (s Store) Rename(appId string, current string, new string) error {
+	const q = `
+	UPDATE commits SET author=:new_name WHERE app_id=:app_id AND author=:current_name
+`
+
+	data := struct {
+		AppId       string `db:"app_id"`
+		CurrentName string `db:"current_name"`
+		NewName     string `db:"new_name"`
+	}{
+		AppId: appId,
+		CurrentName: current,
+		NewName: new,
+	}
+
+	_, err := s.connection.NamedExec(q, data)
+	return err
+}
+
 func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }

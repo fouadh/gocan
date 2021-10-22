@@ -48,8 +48,17 @@ $GOCAN main-devs orm --scene hibernate | grep AbstractEntityPersister
 
 echo "Identify developers of the modules coupled to AbstractEntityPersister"
 $GOCAN main-devs orm --scene hibernate | grep CustomPersister
-$GOCAN main-devs orm --scene hibernate | grep EntityPersister
+$GOCAN main-devs orm --scene hibernate | grep entity/EntityPersister
 $GOCAN main-devs orm --scene hibernate | grep GoofyPersisterClassProvider
 
 echo "Calculate individual contributions to EntityPersister"
-$GOCAN devs orm --scene hibernate | grep entity/EntityPersister
+$GOCAN entity-efforts orm --scene hibernate | grep entity/EntityPersister
+
+echo "Rename author"
+$GOCAN rename-dev --app orm --scene hibernate --current edalquist --new "Eric Dalquist"
+
+echo "Verify the impact on the individual contributions"
+$GOCAN entity-efforts orm --scene hibernate | grep entity/EntityPersister
+
+echo "Verify the main developer of EntityPersister"
+$GOCAN main-devs orm --scene hibernate | grep entity/EntityPersister

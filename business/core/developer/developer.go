@@ -44,6 +44,10 @@ func (c Core) QueryDevelopers(appId string, before time.Time, after time.Time) (
 	return c.developer.QueryDevelopers(appId, before, after)
 }
 
+func (c Core) RenameDeveloper(appId string, current string, new string) error {
+	return c.developer.Rename(appId, current, new)
+}
+
 func buildKnowledgeMap(appName string, revisions []revision.Revision, developers []developer.EntityDeveloper) developer.KnowledgeMapHierarchy {
 	app := developer.KnowledgeMapHierarchy{
 		Name:     appName,

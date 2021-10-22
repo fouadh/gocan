@@ -2,6 +2,7 @@ package developer
 
 import (
 	"com.fha.gocan/business/core"
+	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/foundation"
 	"encoding/json"
 	"fmt"
@@ -16,7 +17,61 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 		entityEfforts(ctx),
 		knowledgeMap(ctx),
 		list(ctx),
+		rename(ctx),
 	}
+}
+
+func rename(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var appName string
+	var currentName string
+	var newName string
+	var verbose bool
+
+	cmd := cobra.Command{
+		Use: "rename-dev",
+		Aliases: []string{"rename-developer"},
+		Short: "Rename a developer in the database",
+		Args: cobra.NoArgs,
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.SetVerbose(verbose)
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
+
+			ui.Log("Renaming developer...")
+
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
+			if err != nil {
+				return errors.Wrap(err, "error fetching the app")
+			}
+			if (a.Id == "") {
+				return errors.Errorf("Unable to retrieve the app")
+			}
+
+			c := NewCore(connection)
+
+			if err := c.RenameDeveloper(a.Id, currentName, newName); err != nil {
+				return errors.Wrap(err, "Unable to rename the developer")
+			}
+
+			ui.Print("The author has been renamed.")
+
+			ui.Ok()
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
+	cmd.Flags().StringVarP(&currentName, "current", "c", "", "Current developer name")
+	cmd.Flags().StringVarP(&newName, "new", "n", "", "New developer name")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	return &cmd
 }
 
 func mainDevs(ctx foundation.Context) *cobra.Command {
