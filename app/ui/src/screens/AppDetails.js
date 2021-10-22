@@ -11,6 +11,7 @@ import {KnowledgeMap} from "./KnowledgeMap";
 import {Hotspots} from "./Hotspots";
 import {ComplexityAnalysis} from "./ComplexityAnalysis";
 import {EntityCoupling} from "./EntityCoupling";
+import {EntityContributions} from "./EntityContributions";
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -67,6 +68,9 @@ export function AppDetails() {
                 </TabPanel>
                 <TabPanel header="Knowledge Map">
                     <KnowledgeMap sceneId={sceneId} appId={appId} date={dateRange}/>
+                </TabPanel>
+                <TabPanel header="Entity Contributions">
+                    <EntityContributions />
                 </TabPanel>
             </TabView>
         </>
