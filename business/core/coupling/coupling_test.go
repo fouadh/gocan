@@ -3,7 +3,6 @@ package coupling
 import (
 	"com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/business/data/store/stat"
-	"com.fha.gocan/foundation/date"
 	"testing"
 	"time"
 )
@@ -21,29 +20,6 @@ func TestCouplingForTwoFiles(t *testing.T) {
 			Coupled:          "file2",
 			Degree:           0.6666666666666666,
 			AverageRevisions: 1.5,
-		},
-	}
-	got := CalculateCouplings(stats, 0, 0)
-
-	assertEqual(t, want, got)
-}
-
-func TestCouplingForTwoFilesByTemporalPeriod(t *testing.T) {
-	date1, _ := date.ParseDateTime("2021-10-21 10:00:00")
-	date2, _ := date.ParseDateTime("2021-10-21 11:00:00")
-
-	stats := []stat.StatInfo{
-		{CommitId: "123", File: "file1", Date: date1},
-		{CommitId: "123", File: "file2", Date: date1},
-		{CommitId: "456", File: "file1", Date: date2},
-	}
-
-	want := []coupling.Coupling{
-		{
-			Entity:           "file1",
-			Coupled:          "file2",
-			Degree:           1.0,
-			AverageRevisions: 1,
 		},
 	}
 	got := CalculateCouplings(stats, 0, 0)

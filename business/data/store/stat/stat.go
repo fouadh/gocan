@@ -141,37 +141,26 @@ func aggregateCommitsPerPeriod(stats []StatInfo, period int) []StatInfo {
 }
 
 func aggregateCommitsPerBoundary(b boundary.Boundary, stats []StatInfo) []StatInfo {
-	statsByBoundaryMap := make(map[string](map[string]StatInfo))
 	transformations := b.Transformations
-
-	for _, s := range stats {
-		if _, ok := statsByBoundaryMap[s.CommitId]; !ok {
-			statsByBoundaryMap[s.CommitId] = make(map[string]StatInfo)
-		}
-		commits := statsByBoundaryMap[s.CommitId]
-
-		var transformation string
+	for i, s := range stats {
+		file := s.File
+		s.File = ""
 		for _, t := range transformations {
-			if strings.HasPrefix(s.File, t.Path) {
-				transformation = t.Name
+			if strings.HasPrefix(file, t.Path) {
+				s.File = t.Name
+				stats[i] = s
 				break
 			}
 		}
+		stats[i] = s
+	}
 
-		if transformation != "" {
-			commits[transformation] = StatInfo{
-				Date:     s.Date,
-				CommitId: s.CommitId,
-				File:     transformation,
-			}
+	aggregation := []StatInfo{}
+	for _, s := range stats {
+		if s.File != "" {
+			aggregation = append(aggregation, s)
 		}
 	}
 
-	statsByBoundary := []StatInfo{}
-	for _, commits := range statsByBoundaryMap {
-		for _, s := range commits {
-			statsByBoundary = append(statsByBoundary, s)
-		}
-	}
-	return statsByBoundary
+	return aggregation
 }
