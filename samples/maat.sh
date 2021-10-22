@@ -70,3 +70,6 @@ $GOCAN create-boundary pipes_filter_boundaries --scene maat --app maat \
 
 echo "Perform architectural analysis on the pipes filter architecture"
 $GOCAN coupling maat --scene maat --boundary pipes_filter_boundaries
+
+echo "Study code churn"
+$GOCAN code-churn maat --scene maat
