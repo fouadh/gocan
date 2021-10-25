@@ -14,6 +14,7 @@
 * [gocan apps](gocan_apps.md)	 - List the applications associated with a scene
 * [gocan boundaries](gocan_boundaries.md)	 - List the boundaries defined for an application
 * [gocan code-churn](gocan_code-churn.md)	 - Get the code churn of an application
+* [gocan completion](gocan_completion.md)	 - Generate completion script
 * [gocan complexity-analyses](gocan_complexity-analyses.md)	 - List the complexity analyses associated with an app
 * [gocan coupling](gocan_coupling.md)	 - Get the coupling relationships between entities for a given application
 * [gocan coupling-hierarchy](gocan_coupling-hierarchy.md)	 - Get the coupling information about an app in JSON formatted to be used with d3.js

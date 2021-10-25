@@ -32,23 +32,6 @@ func main() {
 	}
 }
 
-func GenerateDoc(root *cobra.Command) *cobra.Command {
-	var directory string
-
-	cmd := cobra.Command{
-		Use: "generate-doc",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			if err := doc.GenMarkdownTree(root, directory); err != nil {
-				return errors.Wrap(err, "Unable to generate the doc")
-			}
-			return nil
-		},
-	}
-
-	cmd.Flags().StringVarP(&directory, "directory", "d", ".", "Directory where the doc will be generated")
-	return &cmd
-}
-
 func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "gocan",
@@ -82,6 +65,44 @@ func Root() *cobra.Command {
 	for _, c := range commands {
 		rootCmd.AddCommand(c...)
 	}
-	rootCmd.AddCommand(GenerateDoc(rootCmd))
+	rootCmd.AddCommand(GenerateDoc(), Completion())
 	return rootCmd
+}
+
+func Completion() *cobra.Command {
+	return &cobra.Command{
+		Use:       "completion",
+		Short:     "Generate completion script",
+		ValidArgs: []string{"bash", "zsh", "fish", "powershell"},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			switch args[0] {
+			case "bash":
+				return cmd.Root().GenBashCompletion(os.Stdout)
+			case "zsh":
+				return cmd.Root().GenZshCompletion(os.Stdout)
+			case "fish":
+				return cmd.Root().GenFishCompletion(os.Stdout, true)
+			case "powershell":
+				return cmd.Root().GenPowerShellCompletionWithDesc(os.Stdout)
+			}
+			return nil
+		},
+	}
+}
+
+func GenerateDoc() *cobra.Command {
+	var directory string
+
+	cmd := cobra.Command{
+		Use: "generate-doc",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := doc.GenMarkdownTree(cmd.Root(), directory); err != nil {
+				return errors.Wrap(err, "Unable to generate the doc")
+			}
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&directory, "directory", "d", ".", "Directory where the doc will be generated")
+	return &cmd
 }
