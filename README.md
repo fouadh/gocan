@@ -41,6 +41,8 @@ To get help for a specific command:
 gocan [command] --help
 ```
 
+The exhaustive list of commands can be found [here](./doc/commands/gocan.md)
+
 # Using the app
 
 ## Start the embedded database

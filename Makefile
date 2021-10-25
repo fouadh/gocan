@@ -12,11 +12,11 @@ backend:
 	go build -ldflags="-X 'main.Version=v$(VERSION)'" -o bin/gocan ./app/cmd/gocan/main.go
 
 doc: backend
+	rm -rf ./doc/commands
 	mkdir -p ./doc/commands
 	./bin/gocan generate-doc --directory ./doc/commands
 
 build: frontend backend doc
-
 
 run:
 	go run app/cmd/gocan/main.go
