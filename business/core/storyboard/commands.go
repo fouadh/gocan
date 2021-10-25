@@ -114,6 +114,8 @@ func create(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().IntVarP(&interval, "interval", "", 1, "interval in days between two sets of measures")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
+	cmd.MarkFlagRequired("scene")
+
 	return &cmd
 }
 

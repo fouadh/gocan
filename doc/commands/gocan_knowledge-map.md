@@ -9,8 +9,8 @@ gocan knowledge-map [flags]
 ### Options
 
 ```
-      --after string    Fetch all the main developers after this day
-      --before string   Fetch the main developers before this day
+      --after string    Calculate all the knowledge map after this day
+      --before string   Calculate the knowledge map before this day
   -h, --help            help for knowledge-map
   -s, --scene string    Scene name
       --verbose         display the log information

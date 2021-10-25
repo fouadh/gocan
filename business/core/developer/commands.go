@@ -71,6 +71,11 @@ func rename(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&newName, "new", "n", "", "New developer name")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+	cmd.MarkFlagRequired("current")
+	cmd.MarkFlagRequired("new")
+
 	return &cmd
 }
 
@@ -126,6 +131,8 @@ func mainDevs(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the main developers after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
 
 	return &cmd
 }
@@ -183,6 +190,8 @@ func entityEfforts(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
+	cmd.MarkFlagRequired("scene")
+
 	return &cmd
 }
 
@@ -227,9 +236,11 @@ func knowledgeMap(ctx foundation.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the main developers before this day")
-	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the main developers after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Calculate the knowledge map before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Calculate all the knowledge map after this day")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
 
 	return &cmd
 }
@@ -282,6 +293,8 @@ func list(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the developers after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
 
 	return &cmd
 }

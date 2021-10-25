@@ -76,6 +76,10 @@ the different layers of an application. Or you can define a boundary for product
 	cmd.Flags().StringSliceVarP(&transformations, "transformation", "t", nil, "Transformations")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+	cmd.MarkFlagRequired("transformation")
+
 	return cmd
 }
 
@@ -127,6 +131,10 @@ func delete(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+
 	return cmd
 }
 
@@ -191,5 +199,9 @@ func list(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+
 	return cmd
 }

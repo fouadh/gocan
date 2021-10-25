@@ -37,7 +37,7 @@
 * [gocan migrate-db](gocan_migrate-db.md)	 - Run the migration scripts against a database. To be used with external dbs.
 * [gocan modus-operandi](gocan_modus-operandi.md)	 - Get the most used terms in git messages of an application
 * [gocan rename-dev](gocan_rename-dev.md)	 - Rename a developer in the database
-* [gocan revision-trends](gocan_revision-trends.md)	 - Get the revision trends for a boundary
+* [gocan revision-trends](gocan_revision-trends.md)	 - Retrieve a saved revision trends
 * [gocan revisions](gocan_revisions.md)	 - Get the entities of an application ordered by their number of revisions
 * [gocan revisions-authors](gocan_revisions-authors.md)	 - Get the entities of an application ordered by their number of authors
 * [gocan scenes](gocan_scenes.md)	 - List the scenes

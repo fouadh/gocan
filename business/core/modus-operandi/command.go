@@ -64,5 +64,7 @@ func list(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
+	cmd.MarkFlagRequired("scene")
+
 	return &cmd
 }

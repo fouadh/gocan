@@ -59,5 +59,8 @@ func create(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch all the history before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the history after this day")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+
 	return &cmd
 }

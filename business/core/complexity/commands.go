@@ -95,6 +95,12 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 	cmd.Flags().IntVarP(&spaces, "spaces", "", 4, "The number of spaces defining an indentation")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+	cmd.MarkFlagRequired("filename")
+	cmd.MarkFlagRequired("directory")
+
 	return &cmd
 }
 
@@ -141,6 +147,10 @@ func delete(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+
 	return &cmd
 }
 
@@ -197,6 +207,9 @@ func list(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
 
 	return &cmd
 }

@@ -90,6 +90,9 @@ func authors(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the revisions after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+
 	return &cmd
 }
 
@@ -157,6 +160,9 @@ func list(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the revisions after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+
 	return &cmd
 }
 
@@ -202,6 +208,9 @@ func hotspots(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the hotspots after this day")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+
 	return &cmd
 }
 
@@ -255,6 +264,10 @@ func createTrends(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+	cmd.MarkFlagRequired("boundary")
+
 	return &cmd
 }
 
@@ -267,7 +280,7 @@ func trends(ctx context.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "revision-trends",
 		Aliases: []string{"revisions-trends", "rt"},
-		Short:   "Get the revision trends for a boundary",
+		Short:   "Retrieve a saved revision trends",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -320,6 +333,9 @@ func trends(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
 
 	return &cmd
 }

@@ -1,6 +1,6 @@
 ## gocan revision-trends
 
-Get the revision trends for a boundary
+Retrieve a saved revision trends
 
 ```
 gocan revision-trends [flags]
