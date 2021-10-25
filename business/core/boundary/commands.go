@@ -23,7 +23,7 @@ func create(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := &cobra.Command{
-		Use:   "create-boundary",
+		Use:   "create-boundaries",
 		Short: "Create a boundary with its transformations",
 		Long: `
 A boundary allows to map code folders with tags. 
@@ -31,8 +31,8 @@ A boundary allows to map code folders with tags.
 You can use it to categorize an application. For example, you can define an architectural boundary with
 the different layers of an application. Or you can define a boundary for production code vs test code.
 `,
-		Example: "gocan create-boundary myboundary --scene myscene --app myapp --transformation src:src/main/ --transformation test:src/test/",
-		Aliases: []string{"cb"},
+		Example: "gocan create-boundaries myboundary --scene myscene --app myapp --transformation src:src/main/ --transformation test:src/test/",
+		Aliases: []string{"cb", "create-boundary"},
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if appName == "" {
