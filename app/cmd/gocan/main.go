@@ -20,12 +20,37 @@ import (
 	"com.fha.gocan/foundation/terminal"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
+	"github.com/spf13/cobra/doc"
 	"os"
 )
 
 var Version = "development"
 
 func main() {
+	rootCmd := Root()
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
+}
+
+func GenerateDoc(root *cobra.Command) *cobra.Command {
+	var directory string
+
+	cmd := cobra.Command{
+		Use: "generate-doc",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := doc.GenMarkdownTree(root, directory); err != nil {
+				return errors.Wrap(err, "Unable to generate the doc")
+			}
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&directory, "directory", "d", ".", "Directory where the doc will be generated")
+	return &cmd
+}
+
+func Root() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "gocan",
 		Version: Version,
@@ -59,8 +84,6 @@ func main() {
 	for _, c := range commands {
 		rootCmd.AddCommand(c...)
 	}
-
-	if err := rootCmd.Execute(); err != nil {
-		os.Exit(1)
-	}
+	rootCmd.AddCommand(GenerateDoc(rootCmd))
+	return rootCmd
 }
