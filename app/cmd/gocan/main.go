@@ -1,7 +1,6 @@
 package main
 
 import (
-	active_set "com.fha.gocan/business/core/active-set"
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/churn"
@@ -77,7 +76,6 @@ func Root() *cobra.Command {
 		complexity.Commands(ctx),
 		churn.Commands(ctx),
 		modus_operandi.Commands(ctx),
-		active_set.Commands(ctx),
 		storyboard.Commands(ctx),
 	}
 

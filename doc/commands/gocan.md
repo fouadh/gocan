@@ -10,7 +10,6 @@
 
 ### SEE ALSO
 
-* [gocan active-set](gocan_active-set.md)	 - 
 * [gocan app](gocan_app.md)	 - Get an application summary information
 * [gocan apps](gocan_apps.md)	 - List the applications associated with a scene
 * [gocan boundaries](gocan_boundaries.md)	 - List the boundaries defined for an application
