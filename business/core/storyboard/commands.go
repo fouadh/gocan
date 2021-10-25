@@ -3,8 +3,10 @@ package storyboard
 import (
 	"bytes"
 	"com.fha.gocan/business/core"
+	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
+	"com.fha.gocan/foundation/terminal"
 	"context"
 	"github.com/chromedp/chromedp"
 	"github.com/icza/mjpeg"
@@ -52,12 +54,6 @@ func create(ctx foundation.Context) *cobra.Command {
 			ui := ctx.Ui
 			ui.SetVerbose(verbose)
 
-			ctxt, cancel := chromedp.NewContext(context.Background())
-			defer cancel()
-
-			ctxt, cancel = context.WithTimeout(ctxt, 15*time.Second)
-			defer cancel()
-
 			connection, err := ctx.GetConnection()
 			if err != nil {
 				return err
@@ -83,17 +79,15 @@ func create(ctx foundation.Context) *cobra.Command {
 				fullTotal += 1
 			}
 			var pngs = make([][]byte, fullTotal)
+
 			for i := 0; i < total; i++ {
-				max := afterTime.AddDate(0, 0, (i+1)*interval)
-				ui.Log("Getting data between " + date.FormatDay(afterTime) + " and " + date.FormatDay(max))
-				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(max), &pngs[i], analysisId)); err != nil {
-					return errors.Wrap(err, "Unable to browse data")
+				if err := runScenario(afterTime, afterTime.AddDate(0, 0, (i+1)*interval), ui, endpoint, a, &pngs[i], analysisId); err != nil {
+					return errors.Wrap(err, "Unable to run scenario")
 				}
 			}
 			if int(remainder) > 0 {
-				ui.Log("Getting data between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
-				if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(afterTime), date.FormatDay(beforeTime), &pngs[len(pngs) - 1], analysisId)); err != nil {
-					return errors.Wrap(err, "Unable to browse data")
+				if err := runScenario(afterTime, beforeTime, ui, endpoint, a, &pngs[len(pngs) - 1], analysisId); err != nil {
+					return errors.Wrap(err, "Unable to run scenario")
 				}
 			}
 
@@ -121,6 +115,21 @@ func create(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	return &cmd
+}
+
+func runScenario(minDate time.Time, maxDate time.Time, ui terminal.UI, endpoint string, a app.App, buffer *[]byte, analysisId string) error {
+	ctxt, cancel1 := chromedp.NewContext(context.Background())
+	defer cancel1()
+
+	ctxt, cancel2 := context.WithTimeout(ctxt, 15*time.Second)
+	defer cancel2()
+
+	ui.Log("Run scenario between " + date.FormatDay(minDate) + " and " + date.FormatDay(maxDate))
+	if err := chromedp.Run(ctxt, tasks(endpoint, a.SceneId, a.Id, date.FormatDay(minDate), date.FormatDay(maxDate), buffer, analysisId)); err != nil {
+		return errors.Wrap(err, "Unable to browse data")
+	}
+
+	return nil
 }
 
 func createVideo(width int, height int, pngs [][]byte, filename string, fps int) error {
