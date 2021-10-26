@@ -3,8 +3,7 @@ import axios from "axios";
 import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
-import {InputText} from 'primereact/inputtext';
-import { Button } from 'primereact/button';
+import {Button} from 'primereact/button';
 import {Autocomplete} from "../components/Autocomplete";
 
 export function EntityCoupling({sceneId, appId, date, entities}) {

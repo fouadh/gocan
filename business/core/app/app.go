@@ -3,6 +3,7 @@ package app
 import (
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/scene"
+	"com.fha.gocan/business/data/store/stat"
 	context "com.fha.gocan/foundation"
 	"fmt"
 	"github.com/jmoiron/sqlx"
@@ -13,12 +14,14 @@ import (
 type Core struct {
 	scene scene.Store
 	app   app.Store
+	stat  stat.Store
 }
 
 func NewCore(connection *sqlx.DB) Core {
 	return Core{
 		scene: scene.NewStore(connection),
 		app:   app.NewStore(connection),
+		stat: stat.NewStore(connection),
 	}
 }
 
@@ -49,6 +52,10 @@ func (c Core) QueryBySceneName(sceneName string) ([]app.App, error) {
 
 func (c Core) QuerySummary(appId string, before time.Time, after time.Time) (app.Summary, error) {
 	return c.app.QuerySummary(appId, before, after)
+}
+
+func (c Core) QueryEntities(appId string) ([]stat.Entity, error) {
+	return c.stat.QueryEntities(appId)
 }
 
 func (c Core) FindAppByAppNameAndSceneName(appName string, sceneName string) (app.App, error) {

@@ -37,18 +37,18 @@ func (s Store) Query(appId string, before time.Time, after time.Time, period int
 		Before time.Time `db:"before"`
 		After  time.Time `db:"after"`
 	}{
-		AppId: appId,
+		AppId:  appId,
 		Before: before,
-		After: after,
+		After:  after,
 	}
 
-	 rows, err := s.connection.NamedQuery(q, data)
-	 if err != nil {
-	 	return []StatInfo{}, errors.Wrap(err, "Unable to execute query")
-	 }
-	 defer rows.Close()
+	rows, err := s.connection.NamedQuery(q, data)
+	if err != nil {
+		return []StatInfo{}, errors.Wrap(err, "Unable to execute query")
+	}
+	defer rows.Close()
 
-	 results := []StatInfo{}
+	var results []StatInfo
 
 	for rows.Next() {
 		var item StatInfo
@@ -58,12 +58,29 @@ func (s Store) Query(appId string, before time.Time, after time.Time, period int
 		results = append(results, item)
 	}
 
-	if (period > 0) {
+	if period > 0 {
 		results = aggregateCommitsPerPeriod(results, period)
 	}
 
-	if (b.Id != "") {
+	if b.Id != "" {
 		results = aggregateCommitsPerBoundary(b, results)
+	}
+
+	return results, nil
+}
+
+func (s Store) QueryEntities(appId string) ([]Entity, error) {
+	const q = `SELECT distinct file FROM stats WHERE app_id=:app_id AND file NOT LIKE '%=>%' ORDER BY file ASC`
+
+	data := struct {
+		AppId string `db:"app_id"`
+	}{
+		AppId: appId,
+	}
+
+	var results []Entity
+	if err := db.NamedQuerySlice(s.connection, q, data, &results); err != nil {
+		return []Entity{}, errors.Wrap(err, "Unable to fetch entities")
 	}
 
 	return results, nil

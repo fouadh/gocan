@@ -15,3 +15,7 @@ type StatInfo struct {
 	CommitId string    `db:"commit_id"`
 	File     string    `db:"file"`
 }
+
+type Entity struct {
+	Name string `db:"file"`
+}

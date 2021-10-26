@@ -7,6 +7,7 @@ import (
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -65,4 +66,26 @@ func (h *Handlers) QueryById(w http.ResponseWriter, r *http.Request, params map[
 	}
 
 	return web.Respond(w, a, 200)
+}
+
+func (h *Handlers) QueryEntities(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+
+	entities, err := h.App.QueryEntities(appId)
+	if err != nil {
+		return errors.Wrap(err, "Unable to get entities")
+	}
+
+	files := make([]string, len(entities))
+	for i, e := range entities {
+		files[i] = e.Name
+	}
+
+	payload := struct {
+		Entities []string `json:"entities"`
+	}{
+		Entities: files,
+	}
+
+	return web.Respond(w, payload, 200)
 }

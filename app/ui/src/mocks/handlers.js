@@ -52,6 +52,12 @@ export const handlers = [
         }))
     }),
 
+    rest.get('/api/scenes/s123/apps/a1/entities', (req, res, ctx) => {
+        return res(ctx.json({
+            entities: ["/a1", "/b1/a2", "/c123/d/z", "D456"]
+        }))
+    }),
+
     rest.get('/api/scenes/s123/apps/a1/revisions', (req, res, ctx) => {
         return res(ctx.json({
             revisions: [

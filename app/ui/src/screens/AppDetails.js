@@ -25,6 +25,7 @@ export function AppDetails() {
     }
     const {sceneId, appId} = useParams();
     const [application, setApplication] = useState();
+    const [entities, setEntities] = useState([]);
 
     useEffect(() => {
         let subscribed = true;
@@ -33,6 +34,14 @@ export function AppDetails() {
             .then(it => {
                 if (subscribed)
                     setApplication(it);
+            });
+
+        axios.get(`/api/scenes/${sceneId}/apps/${appId}/entities`)
+            .then(it => it.data)
+            .then(it => it.entities)
+            .then(it => {
+               if (subscribed)
+                   setEntities(it);
             });
 
         return () => subscribed = false;
@@ -55,18 +64,7 @@ export function AppDetails() {
                     <Coupling sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Entity Coupling">
-                    <EntityCoupling sceneId={sceneId} appId={appId} date={dateRange} entities={[
-                        "Alligator",
-                        "Bask",
-                        "Crocodilian",
-                        "Death Roll",
-                        "Eggs",
-                        "Jaws",
-                        "Reptile",
-                        "Solitary",
-                        "Tail",
-                        "Wetlands"
-                    ]} />
+                    <EntityCoupling sceneId={sceneId} appId={appId} date={dateRange} entities={entities} />
                 </TabPanel>
                 <TabPanel header="Code Churn">
                     <CodeChurn sceneId={sceneId} appId={appId} date={dateRange}/>
@@ -81,18 +79,7 @@ export function AppDetails() {
                     <KnowledgeMap sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Entity Contributions">
-                    <EntityContributions sceneId={sceneId} appId={appId} date={dateRange} entities={[
-                        "Alligator",
-                        "Bask",
-                        "Crocodilian",
-                        "Death Roll",
-                        "Eggs",
-                        "Jaws",
-                        "Reptile",
-                        "Solitary",
-                        "Tail",
-                        "Wetlands"
-                    ]} />
+                    <EntityContributions sceneId={sceneId} appId={appId} date={dateRange} entities={entities} />
                 </TabPanel>
             </TabView>
         </>
