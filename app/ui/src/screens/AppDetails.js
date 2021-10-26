@@ -55,7 +55,18 @@ export function AppDetails() {
                     <Coupling sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Entity Coupling">
-                    <EntityCoupling sceneId={sceneId} appId={appId} date={dateRange}/>
+                    <EntityCoupling sceneId={sceneId} appId={appId} date={dateRange} entities={[
+                        "Alligator",
+                        "Bask",
+                        "Crocodilian",
+                        "Death Roll",
+                        "Eggs",
+                        "Jaws",
+                        "Reptile",
+                        "Solitary",
+                        "Tail",
+                        "Wetlands"
+                    ]} />
                 </TabPanel>
                 <TabPanel header="Code Churn">
                     <CodeChurn sceneId={sceneId} appId={appId} date={dateRange}/>
@@ -70,7 +81,18 @@ export function AppDetails() {
                     <KnowledgeMap sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Entity Contributions">
-                    <EntityContributions sceneId={sceneId} appId={appId} date={dateRange} />
+                    <EntityContributions sceneId={sceneId} appId={appId} date={dateRange} entities={[
+                        "Alligator",
+                        "Bask",
+                        "Crocodilian",
+                        "Death Roll",
+                        "Eggs",
+                        "Jaws",
+                        "Reptile",
+                        "Solitary",
+                        "Tail",
+                        "Wetlands"
+                    ]} />
                 </TabPanel>
             </TabView>
         </>

@@ -1,15 +1,15 @@
 import {useChartDimensions} from "../hooks/useChartDimensions";
 import Chart from "../chart/Chart";
 import * as d3 from "d3"
-import {InputText} from "primereact/inputtext";
 import {DateSelector} from "../components/DateSelector";
 import {Button} from "primereact/button";
 import {useEffect, useState} from "react";
 import {Spinner} from "../components/Spinner";
 import axios from "axios";
+import {Autocomplete} from "../components/Autocomplete";
 
-export function EntityContributions({sceneId, appId, date}) {
-    const [ref, dimensions] = useChartDimensions({ height: "800px", width: "500px" });
+export function EntityContributions({sceneId, appId, date, entities}) {
+    const [ref, dimensions] = useChartDimensions({height: "800px", width: "500px"});
     const [entity, setEntity] = useState("");
     const [dateRange, setDateRange] = useState(date);
     const [analyze, setAnalyze] = useState(true);
@@ -110,10 +110,10 @@ export function EntityContributions({sceneId, appId, date}) {
         {loading && <Spinner/>}
         {error && <p>{error}</p>}
         <div className="card mt-4">
-            <div className="flex align-items-center">
+            <div className="flex align-items-start">
                 <div className="p-field p-col-12 p-md-4 mr-4">
                     <span className="p-float-label">
-                        <InputText id="entity" value={entity} onChange={e => setEntity(e.target.value)}/>
+                        <Autocomplete suggestions={entities} onChange={e => setEntity(e.value)}/>
                         <label htmlFor="entity">Entity</label>
                     </span>
                 </div>

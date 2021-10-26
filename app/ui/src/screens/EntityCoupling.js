@@ -5,8 +5,9 @@ import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 import {InputText} from 'primereact/inputtext';
 import { Button } from 'primereact/button';
+import {Autocomplete} from "../components/Autocomplete";
 
-export function EntityCoupling({sceneId, appId, date}) {
+export function EntityCoupling({sceneId, appId, date, entities}) {
     const [entity, setEntity] = useState("");
     const [dateRange, setDateRange] = useState(date);
     const [analyze, setAnalyze] = useState(true);
@@ -66,10 +67,10 @@ export function EntityCoupling({sceneId, appId, date}) {
 
     return <>
         <div className="card mt-4">
-            <div className="flex align-items-center">
+            <div className="flex align-items-start">
                 <div className="p-field p-col-12 p-md-4 mr-4">
                     <span className="p-float-label">
-                        <InputText id="entity" value={entity} onChange={e => setEntity(e.target.value)}/>
+                        <Autocomplete suggestions={entities} onChange={e => setEntity(e.value)}/>
                         <label htmlFor="entity">Entity</label>
                     </span>
                 </div>
