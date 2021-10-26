@@ -21,8 +21,7 @@ echo "Cloning craft in $tmp_dir/craft"
 git clone https://github.com/SirCmpwn/Craft.Net.git $tmp_dir/craft
 
 cd $tmp_dir/craft
-$GOCAN import-history craft --scene craft --before 2013-01-01
-$GOCAN import-history craft --scene craft --before 2014-08-08 --after 2013-01-01
+$GOCAN import-history craft --scene craft --before 2014-08-08 --interval-between-analyses 30
 
 echo "Sum of coupling before 2014-08-08"
 $GOCAN soc craft --scene craft | head -n 10

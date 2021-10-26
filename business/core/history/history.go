@@ -9,6 +9,7 @@ import (
 	"com.fha.gocan/business/data/store/stat"
 	"com.fha.gocan/business/sys/git"
 	"com.fha.gocan/foundation"
+	"com.fha.gocan/foundation/date"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -33,7 +34,7 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Import(appId string, path string, before string, after string, ctx foundation.Context) error {
+func (c Core) Import(appId string, path string, before string, after string, ctx foundation.Context, intervalBetweenAnalyses int) error {
 	commits, err := git.GetCommits(path, before, after, ctx)
 	if err != nil {
 		return errors.Wrap(err, "Unable to retrieve commits")
@@ -55,8 +56,21 @@ func (c Core) Import(appId string, path string, before string, after string, ctx
 		return errors.Wrap(err, "Unable to save stats")
 	}
 
-	if err = c.cloc.ImportCloc(appId, path, commits, ctx); err != nil {
+	if len(commits) == 0 {
+		return errors.Errorf("No commit to analyze")
+	}
+
+	if err = c.cloc.ImportCloc(appId, path, commits[0], ctx); err != nil {
 		return errors.Wrap(err, "Unable to save clocs")
+	}
+
+	if intervalBetweenAnalyses > 0 {
+		for i := len(commits) - 1; i >= 0; i -= intervalBetweenAnalyses {
+			ctx.Ui.Log("Analyzing commit " + commits[i].Id + " of " + date.FormatDay(commits[i].Date))
+			if err = c.cloc.ImportCloc(appId, path, commits[i], ctx); err != nil {
+				return errors.Wrap(err, "Unable to save clocs")
+			}
+		}
 	}
 
 	return nil
@@ -72,6 +86,3 @@ func (c Core) CheckIfCanImport(path string) error {
 	}
 	return nil
 }
-
-
-

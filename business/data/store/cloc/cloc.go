@@ -5,7 +5,6 @@ import (
 	"com.fha.gocan/business/sys/git"
 	"com.fha.gocan/foundation"
 	"encoding/json"
-	"fmt"
 	"github.com/boyter/scc/processor"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
@@ -22,11 +21,7 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
-func (s Store) ImportCloc(appId string, directory string, commits []commit.Commit, ctx foundation.Context) error {
-	if len(commits) == 0 {
-		return fmt.Errorf("No commit provided !")
-	}
-
+func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx foundation.Context) error {
 	initialBranch, err := git.GetCurrentBranch(directory)
 	if err != nil {
 		return err
@@ -41,8 +36,6 @@ func (s Store) ImportCloc(appId string, directory string, commits []commit.Commi
 	processor.Files = true
 	processor.GitIgnore = false
 	processor.Complexity = false
-
-	ct := commits[0]
 
 	if err := git.Checkout(ct.Id, directory); err != nil {
 		return err

@@ -19,6 +19,7 @@ func create(ctx foundation.Context) *cobra.Command {
 	var path string
 	var before string
 	var after string
+	var intervalBetweenAnalyses int
 	var verbose bool
 
 	cmd := cobra.Command{
@@ -44,7 +45,7 @@ func create(ctx foundation.Context) *cobra.Command {
 
 
 			ui.Log("Importing history...")
-			if err = h.Import(a.Id, path, before, after, ctx); err != nil {
+			if err = h.Import(a.Id, path, before, after, ctx, intervalBetweenAnalyses); err != nil {
 				return errors.Wrap(err, "History cannot be imported")
 			}
 
@@ -58,6 +59,7 @@ func create(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&path, "directory", "d", ".", "App directory")
 	cmd.Flags().StringVarP(&before, "before", "", date.Today(), "Fetch all the history before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the history after this day")
+	cmd.Flags().IntVarP(&intervalBetweenAnalyses, "interval-between-analyses", "", 0, "Number of days between two complexity analyses. By default, only one is done for the last commit.")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	cmd.MarkFlagRequired("scene")

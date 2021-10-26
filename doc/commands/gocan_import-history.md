@@ -9,12 +9,13 @@ gocan import-history [flags]
 ### Options
 
 ```
-      --after string       Fetch all the history after this day
-      --before string      Fetch all the history before this day (default "2021-10-26")
-  -d, --directory string   App directory (default ".")
-  -h, --help               help for import-history
-  -s, --scene string       Scene name
-      --verbose            display the log information
+      --after string                    Fetch all the history after this day
+      --before string                   Fetch all the history before this day (default "2021-10-26")
+  -d, --directory string                App directory (default ".")
+  -h, --help                            help for import-history
+      --interval-between-analyses int   Number of days between two complexity analyses. By default, only one is done for the last commit.
+  -s, --scene string                    Scene name
+      --verbose                         display the log information
 ```
 
 ### SEE ALSO
