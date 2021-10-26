@@ -14,3 +14,11 @@ type CommitRange struct {
 	MinDate time.Time `db:"min_date"`
 	MaxDate time.Time `db:"max_date"`
 }
+
+func (cr CommitRange) MaxDay() time.Time {
+	return time.Date(cr.MaxDate.Year(), cr.MaxDate.Month(), cr.MaxDate.Day(), 0, 0, 0, 0, cr.MaxDate.Location())
+}
+
+func (cr CommitRange) MinDay() time.Time {
+	return time.Date(cr.MinDate.Year(), cr.MinDate.Month(), cr.MinDate.Day(), 0, 0, 0, 0, cr.MinDate.Location())
+}

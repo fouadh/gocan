@@ -24,39 +24,22 @@ func NewCore(connection *sqlx.DB) Core {
 }
 
 func (c Core) ExtractDateRangeFromQueryParams(appId string, query url.Values) (time.Time, time.Time, error) {
-	cr, err := c.QueryCommitRange(appId)
-	if err != nil {
-		return time.Time{}, time.Time{}, err
-	}
-
 	before := query.Get("before")
-	if before == "" {
-		before = date.FormatDay(cr.MaxDate)
-	}
-	beforeTime, err := date.ParseDay(before)
-	if err != nil {
-		return time.Time{}, time.Time{}, errors.Wrap(err, "Cannot parse before parameter")
-	}
-
 	after := query.Get("after")
-	if after == "" {
-		after = date.FormatDay(cr.MinDate)
-	}
-	afterTime, err := date.ParseDay(after)
-	if err != nil {
-		return time.Time{}, time.Time{}, errors.Wrap(err, "Cannot parse after parameter")
-	}
-	return beforeTime, afterTime, nil
+
+	return c.ExtractDateRangeFromArgs(appId, before, after)
 }
 
 func (c Core) ExtractDateRangeFromArgs(appId string, before string, after string) (time.Time, time.Time, error) {
 	cr, rangeErr := c.QueryCommitRange(appId)
+	minDay := cr.MinDay()
+	maxDay := cr.MaxDay()
 
 	if before == "" {
 		if rangeErr != nil {
 			return time.Time{}, time.Time{}, errors.Wrap(rangeErr, "Commit range cannot be retrieved")
 		}
-		before = date.FormatDay(cr.MaxDate)
+		before = date.FormatDay(maxDay)
 	}
 	beforeTime, err := date.ParseDay(before)
 	if err != nil {
@@ -67,11 +50,23 @@ func (c Core) ExtractDateRangeFromArgs(appId string, before string, after string
 		if rangeErr != nil {
 			return time.Time{}, time.Time{}, errors.Wrap(rangeErr, "Commit range cannot be retrieved")
 		}
-		after = date.FormatDay(cr.MinDate)
+		after = date.FormatDay(minDay)
 	}
 	afterTime, err := date.ParseDay(after)
 	if err != nil {
 		return time.Time{}, time.Time{}, errors.Wrap(err, "Invalid after date")
+	}
+
+	if (afterTime.Before(minDay) && !afterTime.Equal(minDay)) || afterTime.After(maxDay)  {
+		return time.Time{}, time.Time{}, errors.Errorf("Invalid after date: it should be between " + date.FormatDay(minDay) + " and " + date.FormatDay(maxDay) + " instead of " + date.FormatDay(afterTime))
+	}
+
+	if beforeTime.Before(minDay) || (beforeTime.After(maxDay) && !beforeTime.Equal(maxDay)) {
+		return time.Time{}, time.Time{}, errors.Errorf("Invalid before date: it should be between " + date.FormatDay(minDay) + " and " + date.FormatDay(maxDay) + " instead of " + date.FormatDay(beforeTime))
+	}
+
+	if beforeTime.Before(afterTime) {
+		return time.Time{}, time.Time{}, errors.Errorf("After date must be less that Before date: shall the dates be inverted ?")
 	}
 
 	return beforeTime, afterTime, nil
