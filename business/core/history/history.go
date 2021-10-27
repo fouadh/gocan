@@ -12,6 +12,7 @@ import (
 	"com.fha.gocan/foundation/date"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
+	"sort"
 )
 
 type Core struct {
@@ -36,6 +37,11 @@ func NewCore(connection *sqlx.DB) Core {
 
 func (c Core) Import(appId string, path string, before string, after string, ctx foundation.Context, intervalBetweenAnalyses int) error {
 	commits, err := git.GetCommits(path, before, after, ctx)
+
+	sort.Slice(commits, func(i, j int) bool {
+		return commits[i].Date.After(commits[j].Date)
+	})
+
 	if err != nil {
 		return errors.Wrap(err, "Unable to retrieve commits")
 	}
