@@ -40,8 +40,8 @@ func (h *Handlers) QueryAll(w http.ResponseWriter, r *http.Request, params map[s
 
 		summary, err := h.App.QuerySummary(a.Id, cr.MaxDate, cr.MinDate)
 		summary.DateRange = app2.DateRange{
-			MinDate: date.FormatDay(cr.MinDate),
-			MaxDate: date.FormatDay(cr.MaxDate),
+			MinDate: date.FormatDay(cr.MinDay()),
+			MaxDate: date.FormatDay(cr.MaxDay()),
 		}
 		if err != nil {
 			return err

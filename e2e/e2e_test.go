@@ -2,6 +2,8 @@ package e2e
 
 import (
 	"bytes"
+	"fmt"
+	"io"
 	"io/ioutil"
 	"os"
 	"os/exec"
@@ -34,17 +36,16 @@ func TestE2E(t *testing.T) {
 func importHistory(t *testing.T, appName string, sceneName string) {
 	appFolder := createTempFolder(t)
 	defer os.RemoveAll(appFolder)
+	fmt.Println("temp folder is " + appFolder)
 
-	data := `
-	public class Hello {
-      public static void main(String[] args) {
-		System.out.println("hello from gocan !");
-      }
-	}
-`
-	if err := ioutil.WriteFile(appFolder+"/Hello.java", []byte(data), 0755); err != nil {
-		t.Fatalf("Unable to create file")
-	}
+	source, err := os.Open("./data/repo/Hello.java")
+	defer source.Close()
+
+	dst := appFolder + "/Hello.java"
+	destination, err := os.Create(dst)
+	defer destination.Close()
+
+	io.Copy(destination, source)
 
 	out, err := exec.Command("/bin/sh", "-c", "cd "+appFolder+"; git init; git config user.name \"Developer 1\"; git add .; git commit -m 'init repo'").Output()
 	if err != nil {

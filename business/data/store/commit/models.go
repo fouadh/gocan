@@ -16,7 +16,7 @@ type CommitRange struct {
 }
 
 func (cr CommitRange) MaxDay() time.Time {
-	return time.Date(cr.MaxDate.Year(), cr.MaxDate.Month(), cr.MaxDate.Day(), 0, 0, 0, 0, cr.MaxDate.Location())
+	return time.Date(cr.MaxDate.Year(), cr.MaxDate.Month(), cr.MaxDate.Day(), 0, 0, 0, 0, cr.MaxDate.Location()).AddDate(0, 0, 1)
 }
 
 func (cr CommitRange) MinDay() time.Time {
