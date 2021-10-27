@@ -72,7 +72,7 @@ export function EntityContributions({sceneId, appId, date, entities}) {
                 y: initialRectangle.y,
                 height: initialRectangle.height,
                 width: (contributions[0].contributions / totalContributions) * totalArea / initialRectangle.height,
-                fill: colorScale(0)
+                fill: colorScale(1)
             };
 
             const rectangles = [initialRectangle, rectangle0];
