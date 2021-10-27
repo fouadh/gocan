@@ -13,7 +13,7 @@ gocan import-history [flags]
       --before string                   Fetch all the history before this day (default "2021-10-27")
   -d, --directory string                App directory (default ".")
   -h, --help                            help for import-history
-      --interval-between-analyses int   Number of days between two complexity analyses. By default, only one is done for the last commit.
+      --interval-between-analyses int   Number of commits between two complexity analyses. By default, only one is done for the last commit.
   -s, --scene string                    Scene name
       --verbose                         display the log information
 ```
