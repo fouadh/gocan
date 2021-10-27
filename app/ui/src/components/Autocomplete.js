@@ -18,7 +18,7 @@ export function Autocomplete({suggestions, onChange}) {
                         className = "suggestion-active";
                     }
                     return (
-                        <li className={className} key={suggestion} onClick={handleClick}>
+                        <li className={className} key={suggestion} onClick={handleClick} title={suggestion}>
                             {suggestion}
                         </li>
                     );
