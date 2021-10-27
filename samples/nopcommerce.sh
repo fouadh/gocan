@@ -16,7 +16,7 @@ $GOCAN create-scene nopcommerce
 $GOCAN create-app nopcommerce --scene nopcommerce
 
 echo "Importing the history"
-tmp_dir=$(mktemp -d -t gocan-)
+tmp_dir=$(mktemp -d -t gocan-XXXXXX)
 echo "Cloning nopcommerce in $tmp_dir/nopcommerce"
 git clone https://github.com/nopSolutions/nopCommerce $tmp_dir/nopcommerce
 

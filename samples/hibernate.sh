@@ -14,7 +14,7 @@ $GOCAN create-scene hibernate
 $GOCAN create-app orm --scene hibernate
 
 echo "Importing the history"
-tmp_dir=$(mktemp -d -t gocan-)
+tmp_dir=$(mktemp -d -t gocan-XXXXXX)
 echo "Cloning hibernate in $tmp_dir/orm"
 git clone https://github.com/hibernate/hibernate-orm.git $tmp_dir/orm
 

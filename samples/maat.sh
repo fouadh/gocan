@@ -16,7 +16,7 @@ $GOCAN create-scene maat
 $GOCAN create-app maat --scene maat
 
 echo "Importing the history"
-tmp_dir=$(mktemp -d -t gocan-)
+tmp_dir=$(mktemp -d -t gocan-XXXXXX)
 echo "Cloning maat in $tmp_dir/maat"
 git clone https://github.com/adamtornhill/code-maat.git $tmp_dir/maat
 

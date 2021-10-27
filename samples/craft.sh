@@ -16,7 +16,7 @@ $GOCAN create-scene craft
 $GOCAN create-app craft --scene craft
 
 echo "Importing the history"
-tmp_dir=$(mktemp -d -t gocan-)
+tmp_dir=$(mktemp -d -t gocan-XXXXXX)
 echo "Cloning craft in $tmp_dir/craft"
 git clone https://github.com/SirCmpwn/Craft.Net.git $tmp_dir/craft
 
