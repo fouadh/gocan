@@ -17,6 +17,7 @@ import (
 	"image/jpeg"
 	"image/png"
 	"math"
+	"strings"
 	"time"
 )
 
@@ -26,13 +27,13 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 	}
 }
 
-var analysisIds = map[string](string) {
-	"revisions": "0",
-	"hotspots": "1",
-	"coupling": "3",
-	"code-churn": "5",
+var analysisIds = map[string](string){
+	"revisions":      "0",
+	"hotspots":       "1",
+	"coupling":       "3",
+	"code-churn":     "5",
 	"modus-operandi": "6",
-	"knowledge-map": "8",
+	"knowledge-map":  "8",
 }
 
 func create(ctx foundation.Context) *cobra.Command {
@@ -71,7 +72,7 @@ func create(ctx foundation.Context) *cobra.Command {
 			}
 
 			daysInRange := beforeTime.Sub(afterTime).Hours() / 24
-			total := int(daysInRange)/interval
+			total := int(daysInRange) / interval
 			remainder := math.Mod(daysInRange, float64(interval))
 
 			fullTotal := total
@@ -80,13 +81,17 @@ func create(ctx foundation.Context) *cobra.Command {
 			}
 			var pngs = make([][]byte, fullTotal)
 
+			if !strings.HasSuffix(endpoint, "/") {
+				endpoint += "/"
+			}
+
 			for i := 0; i < total; i++ {
 				if err := runScenario(afterTime, afterTime.AddDate(0, 0, (i+1)*interval), ui, endpoint, a, &pngs[i], analysisId); err != nil {
 					return errors.Wrap(err, "Unable to run scenario")
 				}
 			}
 			if int(remainder) > 0 {
-				if err := runScenario(afterTime, beforeTime, ui, endpoint, a, &pngs[len(pngs) - 1], analysisId); err != nil {
+				if err := runScenario(afterTime, beforeTime, ui, endpoint, a, &pngs[len(pngs)-1], analysisId); err != nil {
 					return errors.Wrap(err, "Unable to run scenario")
 				}
 			}
@@ -111,7 +116,7 @@ func create(ctx foundation.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&filename, "filename", "f", "storyboard"+date.Today()+".avi", "storyboard file name")
 	cmd.Flags().StringVarP(&analysis, "analysis", "", "hotspots", "analysis to storyboard between revisions|hotspots|coupling|code-churn|modus-operandi|knowledge-map")
 	cmd.Flags().IntVarP(&fps, "fps", "", 8, "number of frames per second")
-	cmd.Flags().IntVarP(&interval, "interval", "", 1, "interval in days between two sets of measures")
+	cmd.Flags().IntVarP(&interval, "interval", "", 14, "interval in days between two sets of measures")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	cmd.MarkFlagRequired("scene")
@@ -120,7 +125,13 @@ func create(ctx foundation.Context) *cobra.Command {
 }
 
 func runScenario(minDate time.Time, maxDate time.Time, ui terminal.UI, endpoint string, a app.App, buffer *[]byte, analysisId string) error {
-	ctxt, cancel1 := chromedp.NewContext(context.Background())
+	allocCtx, cancel := chromedp.NewExecAllocator(context.Background(),
+		chromedp.NoSandbox,
+		chromedp.Headless,
+		chromedp.Flag("disable-setuid-sandbox", true))
+	defer cancel()
+
+	ctxt, cancel1 := chromedp.NewContext(allocCtx)
 	defer cancel1()
 
 	ctxt, cancel2 := context.WithTimeout(ctxt, 15*time.Second)
@@ -181,7 +192,7 @@ func tasks(endpoint string, sceneId string, appId string, min string, max string
 
 	tasks := chromedp.Tasks{
 		chromedp.Navigate(url),
-		chromedp.Click("#tabs_header_" +analysisId+ " > span", chromedp.ByQuery),
+		chromedp.Click("#tabs_header_"+analysisId+" > span", chromedp.ByQuery),
 		chromedp.WaitVisible(".js-viz", chromedp.ByQuery),
 		chromedp.Screenshot(".js-viz", buf, chromedp.NodeVisible),
 	}

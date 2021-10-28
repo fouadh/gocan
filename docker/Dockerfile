@@ -1,5 +1,5 @@
 # Build the frontend
-FROM node as build_frontend
+FROM node:14 as build_frontend
 
 RUN mkdir -p /gocan/app/ui
 WORKDIR /gocan
@@ -30,7 +30,14 @@ ARG BUILD_REF
 RUN mkdir /gocan
 #RUN mkdir -p /root/.gocan
 RUN apt update
+RUN ln -fs /usr/share/zoneinfo/America/New_York /etc/localtime
 RUN apt install -y curl git
+
+# Install Chrome
+RUN curl -LO https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN apt install -y ./google-chrome-stable_current_amd64.deb
+RUN rm google-chrome-stable_current_amd64.deb
+
 RUN useradd -ms /bin/bash gocan
 ENV PATH="/home/gocan:$PATH"
 USER gocan
