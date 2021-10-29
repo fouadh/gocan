@@ -43,7 +43,7 @@ gocan [command] --help
 
 The exhaustive list of commands can be found [here](./doc/commands/gocan.md)
 
-# Using the app
+# Quick Start
 
 ## Start the embedded database
 
@@ -52,14 +52,6 @@ command:
 
 ```
 gocan start-db
-```
-
-## Run the UI
-
-To visualize the different charts, execute the following command that bootstraps an embedded web server:
-
-```
-gocan ui
 ```
 
 ## Create a forensics scene
@@ -85,8 +77,20 @@ In order to get metrics, it is needed to run this command to import information 
 cloned locally.
 
 ```
-gocan import-history my-app -s my-scene --after 2021-01-01 --before 2021-06-30
+gocan import-history my-app -s my-scene --interval-between-analyses 100
 ```
+
+This command will import the git information from the current directory and will perform a complexity analysis every 100 commits.
+
+## Run the UI
+
+To visualize the different charts, execute the following command that bootstraps an embedded web server:
+
+```
+gocan ui
+```
+
+And open your browser to start visualizing.
 
 It is recommended to limit the data that you want to analyze to a small period. Like mentionned in the book, having
 too many data can skew the results and obscure most recent trends.
@@ -385,7 +389,7 @@ described in the book.
 ## Requirements
 
 * golang 1.17
-* nodejs
+* node 14
 * yarn
 
 ## Build
