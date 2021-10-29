@@ -379,6 +379,12 @@ For example, to get an evolution of the hotspots:
 gocan storyboard orm --scene hibernate --after 2012-01-01 --before 2013-09-04 --filename storyboard.avi --interval 14 --analysis hotspots --fps 8 
 ```
 
+_Example of generated video:_
+
+![Example](./doc/images/storyboard.gif)
+
+It can be hypnotizing to observe structural decay with that kind of video :-)
+
 # Want More samples ?
 
 Take a look at the [samples](./samples) folder that contains examples of analyses similar to those
