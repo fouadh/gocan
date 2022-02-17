@@ -2,7 +2,7 @@
 
 `gocan` is a code analyzer heavily inspired from the excellent book [Your Code as a Crime Scene](https://pragprog.com/titles/atcrime/your-code-as-a-crime-scene/) written by Adam Tornhill.
 
-It provides a cli to analyze git repositories and build some of the charts described in that book and that can be used to start conversations regarding the design or organisation of some application.
+It provides a cli to analyze git repositories and build some of the charts described in that book and that can be used to start conversations regarding the design or organisation of some given application.
 
 It has very similar interface to [code-maat](https://github.com/adamtornhill/code-maat), the tool created by Adam Tornhill. Here are some of the main differences:
 
