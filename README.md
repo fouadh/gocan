@@ -73,14 +73,13 @@ gocan create-app my-app -s my-scene
 
 ## Import an application history
 
-In order to get metrics, it is needed to run this command to import information from a git repository that has been
-cloned locally.
+In order to get metrics, it is needed to first clone a git repository locally and then, run this command to import statistics about it:
 
 ```
-gocan import-history my-app -s my-scene --interval-between-analyses 100
+gocan import-history my-app -s my-scene
 ```
 
-This command will import the git information from the current directory and will perform a complexity analysis every 100 commits.
+This command will import the git information from the current directory.
 
 ## Run the UI
 
