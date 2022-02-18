@@ -68,7 +68,7 @@ export function EntityCoupling({sceneId, appId, date, entities}) {
         <div className="card mt-4">
             <div className="flex align-items-start">
                 <div className="p-field p-col-12 p-md-4 mr-4">
-                    <span className="p-float-label">
+                    <span className="p-float-label autocomplete">
                         <Autocomplete suggestions={entities} onChange={e => setEntity(e.value)}/>
                         <label htmlFor="entity">Entity</label>
                     </span>

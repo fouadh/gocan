@@ -7,6 +7,7 @@ import (
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
 	"net/http"
+	"strconv"
 )
 
 type Handlers struct {
@@ -37,7 +38,19 @@ func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request
 		return err
 	}
 
-	c, err := h.Coupling.BuildCouplingHierarchy(a, .4, 6, before, after)
+	minCouplingStr := query.Get("minCoupling")
+	minCoupling, err := strconv.ParseFloat(minCouplingStr, 32)
+	if err != nil {
+		minCoupling = .39
+	}
+
+	minRevsAvgStr := query.Get("minRevisionsAvg")
+	minRevsAvg, err := strconv.Atoi(minRevsAvgStr)
+	if err != nil {
+		minRevsAvg = 6
+	}
+
+	c, err := h.Coupling.BuildCouplingHierarchy(a, minCoupling, minRevsAvg, before, after)
 
 	if err != nil {
 		return err
@@ -62,7 +75,19 @@ func (h *Handlers) BuildEntityCouplingHierarchy(w http.ResponseWriter, r *http.R
 		return err
 	}
 
-	c, err := h.Coupling.BuildEntityCouplingHierarchy(a, entity, .39, 6, before, after)
+	minCouplingStr := query.Get("minCoupling")
+	minCoupling, err := strconv.ParseFloat(minCouplingStr, 32)
+	if err != nil {
+		minCoupling = .39
+	}
+
+	minRevsAvgStr := query.Get("minRevisionsAvg")
+	minRevsAvg, err := strconv.Atoi(minRevsAvgStr)
+	if err != nil {
+		minRevsAvg = 6
+	}
+
+	c, err := h.Coupling.BuildEntityCouplingHierarchy(a, entity, minCoupling, minRevsAvg, before, after)
 
 	if err != nil {
 		return err

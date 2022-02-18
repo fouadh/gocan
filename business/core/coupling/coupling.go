@@ -338,7 +338,6 @@ func organizeEntitiesPerCommit(stats []stat.StatInfo) map[string]map[string]bool
 	return commits
 }
 
-
 type info struct {
 	count     int
 	file1Revs int

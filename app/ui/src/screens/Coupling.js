@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import {InputNumber} from 'primereact/inputnumber';
 import axios from "axios";
 import {Chord} from "../components/Chord";
 import {Spinner} from "../components/Spinner";
@@ -6,6 +7,8 @@ import {DateSelector} from "../components/DateSelector";
 import {Button} from 'primereact/button';
 
 export function Coupling({sceneId, appId, date}) {
+    const [minCouplingPercent, setMinCouplingPercent] = useState(40);
+    const [minRevsAvg, setMinRevsAvg] = useState(6);
     const [dateRange, setDateRange] = useState({date});
     const [analyze, setAnalyze] = useState(true);
     const [coupling, setCoupling] = useState();
@@ -17,16 +20,21 @@ export function Coupling({sceneId, appId, date}) {
         if (analyze) {
             setLoading(true);
             let endpoint = `/api/scenes/${sceneId}/apps/${appId}/coupling-hierarchy`;
+            const params = new URLSearchParams();
             if (dateRange.min) {
-                if (dateRange.max) {
-                    endpoint += `?after=${dateRange.min}&before=${dateRange.max}`
-                } else {
-                    endpoint += `?after=${dateRange.min}`
-                }
-            } else if (dateRange.max) {
-                endpoint += `?before=${dateRange.max}`
+                params.append("after", dateRange.min);
             }
-            axios.get(endpoint)
+            if (dateRange.max) {
+                params.append("before", dateRange.max);
+            }
+            if (minCouplingPercent) {
+                params.append("minCoupling", minCouplingPercent / 100);
+            }
+            if (minRevsAvg) {
+                params.append("minRevisionsAvg", minRevsAvg);
+            }
+
+            axios.get(`${endpoint}?${params}`)
                 .then(it => it.data)
                 .then(it => {
                     if (subscribe) {
@@ -40,7 +48,7 @@ export function Coupling({sceneId, appId, date}) {
         }
 
         return () => subscribe = false;
-    }, [sceneId, appId, boundary, analyze, dateRange]);
+    }, [sceneId, appId, boundary, analyze, dateRange, minCouplingPercent, minRevsAvg]);
 
     let screen;
     if (loading) {
@@ -57,7 +65,19 @@ export function Coupling({sceneId, appId, date}) {
         <div className="card mt-4">
             <div className="flex align-items-center">
                 <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
-                <Button label="Submit" onClick={e => setAnalyze(true)} />
+                <div className="p-field p-col-12 p-md-4 mr-4">
+                    <span className="p-float-label">
+                        <InputNumber id="minCouplingPercent" value={minCouplingPercent} onValueChange={e => setMinCouplingPercent(e.value)}/>
+                        <label htmlFor="minCouplingPercent">Minimal Coupling Percentage</label>
+                    </span>
+                </div>
+                <div className="p-field p-col-12 p-md-4 mr-4">
+                    <span className="p-float-label">
+                        <InputNumber id="minRevsAvg" value={minRevsAvg} onValueChange={e => setMinRevsAvg(e.value)}/>
+                        <label htmlFor="minRevsAvg">Minimal Revisions Average</label>
+                    </span>
+                </div>
+                <Button label="Submit" onClick={e => setAnalyze(true)}/>
             </div>
         </div>
         {screen}
