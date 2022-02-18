@@ -1,5 +1,5 @@
 SHELL := /bin/bash
-VERSION := 0.2.3
+VERSION := 0.2.4.SNAPSHOT
 PLATFORMS := linux/amd64 darwin/amd64
 temp = $(subst /, ,$@)
 os = $(word 1, $(temp))
