@@ -405,6 +405,17 @@ Build a version of gocan. The binary will be generated in the `bin` folder.
 make build
 ```
 
+## Running the UI for development
+
+The UI part comes with a [mock server](https://mswjs.io/) allowing to run it without having the backend running.
+
+```
+cd app/ui
+yarn start
+```
+
+The mock handlers can be found in the `mocks/handlers.js` file.
+
 ## Test
 
 Run all the tests of the project.
