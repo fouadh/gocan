@@ -5,8 +5,11 @@ import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 import {Button} from 'primereact/button';
 import {Autocomplete} from "../components/Autocomplete";
+import {InputNumber} from "primereact/inputnumber";
 
 export function EntityCoupling({sceneId, appId, date, entities}) {
+    const [minCouplingPercent, setMinCouplingPercent] = useState(40);
+    const [minRevsAvg, setMinRevsAvg] = useState(6);
     const [entity, setEntity] = useState("");
     const [dateRange, setDateRange] = useState(date);
     const [analyze, setAnalyze] = useState(true);
@@ -29,6 +32,13 @@ export function EntityCoupling({sceneId, appId, date, entities}) {
                 if (dateRange.max) {
                     params.append("before", dateRange.max);
                 }
+                if (minCouplingPercent) {
+                    params.append("minCoupling", minCouplingPercent / 100);
+                }
+                if (minRevsAvg) {
+                    params.append("minRevisionsAvg", minRevsAvg);
+                }
+
                 axios.get(`${endpoint}?${params}`)
                     .then(it => it.data)
                     .then(it => {
@@ -48,7 +58,7 @@ export function EntityCoupling({sceneId, appId, date, entities}) {
         }
 
         return () => subscribed = false;
-    }, [sceneId, appId, analyze, dateRange, entity]);
+    }, [sceneId, appId, analyze, dateRange, entity, minCouplingPercent, minRevsAvg]);
 
     let screen;
 
@@ -72,6 +82,18 @@ export function EntityCoupling({sceneId, appId, date, entities}) {
                     </span>
                 </div>
                 <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
+                <div className="p-field p-col-12 p-md-4 mr-4">
+                    <span className="p-float-label">
+                        <InputNumber id="minCouplingPercent" value={minCouplingPercent} onValueChange={e => setMinCouplingPercent(e.value)}/>
+                        <label htmlFor="minCouplingPercent">Minimal Coupling Percentage</label>
+                    </span>
+                </div>
+                <div className="p-field p-col-12 p-md-4 mr-4">
+                    <span className="p-float-label">
+                        <InputNumber id="minRevsAvg" value={minRevsAvg} onValueChange={e => setMinRevsAvg(e.value)}/>
+                        <label htmlFor="minRevsAvg">Minimal Revisions Average</label>
+                    </span>
+                </div>
                 <Button label="Submit" onClick={e => setAnalyze(true)} />
             </div>
         </div>
