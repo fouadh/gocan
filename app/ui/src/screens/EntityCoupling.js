@@ -20,18 +20,16 @@ export function EntityCoupling({sceneId, appId, date, entities}) {
             if (entity !== "") {
                 setError(null);
                 setLoading(true);
-                let endpoint = `/api/scenes/${sceneId}/apps/${appId}/entity-coupling?entity=${entity}`;
+                let endpoint = `/api/scenes/${sceneId}/apps/${appId}/entity-coupling`;
+                const params = new URLSearchParams();
+                params.append("entity", entity);
                 if (dateRange.min) {
-                    if (dateRange.max) {
-                        endpoint += `&after=${dateRange.min}&before=${dateRange.max}`
-                    } else {
-                        endpoint += `&after=${dateRange.min}`
-                    }
-                } else if (dateRange.max) {
-                    endpoint += `&before=${dateRange.max}`
+                    params.append("after", dateRange.min);
                 }
-
-                axios.get(endpoint)
+                if (dateRange.max) {
+                    params.append("before", dateRange.max);
+                }
+                axios.get(`${endpoint}?${params}`)
                     .then(it => it.data)
                     .then(it => {
                         if (subscribed) {

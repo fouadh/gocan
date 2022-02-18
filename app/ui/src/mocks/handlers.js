@@ -573,7 +573,7 @@ export const handlers = [
 
     rest.get('/api/scenes/s123/apps/a1/entity-coupling', (req, res, ctx) => {
         const entity = req.url.searchParams.get('entity');
-        if (entity.indexOf("file") < 0) {
+        if (!entity || entity === "") {
             return res(ctx.status(404));
         }
         return res(ctx.json({
