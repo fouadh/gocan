@@ -174,7 +174,7 @@ func hotspots(ctx context.Context) *cobra.Command {
 
 	cmd := cobra.Command{
 		Use:   "hotspots",
-		Args:  cobra.ExactArgs(1),
+		Args:  cobra.MaximumNArgs(1),
 		Short: "Get the hotspots of an application in JSON formatted for d3.js",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -188,15 +188,45 @@ func hotspots(ctx context.Context) *cobra.Command {
 			defer connection.Close()
 
 			c := NewCore(connection)
-			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+
+			var hotspots revision.HotspotHierarchy
+
+			if len(args) > 0 {
+				a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+				if err != nil {
+					return errors.Wrap(err, "Cannot extract information")
+				}
+
+				hotspots, err = c.QueryHotspots(a, beforeTime, afterTime)
+			} else {
+				hotspots = revision.HotspotHierarchy{
+					Name:     "root",
+					Children: []*revision.HotspotHierarchy{},
+				}
+
+				apps, err := app.NewCore(connection).QueryBySceneName(sceneName)
+				if err != nil {
+					return errors.Wrap(err, "Cannot retrieve scene applications")
+				}
+
+				for _, appli := range apps {
+					a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, appli.Name, before, after)
+					if err != nil {
+						return errors.Wrap(err, "Cannot extract information")
+					}
+					appHotspots, err := c.QueryHotspots(a, beforeTime, afterTime)
+					if err != nil {
+						return errors.Wrap(err, "Cannot get hotspots of app "+appli.Name)
+					}
+
+					hotspots.Children = append(hotspots.Children, &appHotspots)
+				}
+			}
+
 			if err != nil {
 				return errors.Wrap(err, "Command failed")
 			}
-
-			hotspots, err := c.QueryHotspots(a, beforeTime, afterTime)
-
 			ui.Ok()
-
 			str, _ := json.MarshalIndent(hotspots, "", "  ")
 			ui.Print(string(str))
 
@@ -297,7 +327,6 @@ func trends(ctx context.Context) *cobra.Command {
 			if err != nil {
 				return errors.Wrap(err, "Command failed")
 			}
-
 
 			ui.Log("Getting revisions trends...")
 			trends, err := c.RevisionTrendsByName(args[0], a.Id)
