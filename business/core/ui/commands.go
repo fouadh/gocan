@@ -135,6 +135,7 @@ func createHandlers(connection *sqlx.DB) map[string]func(w http.ResponseWriter, 
 	handlers["/scenes/:sceneId/apps/:appId/entities"] = appHandlers.QueryEntities
 	handlers["/scenes/:sceneId/apps/:appId/revisions"] = revisionHandlers.Query
 	handlers["/scenes/:sceneId/apps/:appId/hotspots"] = revisionHandlers.QueryHotspots
+	handlers["/scenes/:sceneId/hotspots"] = revisionHandlers.QuerySceneHotspots
 	handlers["/scenes/:sceneId/apps/:appId/revisions-trends/:trendId"] = revisionHandlers.QueryRevisionsTrendsById
 	handlers["/scenes/:sceneId/apps/:appId/revisions-trends"] = revisionHandlers.QueryRevisionsTrends
 	handlers["/scenes/:sceneId/apps/:appId/boundaries"] = boundaryHandlers.QueryByAppId

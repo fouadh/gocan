@@ -15,17 +15,20 @@ export function Hotspots({sceneId, appId, date}) {
         let subscribed = true;
         if (analyze) {
             setLoading(true);
-            let endpoint = `/api/scenes/${sceneId}/apps/${appId}/hotspots`;
-            if (dateRange.min) {
-                if (dateRange.max) {
-                    endpoint += `?after=${dateRange.min}&before=${dateRange.max}`
-                } else {
-                    endpoint += `?after=${dateRange.min}`
-                }
-            } else if (dateRange.max) {
-                endpoint += `?before=${dateRange.max}`
+            let endpoint;
+            if (appId) {
+                endpoint = `/api/scenes/${sceneId}/apps/${appId}/hotspots`;
+            } else {
+                endpoint = `/api/scenes/${sceneId}/hotspots`;
             }
-            axios.get(endpoint)
+            let params = new URLSearchParams();
+            if (dateRange.min) {
+                params.append("after", dateRange.min);
+            }
+            if (dateRange.max) {
+                params.append("before", dateRange.max);
+            }
+            axios.get(`${endpoint}?${params}`)
                 .then(it => it.data)
                 .then(it => {
                     if (subscribed) {

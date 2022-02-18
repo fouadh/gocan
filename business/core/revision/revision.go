@@ -1,6 +1,8 @@
 package revision
 
 import (
+	"com.fha.gocan/business/core"
+	app2 "com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/boundary"
 	"com.fha.gocan/business/data/store/revision"
@@ -32,13 +34,40 @@ func (c Core) Query(appId string, before time.Time, after time.Time) ([]revision
 	return c.revision.QueryByAppIdAndDateRange(appId, before, after)
 }
 
-func (c Core) QueryHotspots(a app.App, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
+func (c Core) QueryAppHotspots(a app.App, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
 	revs, err := c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
 	if err != nil {
 		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
 	}
 
 	return buildHotspots(a.Name, revs), nil
+}
+
+func (c Core) QuerySceneHotspots(sceneName string, before string, after string, connection *sqlx.DB) (revision.HotspotHierarchy, error) {
+	hotspots := revision.HotspotHierarchy{
+		Name:     "root",
+		Children: []*revision.HotspotHierarchy{},
+	}
+
+	apps, err := app2.NewCore(connection).QueryBySceneName(sceneName)
+	if err != nil {
+		return revision.HotspotHierarchy{}, errors.Wrap(err, "Cannot retrieve scene applications")
+	}
+
+	for _, appli := range apps {
+		a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, appli.Name, before, after)
+		if err != nil {
+			return revision.HotspotHierarchy{}, errors.Wrap(err, "Cannot extract information")
+		}
+		appHotspots, err := c.QueryAppHotspots(a, beforeTime, afterTime)
+		if err != nil {
+			return revision.HotspotHierarchy{}, errors.Wrap(err, "Cannot get hotspots of app "+appli.Name)
+		}
+
+		hotspots.Children = append(hotspots.Children, &appHotspots)
+	}
+
+	return hotspots, nil
 }
 
 func (c Core) RevisionTrendsByName(name string, appId string) (revision.RevisionTrends, error) {
@@ -85,7 +114,7 @@ func (c Core) CreateRevisionTrends(name string, appId string, b boundary.Boundar
 		Id:         trendId,
 		Name:       name,
 		BoundaryId: b.Id,
-		AppId: appId,
+		AppId:      appId,
 		Entries:    entries,
 	}
 

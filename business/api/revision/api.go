@@ -5,6 +5,7 @@ import (
 	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/core/revision"
+	"com.fha.gocan/business/core/scene"
 	revision2 "com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
@@ -12,18 +13,22 @@ import (
 )
 
 type Handlers struct {
-	Revision revision.Core
-	App      app.Core
-	Boundary boundary.Core
-	Commit   commit.Core
+	Revision   revision.Core
+	Scene      scene.Core
+	App        app.Core
+	Boundary   boundary.Core
+	Commit     commit.Core
+	connection *sqlx.DB
 }
 
 func NewHandlers(connection *sqlx.DB) Handlers {
 	return Handlers{
-		Revision: revision.NewCore(connection),
-		App: app.NewCore(connection),
-		Boundary: boundary.NewCore(connection),
-		Commit: commit.NewCore(connection),
+		Revision:   revision.NewCore(connection),
+		Scene:      scene.NewCore(connection),
+		App:        app.NewCore(connection),
+		Boundary:   boundary.NewCore(connection),
+		Commit:     commit.NewCore(connection),
+		connection: connection,
 	}
 }
 
@@ -63,7 +68,31 @@ func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params 
 		return err
 	}
 
-	hotspots, err := h.Revision.QueryHotspots(a, beforeTime, afterTime)
+	hotspots, err := h.Revision.QueryAppHotspots(a, beforeTime, afterTime)
+
+	payload := struct {
+		Name     string                       `json:"name"`
+		Children []revision2.HotspotHierarchy `json:"children"`
+	}{
+		Name:     "root",
+		Children: []revision2.HotspotHierarchy{hotspots},
+	}
+
+	return web.Respond(w, payload, 200)
+}
+
+func (h *Handlers) QuerySceneHotspots(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	sceneId := params["sceneId"]
+	s, err := h.Scene.QueryById(sceneId)
+	if err != nil {
+		return err
+	}
+
+	query := r.URL.Query()
+	before := query.Get("before")
+	after := query.Get("after")
+
+	hotspots, err := h.Revision.QuerySceneHotspots(s.Name, before, after, h.connection)
 
 	payload := struct {
 		Name     string                       `json:"name"`

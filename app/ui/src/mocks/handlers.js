@@ -571,6 +571,147 @@ export const handlers = [
         }))
     }),
 
+    rest.get('/api/scenes/s123/hotspots', (req, res, ctx) => {
+        return res(ctx.json({
+            name: "root",
+            children: [{
+                "name": "gocan",
+                "children": [
+                    {
+                        "name": "app",
+                        "children": [
+                            {
+                                "name": "cmd",
+                                "children": [
+                                    {
+                                        "name": "gocan",
+                                        "children": [
+                                            {
+                                                "name": "main.go",
+                                                "weight": 1,
+                                                "size": 45
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        "name": "business",
+                        "children": [
+                            {
+                                "name": "core",
+                                "children": [
+                                    {
+                                        "name": "coupling",
+                                        "children": [
+                                            {
+                                                "name": "commands.go",
+                                                "weight": 1,
+                                                "size": 99
+                                            },
+                                            {
+                                                "name": "coupling.go",
+                                                "weight": 0.5,
+                                                "size": 43
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "developer",
+                                        "children": [
+                                            {
+                                                "name": "commands.go",
+                                                "weight": 0.5,
+                                                "size": 49
+                                            },
+                                            {
+                                                "name": "developer.go",
+                                                "weight": 0.5,
+                                                "size": 32
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                "name": "data",
+                                "children": [
+                                    {
+                                        "name": "schema",
+                                        "children": [
+                                            {
+                                                "name": "migrations",
+                                                "children": [
+                                                    {
+                                                        "name": "202109140853_create_soc_function.down.sql",
+                                                        "weight": 0.5,
+                                                        "size": 1
+                                                    },
+                                                    {
+                                                        "name": "202109140853_create_soc_function.up.sql",
+                                                        "weight": 0.5,
+                                                        "size": 24
+                                                    },
+                                                    {
+                                                        "name": "202109142128_create_main_developers_function.down.sql",
+                                                        "weight": 0.5,
+                                                        "size": 1
+                                                    },
+                                                    {
+                                                        "name": "202109142128_create_main_developers_function.up.sql",
+                                                        "weight": 0.5,
+                                                        "size": 41
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        "name": "store",
+                                        "children": [
+                                            {
+                                                "name": "coupling",
+                                                "children": [
+                                                    {
+                                                        "name": "coupling.go",
+                                                        "weight": 0.5,
+                                                        "size": 79
+                                                    },
+                                                    {
+                                                        "name": "models.go",
+                                                        "weight": 0.5,
+                                                        "size": 11
+                                                    }
+                                                ]
+                                            },
+                                            {
+                                                "name": "developer",
+                                                "children": [
+                                                    {
+                                                        "name": "developer.go",
+                                                        "weight": 0.5,
+                                                        "size": 45
+                                                    },
+                                                    {
+                                                        "name": "models.go",
+                                                        "weight": 0.5,
+                                                        "size": 8
+                                                    }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ]
+            }]
+        }))
+    }),
+
     rest.get('/api/scenes/s123/apps/a1/entity-coupling', (req, res, ctx) => {
         const entity = req.url.searchParams.get('entity');
         if (!entity || entity === "") {

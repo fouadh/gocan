@@ -5,6 +5,7 @@ import {Panel} from 'primereact/panel';
 import {DataView} from 'primereact/dataview';
 import {TabPanel, TabView} from 'primereact/tabview';
 import './Scene.css';
+import {Hotspots} from "./Hotspots";
 
 export function Scene() {
     const {sceneId} = useParams();
@@ -74,6 +75,8 @@ export function Scene() {
         );
     }
 
+    const sceneDateRange = {};
+
     return scene ? <div>
         <h1>{scene.name}</h1>
         <div>
@@ -81,6 +84,11 @@ export function Scene() {
                 <TabPanel header="Applications">
                     <div className="apps">
                         <DataView value={applications} layout="grid" itemTemplate={AppSummary}/>
+                    </div>
+                </TabPanel>
+                <TabPanel header="Hotspots">
+                    <div>
+                        <Hotspots sceneId={sceneId} date={sceneDateRange}/>
                     </div>
                 </TabPanel>
             </TabView>

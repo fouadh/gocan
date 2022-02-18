@@ -197,30 +197,9 @@ func hotspots(ctx context.Context) *cobra.Command {
 					return errors.Wrap(err, "Cannot extract information")
 				}
 
-				hotspots, err = c.QueryHotspots(a, beforeTime, afterTime)
+				hotspots, err = c.QueryAppHotspots(a, beforeTime, afterTime)
 			} else {
-				hotspots = revision.HotspotHierarchy{
-					Name:     "root",
-					Children: []*revision.HotspotHierarchy{},
-				}
-
-				apps, err := app.NewCore(connection).QueryBySceneName(sceneName)
-				if err != nil {
-					return errors.Wrap(err, "Cannot retrieve scene applications")
-				}
-
-				for _, appli := range apps {
-					a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, appli.Name, before, after)
-					if err != nil {
-						return errors.Wrap(err, "Cannot extract information")
-					}
-					appHotspots, err := c.QueryHotspots(a, beforeTime, afterTime)
-					if err != nil {
-						return errors.Wrap(err, "Cannot get hotspots of app "+appli.Name)
-					}
-
-					hotspots.Children = append(hotspots.Children, &appHotspots)
-				}
+				hotspots, err = c.QuerySceneHotspots(sceneName, before, after, connection)
 			}
 
 			if err != nil {
