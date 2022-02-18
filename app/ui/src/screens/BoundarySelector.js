@@ -24,18 +24,20 @@ export function BoundarySelector({sceneId, appId, onChange}) {
     if (boundaries && boundaries.length > 0) {
         selector = <>
             <>
-                <div className={"selector"}>
-                <label className="p-mr-2">Boundary:</label>
-                <Dropdown optionLabel="name"
-                          optionValue="id"
-                          options={boundaries}
-                          placeholder="Select a boundary"
-                          value={boundary}
-                          showClear={true}
-                          onChange={(e) => {
-                              setBoundary(e.value);
-                              onChange(e);
-                          }}/>
+                <div className="p-field p-col-12 p-md-4 mr-4">
+                    <span className="p-float-label">
+                        <Dropdown id="boundaries"
+                                  optionLabel="name"
+                                  optionValue="name"
+                                  options={boundaries}
+                                  value={boundary}
+                                  showClear={true}
+                                  onChange={(e) => {
+                                      setBoundary(e.value);
+                                      onChange(e);
+                                  }}/>
+                        <label htmlFor="boundaries">Boundary</label>
+                    </span>
                 </div>
             </>
         </>

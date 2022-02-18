@@ -125,6 +125,27 @@ func (c Core) BuildEntityCouplingHierarchy(a app.App, entity string, minimalCoup
 	return root, nil
 }
 
+func (c Core) BuildCouplingHierarchyByBoundary(a app.App, boundaryName string, minimalCoupling float64, minimalRevisionsAverage int, beforeTime time.Time, afterTime time.Time) (coupling.CouplingHierarchy, error) {
+	couplings, err := c.QueryByBoundary(a.Id, boundaryName, minimalCoupling, minimalRevisionsAverage, 0, beforeTime, afterTime)
+	if err != nil {
+		return coupling.CouplingHierarchy{}, errors.Wrap(err, "Unable to fetch couplings")
+	}
+
+	root := coupling.CouplingHierarchy{
+		Name:     "root",
+		Children: []*coupling.CouplingHierarchy{},
+	}
+
+	for _, c := range couplings {
+		path := strings.Split(c.Entity, "/")
+		buildNode(path, &root, c)
+	}
+
+	buildCouplingNodes(&root, &root)
+
+	return root, nil
+}
+
 func buildEntityCouplingNode(path []string, parent *revision.HotspotHierarchy, rev revision.Revision, couplingDegree float64) *revision.HotspotHierarchy {
 	existingNode := findEntityCouplingNode(parent.Children, path[0])
 	if existingNode != nil {

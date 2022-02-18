@@ -5,10 +5,12 @@ import {Chord} from "../components/Chord";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 import {Button} from 'primereact/button';
+import {BoundarySelector} from "./BoundarySelector";
 
 export function Coupling({sceneId, appId, date}) {
     const [minCouplingPercent, setMinCouplingPercent] = useState(40);
     const [minRevsAvg, setMinRevsAvg] = useState(6);
+    const [boundaryName, setBoundaryName] = useState();
     const [dateRange, setDateRange] = useState({date});
     const [analyze, setAnalyze] = useState(true);
     const [coupling, setCoupling] = useState();
@@ -33,6 +35,9 @@ export function Coupling({sceneId, appId, date}) {
             if (minRevsAvg) {
                 params.append("minRevisionsAvg", minRevsAvg);
             }
+            if (boundaryName) {
+                params.append("boundaryName", boundaryName);
+            }
 
             axios.get(`${endpoint}?${params}`)
                 .then(it => it.data)
@@ -48,7 +53,7 @@ export function Coupling({sceneId, appId, date}) {
         }
 
         return () => subscribe = false;
-    }, [sceneId, appId, boundary, analyze, dateRange, minCouplingPercent, minRevsAvg]);
+    }, [sceneId, appId, boundary, analyze, dateRange, minCouplingPercent, minRevsAvg, boundaryName]);
 
     let screen;
     if (loading) {
@@ -67,7 +72,8 @@ export function Coupling({sceneId, appId, date}) {
                 <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
                 <div className="p-field p-col-12 p-md-4 mr-4">
                     <span className="p-float-label">
-                        <InputNumber id="minCouplingPercent" value={minCouplingPercent} onValueChange={e => setMinCouplingPercent(e.value)}/>
+                        <InputNumber id="minCouplingPercent" value={minCouplingPercent}
+                                     onValueChange={e => setMinCouplingPercent(e.value)}/>
                         <label htmlFor="minCouplingPercent">Minimal Coupling Percentage</label>
                     </span>
                 </div>
@@ -77,6 +83,7 @@ export function Coupling({sceneId, appId, date}) {
                         <label htmlFor="minRevsAvg">Minimal Revisions Average</label>
                     </span>
                 </div>
+                <BoundarySelector appId={appId} sceneId={sceneId} onChange={e => setBoundaryName(e.value)}/>
                 <Button label="Submit" onClick={e => setAnalyze(true)}/>
             </div>
         </div>

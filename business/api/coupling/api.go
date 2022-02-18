@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/core/coupling"
+	coupling2 "com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
 	"net/http"
@@ -50,12 +51,17 @@ func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request
 		minRevsAvg = 6
 	}
 
-	c, err := h.Coupling.BuildCouplingHierarchy(a, minCoupling, minRevsAvg, before, after)
+	boundaryName := query.Get("boundaryName")
 
+	var c coupling2.CouplingHierarchy
+	if boundaryName == "" {
+		c, err = h.Coupling.BuildCouplingHierarchy(a, minCoupling, minRevsAvg, before, after)
+	} else {
+		c, err = h.Coupling.BuildCouplingHierarchyByBoundary(a, boundaryName, minCoupling, minRevsAvg, before, after)
+	}
 	if err != nil {
 		return err
 	}
-
 	return web.Respond(w, c, 200)
 }
 
