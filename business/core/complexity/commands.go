@@ -98,7 +98,6 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 
 	cmd.MarkFlagRequired("scene")
 	cmd.MarkFlagRequired("app")
-	cmd.MarkFlagRequired("filename")
 	cmd.MarkFlagRequired("directory")
 
 	return &cmd
@@ -112,7 +111,7 @@ func delete(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "delete-complexity-analysis",
 		Aliases: []string{"dca"},
-		Short: "Delete a complexity analysis",
+		Short:   "Delete a complexity analysis",
 		Example: "gocan delete-complexity-analysis myanalysis --app myapp --scene myscene",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -163,8 +162,8 @@ func list(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "complexity-analyses",
 		Aliases: []string{"ca"},
-		Args: cobra.NoArgs,
-		Short: "List the complexity analyses associated with an app",
+		Args:    cobra.NoArgs,
+		Short:   "List the complexity analyses associated with an app",
 		Example: "gocan complexity-analyses --app myapp --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui

@@ -8,10 +8,13 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/pborman/uuid"
 	"github.com/pkg/errors"
+	"golang.org/x/tools/godoc/util"
+	"io/fs"
 	"io/ioutil"
 	"math"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 	"time"
 )
@@ -36,8 +39,73 @@ func (c Core) CountLineIndentations(line string, size int) int {
 	return (len(line) - len(tline)) / size
 }
 
+func (c Core) AnalyzeRepoComplexity(complexityId string, directory string, date time.Time, spaces int) (complexity.ComplexityEntry, error) {
+	indentations := []int{}
+	indentationsCounter := 0
+	linesCounter := 0
+	max := 0
+
+	err := filepath.WalkDir(directory, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		if !d.IsDir() {
+			analysis, err := c.AnalyzeComplexity("dummy", path, date, spaces)
+			if err != nil {
+				return err
+			}
+
+			linesCounter += analysis.Lines
+			fileIndentations := analysis.Indentations
+			indentations = append(indentations, fileIndentations)
+			indentationsCounter += fileIndentations
+			if max < fileIndentations {
+				max = indentationsCounter
+			}
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		return complexity.ComplexityEntry{}, err
+	}
+
+	// "/Users/fhamdi/code/10-19 Personal/11 Projects/13.01 gocan/gocan/bin/gocan" create-complexity-analysis full5 -a maat -s gocan --directory "/Users/fhamdi/code/10-19 Personal/11 Projects/13.01 gocan/gocan-tutorial/code-maat"
+
+	mean := float64(indentationsCounter) / float64(linesCounter)
+	stdev := 0.
+	for _, i := range indentations {
+		stdev += (float64(i) - mean) * (float64(i) - mean)
+	}
+	stdev = math.Sqrt(stdev / float64(len(indentations)))
+
+	return complexity.ComplexityEntry{
+		ComplexityId: complexityId,
+		Indentations: indentationsCounter,
+		Lines:        linesCounter,
+		Mean:         mean,
+		Max:          max,
+		Stdev:        stdev,
+		Date:         date,
+	}, nil
+}
+
 func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.Time, spaces int) (complexity.ComplexityEntry, error) {
 	bytes, err := ioutil.ReadFile(filename)
+	if !util.IsText(bytes) {
+		return complexity.ComplexityEntry{
+			ComplexityId: complexityId,
+			Indentations: 0,
+			Lines:        0,
+			Mean:         0,
+			Max:          0,
+			Stdev:        0,
+			Date:         date,
+		}, nil
+	}
+
 	if err != nil {
 		return complexity.ComplexityEntry{}, err
 	}
@@ -102,10 +170,9 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 		return complexity.Complexity{}, errors.Wrap(err, "Unable to get current branch info")
 	}
 
-	if !strings.HasSuffix(directory, "/") && !strings.HasPrefix(filename, "/") {
+	if !strings.HasSuffix(directory, "/") && (filename == "" || !strings.HasPrefix(filename, "/")) {
 		directory += "/"
 	}
-	filePath := directory + filename
 
 	for _, line := range lines {
 		cols := strings.Split(line, ";")
@@ -124,12 +191,23 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 				return complexity.Complexity{}, errors.Wrap(err, "Fail to checkout revision "+rev)
 			}
 
-			c, err := c.AnalyzeComplexity(complexityId, filePath, revDate, spaces)
-			if err != nil {
-				fmt.Println("WARNING: File cannot be analyzed for revision " + rev)
+			if filename != "" {
+				filePath := directory + filename
+				c, err := c.AnalyzeComplexity(complexityId, filePath, revDate, spaces)
+				if err != nil {
+					fmt.Println("WARNING: File cannot be analyzed for revision " + rev)
+				}
+
+				if err == nil {
+					complexities = append(complexities, c)
+				}
 			} else {
-				complexities = append(complexities, c)
+				c, err := c.AnalyzeRepoComplexity(complexityId, directory, revDate, spaces)
+				if err == nil {
+					complexities = append(complexities, c)
+				}
 			}
+
 		}
 	}
 
