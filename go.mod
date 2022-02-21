@@ -5,15 +5,18 @@ go 1.17
 require (
 	github.com/Boostport/migration v0.21.2
 	github.com/boyter/scc v2.12.0+incompatible
+	github.com/chromedp/chromedp v0.7.4
 	github.com/dimfeld/httptreemux/v5 v5.3.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.12.0
 	github.com/fergusstrange/embedded-postgres v1.6.0
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/icza/mjpeg v0.0.0-20210726201846-5ff75d3c479f
 	github.com/jmoiron/sqlx v1.3.3
 	github.com/pborman/uuid v1.2.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.1.3
+	golang.org/x/tools v0.1.0
 )
 
 require (
@@ -30,7 +33,6 @@ require (
 	github.com/bombsimon/wsl/v3 v3.2.0 // indirect
 	github.com/charithe/durationcheck v0.0.6 // indirect
 	github.com/chromedp/cdproto v0.0.0-20210713064928-7d28b402946a // indirect
-	github.com/chromedp/chromedp v0.7.4 // indirect
 	github.com/chromedp/sysutil v1.0.0 // indirect
 	github.com/cpuguy83/go-md2man/v2 v2.0.0 // indirect
 	github.com/creack/pty v1.1.11 // indirect
@@ -82,7 +84,6 @@ require (
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.0.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
-	github.com/icza/mjpeg v0.0.0-20210726201846-5ff75d3c479f // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
 	github.com/jackc/chunkreader/v2 v2.0.1 // indirect
 	github.com/jackc/pgconn v1.8.1 // indirect
@@ -161,7 +162,7 @@ require (
 	github.com/timakin/bodyclose v0.0.0-20200424151742-cb6215831a94 // indirect
 	github.com/tomarrell/wrapcheck v1.0.0 // indirect
 	github.com/tommy-muehle/go-mnd/v2 v2.3.1 // indirect
-	github.com/ulikunitz/xz v0.5.7 // indirect
+	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/ultraware/funlen v0.0.3 // indirect
 	github.com/ultraware/whitespace v0.0.4 // indirect
 	github.com/unchartedsoftware/witch v0.0.0-20200617171400-4f405404126f // indirect
@@ -173,7 +174,6 @@ require (
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
 	golang.org/x/text v0.3.5 // indirect
-	golang.org/x/tools v0.1.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	gopkg.in/go-playground/assert.v1 v1.2.1 // indirect
 	gopkg.in/ini.v1 v1.51.0 // indirect
