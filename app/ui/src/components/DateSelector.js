@@ -23,7 +23,6 @@ export function DateSelector({min, max, onChange}) {
             min: `${formatDate(range.min)}`,
             max: `${formatDate(range.max)}`,
         };
-        console.log({date});
         onChange(date);
     };
 

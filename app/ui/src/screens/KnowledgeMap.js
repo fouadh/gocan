@@ -66,7 +66,6 @@ export function KnowledgeMap({sceneId, appId, date}) {
                 .then(it => it.data)
                 .then(it => {
                     if (subscribed) {
-                        console.log(it);
                         setKnowledgeMap(it);
                     }
                 }).finally(() => {
