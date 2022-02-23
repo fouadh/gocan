@@ -68,7 +68,23 @@ func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params 
 		return err
 	}
 
-	hotspots, err := h.Revision.QueryAppHotspots(a, beforeTime, afterTime)
+	boundaryName := query.Get("boundaryName")
+
+	var hotspots revision2.HotspotHierarchy
+
+	if boundaryName != "" {
+		b, err := h.Boundary.QueryByAppIdAndName(appId, boundaryName)
+		if err != nil {
+			return err
+		}
+		hotspots, err = h.Revision.QueryAppHotspotsForBoundary(a, b, beforeTime, afterTime)
+	} else {
+		hotspots, err = h.Revision.QueryAppHotspots(a, beforeTime, afterTime)
+	}
+
+	if err != nil {
+		return err
+	}
 
 	payload := struct {
 		Name     string                       `json:"name"`

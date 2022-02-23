@@ -4,9 +4,11 @@ import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 import {Button} from 'primereact/button';
+import {BoundarySelector} from "./BoundarySelector";
 
 export function Hotspots({sceneId, appId, date}) {
     const [dateRange, setDateRange] = useState(date);
+    const [boundaryName, setBoundaryName] = useState();
     const [analyze, setAnalyze] = useState(true);
     const [hospots, setHotspots] = useState();
     const [loading, setLoading] = useState(false);
@@ -28,6 +30,9 @@ export function Hotspots({sceneId, appId, date}) {
             if (dateRange.max) {
                 params.append("before", dateRange.max);
             }
+            if (boundaryName) {
+                params.append("boundaryName", boundaryName);
+            }
             axios.get(`${endpoint}?${params}`)
                 .then(it => it.data)
                 .then(it => {
@@ -41,7 +46,7 @@ export function Hotspots({sceneId, appId, date}) {
         }
 
         return () => subscribed = false;
-    }, [sceneId, appId, analyze, dateRange]);
+    }, [sceneId, appId, analyze, dateRange, boundaryName]);
 
     let screen;
 
@@ -59,6 +64,7 @@ export function Hotspots({sceneId, appId, date}) {
         <div className="card mt-4">
             <div className="flex align-items-center">
                 <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
+                { appId && <BoundarySelector sceneId={sceneId} appId={appId} onChange={e => setBoundaryName(e.value)} /> }
                 <Button label="Submit" onClick={e => setAnalyze(true)}/>
             </div>
         </div>

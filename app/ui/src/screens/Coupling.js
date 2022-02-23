@@ -15,7 +15,6 @@ export function Coupling({sceneId, appId, date}) {
     const [analyze, setAnalyze] = useState(true);
     const [coupling, setCoupling] = useState();
     const [loading, setLoading] = useState(false);
-    const [boundary] = useState("");
 
     useEffect(() => {
         let subscribe = true;
@@ -53,7 +52,7 @@ export function Coupling({sceneId, appId, date}) {
         }
 
         return () => subscribe = false;
-    }, [sceneId, appId, boundary, analyze, dateRange, minCouplingPercent, minRevsAvg, boundaryName]);
+    }, [sceneId, appId, analyze, dateRange, minCouplingPercent, minRevsAvg, boundaryName]);
 
     let screen;
     if (loading) {
