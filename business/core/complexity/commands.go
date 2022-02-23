@@ -3,6 +3,8 @@ package complexity
 import (
 	"com.fha.gocan/business/core"
 	"com.fha.gocan/business/core/app"
+	boundary2 "com.fha.gocan/business/core/boundary"
+	"com.fha.gocan/business/data/store/boundary"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"github.com/dustin/go-humanize"
@@ -29,6 +31,8 @@ func create(ctx foundation.Context) *cobra.Command {
 	var spaces int
 	var csv bool
 	var verbose bool
+	var boundaryName string
+	var transformationName string
 
 	cmd := cobra.Command{
 		Use:     "create-complexity-analysis",
@@ -64,7 +68,22 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 
 			ui.Log("Analyzing the file revisions between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
 
-			data, err := c.CreateComplexityAnalysis(args[0], a.Id, beforeTime, afterTime, filename, directory, spaces)
+			transformation := boundary.Transformation{}
+
+			bc := boundary2.NewCore(connection)
+			if boundaryName != "" {
+				b, err := bc.QueryByAppIdAndName(a.Id, boundaryName)
+				if err != nil {
+					return errors.Wrap(err, "Boundary not found")
+				}
+				for _, t := range b.Transformations {
+					if t.Name == transformationName {
+						transformation = t
+					}
+				}
+			}
+
+			data, err := c.CreateComplexityAnalysis(args[0], a.Id, beforeTime, afterTime, filename, directory, spaces, transformation)
 
 			if err != nil {
 				return errors.Wrap(err, "Error when analyzing complexity")
@@ -87,6 +106,8 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary name (to be used with transformation name)")
+	cmd.Flags().StringVarP(&transformationName, "transformation", "t", "", "Transformation name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Analyze the complexity before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Analyze the complexity after this day")

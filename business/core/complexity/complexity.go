@@ -1,6 +1,7 @@
 package complexity
 
 import (
+	"com.fha.gocan/business/data/store/boundary"
 	"com.fha.gocan/business/data/store/complexity"
 	"com.fha.gocan/business/sys/git"
 	"com.fha.gocan/foundation/date"
@@ -39,7 +40,7 @@ func (c Core) CountLineIndentations(line string, size int) int {
 	return (len(line) - len(tline)) / size
 }
 
-func (c Core) AnalyzeRepoComplexity(complexityId string, directory string, date time.Time, spaces int) (complexity.ComplexityEntry, error) {
+func (c Core) AnalyzeRepoComplexity(complexityId string, directory string, t boundary.Transformation, date time.Time, spaces int) (complexity.ComplexityEntry, error) {
 	indentations := []int{}
 	indentationsCounter := 0
 	linesCounter := 0
@@ -51,17 +52,19 @@ func (c Core) AnalyzeRepoComplexity(complexityId string, directory string, date 
 		}
 
 		if !d.IsDir() {
-			analysis, err := c.AnalyzeComplexity("dummy", path, date, spaces)
-			if err != nil {
-				return err
-			}
+			if t.Name == "" || strings.Contains(path, t.Path) {
+				analysis, err := c.AnalyzeComplexity("dummy", path, date, spaces)
+				if err != nil {
+					return err
+				}
 
-			linesCounter += analysis.Lines
-			fileIndentations := analysis.Indentations
-			indentations = append(indentations, fileIndentations)
-			indentationsCounter += fileIndentations
-			if max < fileIndentations {
-				max = indentationsCounter
+				linesCounter += analysis.Lines
+				fileIndentations := analysis.Indentations
+				indentations = append(indentations, fileIndentations)
+				indentationsCounter += fileIndentations
+				if max < fileIndentations {
+					max = indentationsCounter
+				}
 			}
 		}
 
@@ -147,7 +150,7 @@ func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.
 	}, nil
 }
 
-func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before time.Time, after time.Time, filename string, directory string, spaces int) (complexity.Complexity, error) {
+func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before time.Time, after time.Time, filename string, directory string, spaces int, t boundary.Transformation) (complexity.Complexity, error) {
 	cmd := exec.Command("git", "log", "--oneline", "--pretty=format:%h;%ad", "--after", date.FormatDay(after), "--before", date.FormatDay(before), "--date=iso")
 	cmd.Dir = directory
 	cmd.Stderr = os.Stderr
@@ -202,7 +205,7 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 					complexities = append(complexities, c)
 				}
 			} else {
-				c, err := c.AnalyzeRepoComplexity(complexityId, directory, revDate, spaces)
+				c, err := c.AnalyzeRepoComplexity(complexityId, directory, t, revDate, spaces)
 				if err == nil {
 					complexities = append(complexities, c)
 				}
