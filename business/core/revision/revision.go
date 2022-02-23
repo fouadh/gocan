@@ -43,6 +43,15 @@ func (c Core) QueryAppHotspots(a app.App, before time.Time, after time.Time) (re
 	return buildHotspots(a.Name, revs), nil
 }
 
+func (c Core) QueryAppHotspotsForBoundary(a app.App, b boundary.Boundary, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
+	revs, err := c.revision.QueryByBoundary(a.Id, b, before, after)
+	if err != nil {
+		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
+	}
+
+	return buildHotspots(a.Name, revs), nil
+}
+
 func (c Core) QuerySceneHotspots(sceneName string, before string, after string, connection *sqlx.DB) (revision.HotspotHierarchy, error) {
 	hotspots := revision.HotspotHierarchy{
 		Name:     "root",

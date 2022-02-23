@@ -168,6 +168,7 @@ func list(ctx context.Context) *cobra.Command {
 
 func hotspots(ctx context.Context) *cobra.Command {
 	var sceneName string
+	var boundaryName string
 	var before string
 	var after string
 	var verbose bool
@@ -197,7 +198,15 @@ func hotspots(ctx context.Context) *cobra.Command {
 					return errors.Wrap(err, "Cannot extract information")
 				}
 
-				hotspots, err = c.QueryAppHotspots(a, beforeTime, afterTime)
+				if boundaryName != "" {
+					b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
+					if err != nil {
+						return errors.Wrap(err, "Boundary not found")
+					}
+					hotspots, err = c.QueryAppHotspotsForBoundary(a, b, beforeTime, afterTime)
+				} else {
+					hotspots, err = c.QueryAppHotspots(a, beforeTime, afterTime)
+				}
 			} else {
 				hotspots, err = c.QuerySceneHotspots(sceneName, before, after, connection)
 			}
@@ -214,6 +223,7 @@ func hotspots(ctx context.Context) *cobra.Command {
 	}
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use. Only valid for an application hotspots.")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the hotspots before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the hotspots after this day")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
