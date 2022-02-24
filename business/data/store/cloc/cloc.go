@@ -52,7 +52,6 @@ func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx 
 	clocs := []Clocs{}
 	json.Unmarshal(data, &clocs)
 
-	info := []Info{}
 	for _, c := range clocs {
 		for _, fi := range c.Files {
 			var path string
@@ -64,21 +63,36 @@ func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx 
 			} else {
 				path = fi.Location
 			}
-			info = append(info, Info{
-				File:  path,
-				Lines: fi.Code,
-			})
-		}
-	}
 
-	for _, c := range info {
-		s.connection.MustExec(
-			`INSERT INTO cloc(app_id, file, lines, commit_id) VALUES($1, $2, $3, $4) ON CONFLICT DO NOTHING`,
-			appId,
-			c.File,
-			c.Lines,
-			ct.Id,
+			fi.AppId = appId
+			fi.CommitId = ct.Id
+			fi.Location = path
+
+			const q = `
+		insert into cloc(
+		                 app_id, 
+		                 commit_id, 
+		                 file, lines, 
+		                 language, extension, filename, code, comment, blank, complexity, is_binary
+		) values(
+			:app_id, 
+			:commit_id, 
+			:file, 
+			:lines, 
+			:language, 
+			:extension, 
+			:filename, 
+			:code, 
+			:comment,
+			:blank, 
+			:complexity, 
+			:is_binary
 		)
+`
+			if _, err := s.connection.NamedExec(q, fi); err != nil {
+				return errors.Wrap(err, "Unable to save cloc analysis")
+			}
+		}
 	}
 
 	ctx.Ui.Log("reinitialising repo to initial branch")
