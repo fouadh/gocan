@@ -40,7 +40,7 @@ func (c Core) CountLineIndentations(line string, size int) int {
 	return (len(line) - len(tline)) / size
 }
 
-func (c Core) AnalyzeRepoComplexity(complexityId string, directory string, t boundary.Transformation, date time.Time, spaces int) (complexity.ComplexityEntry, error) {
+func (c Core) AnalyzeRepoComplexity(complexityId string, directory string, t boundary.Module, date time.Time, spaces int) (complexity.ComplexityEntry, error) {
 	indentations := []int{}
 	indentationsCounter := 0
 	linesCounter := 0
@@ -150,7 +150,7 @@ func (c Core) AnalyzeComplexity(complexityId string, filename string, date time.
 	}, nil
 }
 
-func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before time.Time, after time.Time, filename string, directory string, spaces int, t boundary.Transformation) (complexity.Complexity, error) {
+func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before time.Time, after time.Time, filename string, directory string, spaces int, t boundary.Module) (complexity.Complexity, error) {
 	cmd := exec.Command("git", "log", "--oneline", "--pretty=format:%h;%ad", "--after", date.FormatDay(after), "--before", date.FormatDay(before), "--date=iso")
 	cmd.Dir = directory
 	cmd.Stderr = os.Stderr

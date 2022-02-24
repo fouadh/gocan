@@ -345,8 +345,8 @@ production code of the `hibernate-core` module, we can create boundaries that de
 
 ```
 gocan create-boundaries core_production_vs_test --scene hibernate --app orm \
-                        --transformation production:hibernate-core/src/main \
-                        --transformation test:hibernate-core/src/test 
+                        --module production:hibernate-core/src/main \
+                        --module test:hibernate-core/src/test 
 ```
 
 The second step is to calculate the revision trends for a given timespan. Let say that we want to run it over all the

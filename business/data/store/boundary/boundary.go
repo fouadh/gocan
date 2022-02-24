@@ -19,10 +19,10 @@ func (s Store) Create(newBoundary NewBoundary) (Boundary, error) {
 		return Boundary{}, errors.Wrap(err, "Cannot insert a new boundary")
 	}
 
-	const q2 = `insert into transformations(boundary_id, name, path) values(:boundary_id, :name, :path)`
-	for _, t := range b.Transformations {
+	const q2 = `insert into modules(boundary_id, name, path) values(:boundary_id, :name, :path)`
+	for _, t := range b.Modules {
 		if _, err := s.connection.NamedExec(q2, t); err != nil {
-			return Boundary{}, errors.Wrap(err, "Cannot insert a new transformation")
+			return Boundary{}, errors.Wrap(err, "Cannot insert a new module")
 		}
 	}
 
@@ -31,21 +31,21 @@ func (s Store) Create(newBoundary NewBoundary) (Boundary, error) {
 
 func (s Store) buildBoundary(newBoundary NewBoundary) Boundary {
 	boundaryId := uuid.NewUUID().String()
-	transformations := []Transformation{}
-	for _, nt := range newBoundary.Transformations {
-		t := Transformation{
+	modules := []Module{}
+	for _, nt := range newBoundary.Modules {
+		t := Module{
 			BoundaryId: boundaryId,
 			Name:       nt.Name,
 			Path:       nt.Path,
 		}
-		transformations = append(transformations, t)
+		modules = append(modules, t)
 	}
 
 	b := Boundary{
-		Id:              boundaryId,
-		Name:            newBoundary.Name,
-		AppId:           newBoundary.AppId,
-		Transformations: transformations,
+		Id:      boundaryId,
+		Name:    newBoundary.Name,
+		AppId:   newBoundary.AppId,
+		Modules: modules,
 	}
 	return b
 }
@@ -55,7 +55,7 @@ func (s Store) QueryByAppId(appId string) ([]Boundary, error) {
 		select row_to_json(row) as row
 from (
          select *
-         from boundaries_transformations
+         from boundaries_modules
          where app_id=:app_id
      ) row;`
 
@@ -94,7 +94,7 @@ func (s Store) QueryById(boundaryId string) (Boundary, error) {
 		select row_to_json(row) as row
 from (
          select *
-         from boundaries_transformations
+         from boundaries_modules
          where id=:boundary_id
      ) row;`
 
@@ -130,7 +130,7 @@ func (s Store) QueryByAppIdAndName(appId string, boundaryName string) (Boundary,
 		select row_to_json(row) as row
 from (
          select *
-         from boundaries_transformations
+         from boundaries_modules
          where app_id=:app_id and name=:boundary_name
      ) row;`
 

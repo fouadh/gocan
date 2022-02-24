@@ -19,19 +19,19 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 func create(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var appName string
-	var transformations []string
+	var modules []string
 	var verbose bool
 
 	cmd := &cobra.Command{
 		Use:   "create-boundaries",
-		Short: "Create a boundary with its transformations",
+		Short: "Create a boundary with its modules",
 		Long: `
 A boundary allows to map code folders with tags. 
 
 You can use it to categorize an application. For example, you can define an architectural boundary with
 the different layers of an application. Or you can define a boundary for production code vs test code.
 `,
-		Example: "gocan create-boundaries myboundary --scene myscene --app myapp --transformation src:src/main/ --transformation test:src/test/",
+		Example: "gocan create-boundaries myboundary --scene myscene --app myapp --module src:src/main/ --module test:src/test/",
 		Aliases: []string{"cb", "create-boundary"},
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -41,8 +41,8 @@ the different layers of an application. Or you can define a boundary for product
 			if sceneName == "" {
 				return fmt.Errorf("No scene provided")
 			}
-			if len(transformations) == 0 {
-				return fmt.Errorf("No transformation provided")
+			if len(modules) == 0 {
+				return fmt.Errorf("No module provided")
 			}
 
 			ctx.Ui.SetVerbose(verbose)
@@ -60,7 +60,7 @@ the different layers of an application. Or you can define a boundary for product
 			}
 
 			ctx.Ui.Log("Creating boundary...")
-			_, err = c.Create(a.Id, args[0], transformations)
+			_, err = c.Create(a.Id, args[0], modules)
 			if err != nil {
 				return err
 			}
@@ -73,12 +73,12 @@ the different layers of an application. Or you can define a boundary for product
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
-	cmd.Flags().StringSliceVarP(&transformations, "transformation", "t", nil, "Transformations")
+	cmd.Flags().StringSliceVarP(&modules, "module", "t", nil, "Modules")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	cmd.MarkFlagRequired("scene")
 	cmd.MarkFlagRequired("app")
-	cmd.MarkFlagRequired("transformation")
+	cmd.MarkFlagRequired("module")
 
 	return cmd
 }
@@ -91,9 +91,9 @@ func delete(ctx foundation.Context) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "delete-boundary",
 		Aliases: []string{"db"},
-		Short: "Delete an application boundary",
+		Short:   "Delete an application boundary",
 		Example: "gocan delete-boundary myboundary --app myapp --scene myscene",
-		Args: cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if appName == "" {
 				return fmt.Errorf("No application provided")
@@ -180,13 +180,13 @@ func list(ctx foundation.Context) *cobra.Command {
 			ctx.Ui.Ok()
 
 			if len(data) > 0 {
-				table := ctx.Ui.Table([]string{"id", "name", "transformations"}, false)
+				table := ctx.Ui.Table([]string{"id", "name", "modules"}, false)
 				for _, b := range data {
-					transformations := ""
-					for _, t := range b.Transformations {
-						transformations += t.Name + ":" + t.Path + " | "
+					modules := ""
+					for _, m := range b.Modules {
+						modules += m.Name + ":" + m.Path + " | "
 					}
-					table.Add(b.Id, b.Name, transformations)
+					table.Add(b.Id, b.Name, modules)
 				}
 				table.Print()
 			} else {

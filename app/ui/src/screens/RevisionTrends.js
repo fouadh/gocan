@@ -8,7 +8,7 @@ export function RevisionTrends({sceneId, appId}) {
     const [trendName, setTrendName] = useState();
     const [trendNames, setTrendNames] = useState();
     const [trends, setTrends] = useState([]);
-    const [transformations, setTransformations] = useState([]);
+    const [modules, setModules] = useState([]);
 
     useEffect(() => {
         let subscribed = true;
@@ -47,7 +47,7 @@ export function RevisionTrends({sceneId, appId}) {
                         });
 
                         let keys = Object.keys(map);
-                        setTransformations(keys);
+                        setModules(keys);
                         const trends = keys.map(t => map[t]);
                         setTrends(trends);
                     }
@@ -65,7 +65,7 @@ export function RevisionTrends({sceneId, appId}) {
                                 xAccessor={d => d3.timeParse('%Y-%m-%d')(d.x)}
                                 yAccessor={d => d.y}
                                 xFormatter={d3.timeFormat("%Y-%m-%d")}
-                                legend={transformations}
+                                legend={modules}
         />;
     } else {
         chart = <></>;

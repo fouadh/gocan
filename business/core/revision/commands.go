@@ -330,13 +330,13 @@ func trends(ctx context.Context) *cobra.Command {
 				return errors.Wrap(err, "Boundary not found")
 			}
 			headers := []string{"date"}
-			for _, t := range b.Transformations {
+			for _, t := range b.Modules {
 				headers = append(headers, t.Name)
 			}
 			table := ui.Table(headers, csv)
 			for _, rt := range trends.Entries {
 				cols := []string{rt.Date}
-				for _, t := range b.Transformations {
+				for _, t := range b.Modules {
 					cols = append(cols, strconv.Itoa(rt.FindEntityRevision(t.Name).NumberOfRevisions))
 				}
 				table.Add(cols...)

@@ -25,16 +25,16 @@ $GOCAN import-history nopcommerce --scene nopcommerce --before 2014-09-25 --afte
 
 echo "Create software architecture boundaries"
 $GOCAN create-boundary architecture --scene nopcommerce --app nopcommerce \
-        --transformation "Admin Models:src/Presentation/Nop.Web/Administration/Models" \
-        --transformation "Admin Views:src/Presentation/Nop.Web/Administration/Views" \
-        --transformation "Admin Controllers:src/Presentation/Nop.Web/Administration/Controllers" \
-        --transformation "Services:src/Libraries/Nop.Services" \
-        --transformation "Core:src/Libraries/Nop.Core" \
-        --transformation "Data Access:src/Libraries/Nop.Data" \
-        --transformation "Business Access Layer:src/Libraries/Nop.Services" \
-        --transformation "Models:src/Presentation/Nop.Web/Models" \
-        --transformation "Views:src/Presentation/Nop.Web/Views" \
-        --transformation "Controllers:src/Presentation/Nop.Web/Controllers"
+        --module "Admin Models:src/Presentation/Nop.Web/Administration/Models" \
+        --module "Admin Views:src/Presentation/Nop.Web/Administration/Views" \
+        --module "Admin Controllers:src/Presentation/Nop.Web/Administration/Controllers" \
+        --module "Services:src/Libraries/Nop.Services" \
+        --module "Core:src/Libraries/Nop.Core" \
+        --module "Data Access:src/Libraries/Nop.Data" \
+        --module "Business Access Layer:src/Libraries/Nop.Services" \
+        --module "Models:src/Presentation/Nop.Web/Models" \
+        --module "Views:src/Presentation/Nop.Web/Views" \
+        --module "Controllers:src/Presentation/Nop.Web/Controllers"
 
 echo "Analyze coupling between layers"
 $GOCAN coupling nopcommerce --scene nopcommerce --boundary architecture

@@ -47,7 +47,7 @@ func (s Store) QueryByAppIdAndDateRange(appId string, before time.Time, after ti
 
 func (s Store) QueryByBoundary(appId string, b boundary.Boundary, before time.Time, after time.Time) ([]Revision, error) {
 	caseWhen := "case "
-	for _, t := range b.Transformations {
+	for _, t := range b.Modules {
 		caseWhen += fmt.Sprintf("when file like '%s%%' then '%s'\n", t.Path, t.Name)
 	}
 	caseWhen += " end"
@@ -172,10 +172,10 @@ SELECT id, name, boundary_id FROM revision_trends
 WHERE name=:name AND app_id=:app_id`
 
 	data := struct {
-		Name string `db:"name"`
+		Name  string `db:"name"`
 		AppId string `db:"app_id"`
 	}{
-		Name: name,
+		Name:  name,
 		AppId: appId,
 	}
 

@@ -20,16 +20,16 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Create(appId string, boundaryName string, transformations []string) (boundary.Boundary, error) {
-	ts, err := c.parseTransformations(transformations)
+func (c Core) Create(appId string, boundaryName string, modules []string) (boundary.Boundary, error) {
+	ts, err := c.parseModules(modules)
 	if err != nil {
 		return boundary.Boundary{}, err
 	}
 
 	nb := boundary.NewBoundary{
-		Name:            boundaryName,
-		AppId:           appId,
-		Transformations: ts,
+		Name:    boundaryName,
+		AppId:   appId,
+		Modules: ts,
 	}
 
 	return c.Boundary.Create(nb)
@@ -43,29 +43,29 @@ func (c Core) QueryByBoundaryId(id string) (boundary.Boundary, error) {
 	return c.Boundary.QueryById(id)
 }
 
-func (c Core) parseTransformations(transformations []string) ([]boundary.NewTransformation, error) {
+func (c Core) parseModules(modules []string) ([]boundary.NewModule, error) {
 	a := regexp.MustCompile(`:`)
-	ts := []boundary.NewTransformation{}
-	for _, t := range transformations {
-		transformation, err := c.parseTransformation(a, t)
+	ts := []boundary.NewModule{}
+	for _, t := range modules {
+		module, err := c.parseModule(a, t)
 		if err != nil {
-			return []boundary.NewTransformation{}, err
+			return []boundary.NewModule{}, err
 		}
-		ts = append(ts, transformation)
+		ts = append(ts, module)
 	}
 	return ts, nil
 }
 
-func (c Core) parseTransformation(a *regexp.Regexp, t string) (boundary.NewTransformation, error) {
+func (c Core) parseModule(a *regexp.Regexp, t string) (boundary.NewModule, error) {
 	cols := a.Split(t, -1)
 	if len(cols) != 2 {
-		return boundary.NewTransformation{}, fmt.Errorf("Transformations must respect the following pattern: [Name]:[Path]. For example, tests:/src/test")
+		return boundary.NewModule{}, fmt.Errorf("Modules must respect the following pattern: [Name]:[Path]. For example, tests:/src/test")
 	}
-	transformation := boundary.NewTransformation{
+	module := boundary.NewModule{
 		Name: cols[0],
 		Path: cols[1],
 	}
-	return transformation, nil
+	return module, nil
 }
 
 func (c Core) DeleteBoundaryByName(appId string, boundaryName string) error {

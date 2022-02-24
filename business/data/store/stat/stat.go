@@ -158,13 +158,13 @@ func aggregateCommitsPerPeriod(stats []StatInfo, period int) []StatInfo {
 }
 
 func aggregateCommitsPerBoundary(b boundary.Boundary, stats []StatInfo) []StatInfo {
-	transformations := b.Transformations
+	modules := b.Modules
 	for i, s := range stats {
 		file := s.File
 		s.File = ""
-		for _, t := range transformations {
-			if strings.HasPrefix(file, t.Path) {
-				s.File = t.Name
+		for _, m := range modules {
+			if strings.HasPrefix(file, m.Path) {
+				s.File = m.Name
 				stats[i] = s
 				break
 			}
