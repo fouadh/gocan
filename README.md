@@ -1,7 +1,5 @@
 # Gocan ![Workflow Status](https://github.com/fouadh/gocan/actions/workflows/pipeline.yml/badge.svg)
 
-## Introduction
-
 `gocan` is a code analyzer heavily inspired from the excellent book [Your Code as a Crime Scene](https://pragprog.com/titles/atcrime/your-code-as-a-crime-scene/) written by Adam Tornhill.
 
 It provides a cli to analyze git repositories and build some of the charts described in that book and that can be used to start conversations regarding the design or organisation of some given application.
