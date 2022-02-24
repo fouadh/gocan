@@ -44,6 +44,7 @@ func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx 
 	file, _ := ioutil.TempFile(os.TempDir(), "gocan*.txt")
 	defer os.Remove(file.Name())
 	processor.FileOutput = file.Name()
+	// todo rely on the .gitignore file if exists to exclude files/folders from analysis
 	processor.Exclude = []string{"node_modules", ".idea"}
 	processor.Process()
 
@@ -87,4 +88,3 @@ func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx 
 
 	return nil
 }
-
