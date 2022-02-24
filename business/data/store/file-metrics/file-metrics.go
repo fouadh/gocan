@@ -27,7 +27,9 @@ func (s Store) QueryMostRecent(appId string) ([]FileContent, error) {
 						   SELECT MAX(date)
 						   from commits))
 	AND app_id = :app_id
-	GROUP BY language;
+	GROUP BY language
+	ORDER BY code DESC
+;
 `
 
 	data := struct {
