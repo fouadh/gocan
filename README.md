@@ -9,7 +9,7 @@ It has very similar interface to [code-maat](https://github.com/adamtornhill/cod
 - written in golang
 - only support git
 - use a database to store the information
-- include the visualisations
+- analyses can be retrieved from the command line or from a UI that displays the visualisations of the book
 
 Here is an overview of the visualisations currently available in the tool:
 
@@ -80,6 +80,14 @@ gocan import-history my-app -s my-scene
 ```
 
 This command will import the git information from the current directory.
+
+## Check the global metrics of the imported app
+
+```
+gocan file-metrics my-app -s my-scene
+```
+
+If the import was successful, it should display some global information about the data that have been analyzed.
 
 ## Run the UI
 

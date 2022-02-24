@@ -17,6 +17,7 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 		list(ctx),
 		summary(ctx),
 		delete(ctx),
+		fileMetrics(ctx),
 	}
 }
 
@@ -25,9 +26,9 @@ func create(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use:  "create-app",
-		Short: "Create an application in a scene",
-		Args: cobra.ExactArgs(1),
+		Use:     "create-app",
+		Short:   "Create an application in a scene",
+		Args:    cobra.ExactArgs(1),
 		Example: "gocan create-app myapp --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx.Ui.SetVerbose(verbose)
@@ -64,9 +65,9 @@ func list(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "apps",
-		Short: "List the applications associated with a scene",
-		Args: cobra.NoArgs,
+		Use:     "apps",
+		Short:   "List the applications associated with a scene",
+		Args:    cobra.NoArgs,
 		Example: "gocan apps --scene myscene",
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx.Ui.SetVerbose(verbose)
@@ -109,11 +110,11 @@ func delete(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "delete-app",
+		Use:     "delete-app",
 		Aliases: []string{"da"},
-		Short: "Delete an application",
+		Short:   "Delete an application",
 		Example: "gocan delete-app myapp -s myscene",
-		Args: cobra.ExactArgs(1),
+		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx.Ui.SetVerbose(verbose)
 			connection, err := ctx.GetConnection()
@@ -156,9 +157,9 @@ func summary(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "app",
+		Use:     "app",
 		Aliases: []string{"app-summary"},
-		Short: "Get an application summary information",
+		Short:   "Get an application summary information",
 		Example: `
 gocan app-summary myapp --scene myscene --after 2021-01-01 --before 2021-02-01
 gocan app-summary myapp --scene myscene --before 2021-02-01
@@ -190,7 +191,7 @@ gocan app-summary myapp --scene myscene
 
 			summary, err := c.QuerySummary(a.Id, beforeTime, afterTime)
 			if err != nil {
-				return errors.Wrap(err, "No summary found for app " + a.Id + " between " + date.FormatDay(afterTime) + " and " + date.FormatDay(beforeTime))
+				return errors.Wrap(err, "No summary found for app "+a.Id+" between "+date.FormatDay(afterTime)+" and "+date.FormatDay(beforeTime))
 			}
 
 			ctx.Ui.Ok()
@@ -206,6 +207,66 @@ gocan app-summary myapp --scene myscene
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the summary of coupling before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the summary of coupling after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+
+	return &cmd
+}
+
+func fileMetrics(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var csv bool
+	var verbose bool
+
+	cmd := cobra.Command{
+		Use:     "file-metrics",
+		Short:   "Get global file metrics for an application",
+		Args:    cobra.ExactArgs(1),
+		Example: "gocan file-metrics myapp --scene myscene",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ctx.Ui.SetVerbose(verbose)
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
+
+			ctx.Ui.Log("Retrieving the apps...")
+			c := NewCore(connection)
+
+			a, err := c.FindAppByAppNameAndSceneName(args[0], sceneName)
+			if err != nil {
+				return errors.Wrap(err, "Invalid app")
+			}
+
+			ctx.Ui.Log("App retrieved")
+			ctx.Ui.Log("Looking for metrics...")
+			metrics, err := c.QueryFileMetrics(a.Id)
+			if err != nil {
+				return errors.Wrap(err, "Error while fetching the metrics")
+			}
+
+			ctx.Ui.Log(fmt.Sprintf("Found %d metrics", len(metrics)))
+			table := ctx.Ui.Table([]string{
+				"Language",
+				"Files",
+				"Blank",
+				"Comment",
+				"Code",
+			}, csv)
+
+			for _, m := range metrics {
+				table.Add(m.Language, m.Files, m.Blank, m.Comment, m.Code)
+			}
+
+			table.Print()
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 

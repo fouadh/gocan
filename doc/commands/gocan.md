@@ -29,6 +29,7 @@
 * [gocan delete-scene](gocan_delete-scene.md)	 - Delete the specified scene
 * [gocan devs](gocan_devs.md)	 - Get the developers of an application
 * [gocan entity-efforts](gocan_entity-efforts.md)	 - Get the efforts associated with entities of an application
+* [gocan file-metrics](gocan_file-metrics.md)	 - Get global file metrics for an application
 * [gocan generate-doc](gocan_generate-doc.md)	 - 
 * [gocan hotspots](gocan_hotspots.md)	 - Get the hotspots of an application in JSON formatted for d3.js
 * [gocan import-history](gocan_import-history.md)	 - Import the commits of an application

@@ -2,6 +2,7 @@ package app
 
 import (
 	"com.fha.gocan/business/data/store/app"
+	file_metrics "com.fha.gocan/business/data/store/file-metrics"
 	"com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/business/data/store/stat"
 	context "com.fha.gocan/foundation"
@@ -12,16 +13,18 @@ import (
 )
 
 type Core struct {
-	scene scene.Store
-	app   app.Store
-	stat  stat.Store
+	scene       scene.Store
+	app         app.Store
+	stat        stat.Store
+	fileMetrics file_metrics.Store
 }
 
 func NewCore(connection *sqlx.DB) Core {
 	return Core{
-		scene: scene.NewStore(connection),
-		app:   app.NewStore(connection),
-		stat: stat.NewStore(connection),
+		scene:       scene.NewStore(connection),
+		app:         app.NewStore(connection),
+		stat:        stat.NewStore(connection),
+		fileMetrics: file_metrics.NewStore(connection),
 	}
 }
 
@@ -70,6 +73,10 @@ func (c Core) FindAppByAppNameAndSceneName(appName string, sceneName string) (ap
 	}
 
 	return a, nil
+}
+
+func (c Core) QueryFileMetrics(appId string) ([]file_metrics.FileContent, error) {
+	return c.fileMetrics.QueryMostRecent(appId)
 }
 
 func (c Core) QueryBySceneId(sceneId string) ([]app.App, error) {
