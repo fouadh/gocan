@@ -13,11 +13,16 @@ type Developer struct {
 	NumberOfCommits int    `json:"number_of_commits"`
 }
 
-type EntityEffort struct {
+type EntityEffortPerAuthor struct {
 	Entity          string
 	Author          string
 	AuthorRevisions int
 	TotalRevisions  int
+}
+
+type EntityEffort struct {
+	Entity string  `db:"entity"`
+	Effort float64 `db:"effort"`
 }
 
 type KnowledgeMapHierarchy struct {

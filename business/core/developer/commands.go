@@ -14,6 +14,7 @@ import (
 func Commands(ctx foundation.Context) []*cobra.Command {
 	return []*cobra.Command{
 		mainDevs(ctx),
+		entityEffortsPerAuthor(ctx),
 		entityEfforts(ctx),
 		knowledgeMap(ctx),
 		list(ctx),
@@ -29,10 +30,10 @@ func rename(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use: "rename-dev",
+		Use:     "rename-dev",
 		Aliases: []string{"rename-developer"},
-		Short: "Rename a developer in the database",
-		Args: cobra.NoArgs,
+		Short:   "Rename a developer in the database",
+		Args:    cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
 			ui.SetVerbose(verbose)
@@ -48,7 +49,7 @@ func rename(ctx foundation.Context) *cobra.Command {
 			if err != nil {
 				return errors.Wrap(err, "error fetching the app")
 			}
-			if (a.Id == "") {
+			if a.Id == "" {
 				return errors.Errorf("Unable to retrieve the app")
 			}
 
@@ -89,7 +90,7 @@ func mainDevs(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "main-developers",
 		Aliases: []string{"main_developers", "mainDevelopers", "md", "main-devs", "main_devs", "mainDevs"},
-		Short: "Get the main developers of an application entities",
+		Short:   "Get the main developers of an application entities",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -137,7 +138,7 @@ func mainDevs(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
-func entityEfforts(ctx foundation.Context) *cobra.Command {
+func entityEffortsPerAuthor(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
 	var after string
@@ -145,9 +146,9 @@ func entityEfforts(ctx foundation.Context) *cobra.Command {
 	var verbose bool
 
 	cmd := cobra.Command{
-		Use:     "entity-efforts",
-		Aliases: []string{"entity_efforts", "entityEfforts", "ee"},
-		Short: "Get the efforts associated with entities of an application",
+		Use:     "entity-efforts-per-author",
+		Aliases: []string{"eepa"},
+		Short:   "Get the efforts associated with entities of an application per author",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -167,9 +168,9 @@ func entityEfforts(ctx foundation.Context) *cobra.Command {
 				return errors.Wrap(err, "Invalid argument(s)")
 			}
 
-			data, err := c.QueryEntityEfforts(a.Id, beforeTime, afterTime)
+			data, err := c.QueryEntityEffortsPerAuthor(a.Id, beforeTime, afterTime)
 			if err != nil {
-				return errors.Wrap(err, "Cannot retrieve main developers")
+				return errors.Wrap(err, "Cannot retrieve entity efforts per author")
 			}
 
 			ui.Ok()
@@ -177,6 +178,65 @@ func entityEfforts(ctx foundation.Context) *cobra.Command {
 			table := ui.Table([]string{"entity", "author", "author-revs", "total-revs"}, csv)
 			for _, dev := range data {
 				table.Add(dev.Entity, dev.Author, fmt.Sprint(dev.AuthorRevisions), fmt.Sprint(dev.TotalRevisions))
+			}
+			table.Print()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the entity efforts before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the entity efforts after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+
+	return &cmd
+}
+func entityEfforts(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var before string
+	var after string
+	var csv bool
+	var verbose bool
+
+	cmd := cobra.Command{
+		Use:     "entity-efforts",
+		Aliases: []string{"entity_efforts", "entityEfforts", "ee"},
+		Short:   "Get the cumulated efforts associated with entities of an application",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.SetVerbose(verbose)
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
+
+			ui.Log("Retrieving entity efforts...")
+
+			c := NewCore(connection)
+
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+			if err != nil {
+				return errors.Wrap(err, "Invalid argument(s)")
+			}
+
+			ui.Log("Found app " + a.Id)
+
+			data, err := c.QueryEntityEfforts(a.Id, beforeTime, afterTime)
+			if err != nil {
+				return errors.Wrap(err, "Cannot retrieve entity efforts")
+			}
+
+			ui.Ok()
+
+			table := ui.Table([]string{"entity", "effort"}, csv)
+			for _, dev := range data {
+				table.Add(dev.Entity, fmt.Sprint(dev.Effort))
 			}
 			table.Print()
 
@@ -204,7 +264,7 @@ func knowledgeMap(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "knowledge-map",
 		Aliases: []string{"knowledge_map", "knowledgeMap", "km"},
-		Short: "Get the knowledge map",
+		Short:   "Get the knowledge map",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui
@@ -255,7 +315,7 @@ func list(ctx foundation.Context) *cobra.Command {
 	cmd := cobra.Command{
 		Use:     "devs",
 		Aliases: []string{"developers"},
-		Short: "Get the developers of an application",
+		Short:   "Get the developers of an application",
 		Args:    cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ui := ctx.Ui

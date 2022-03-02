@@ -13,10 +13,10 @@ import (
 )
 
 type Core struct {
-	scene    scene.Store
-	app      app.Store
+	scene     scene.Store
+	app       app.Store
 	developer developer.Store
-	revision revision.Store
+	revision  revision.Store
 }
 
 func (c Core) QueryMainDevelopers(appId string, before time.Time, after time.Time) ([]developer.EntityDeveloper, error) {
@@ -37,8 +37,12 @@ func (c Core) BuildKnowledgeMap(a app.App, before time.Time, after time.Time) (d
 	return buildKnowledgeMap(a.Name, revs, md), nil
 }
 
+func (c Core) QueryEntityEffortsPerAuthor(appId string, before time.Time, after time.Time) ([]developer.EntityEffortPerAuthor, error) {
+	return c.developer.QueryEntityEffortsPerAuthor(appId, before, after)
+}
+
 func (c Core) QueryEntityEfforts(appId string, before time.Time, after time.Time) ([]developer.EntityEffort, error) {
-	return c.developer.QueryEntityEfforts(appId, before, after)
+	return c.developer.QueryDevelopmentEffort(appId, before, after)
 }
 
 func (c Core) QueryDevelopers(appId string, before time.Time, after time.Time) ([]developer.Developer, error) {
@@ -49,13 +53,13 @@ func (c Core) RenameDeveloper(appId string, current string, new string) error {
 	return c.developer.Rename(appId, current, new)
 }
 
-func (c Core) QueryEntityEffortsForEntity(appId string, entity string, before time.Time, after time.Time) ([]developer.EntityEffort, error) {
-	efforts, err := c.developer.QueryEntityEfforts(appId, before, after)
+func (c Core) QueryEntityEffortsForEntity(appId string, entity string, before time.Time, after time.Time) ([]developer.EntityEffortPerAuthor, error) {
+	efforts, err := c.developer.QueryEntityEffortsPerAuthor(appId, before, after)
 	if err != nil {
-		return []developer.EntityEffort{}, nil
+		return []developer.EntityEffortPerAuthor{}, nil
 	}
 
-	contributions := []developer.EntityEffort{}
+	contributions := []developer.EntityEffortPerAuthor{}
 	for _, e := range efforts {
 		if e.Entity == entity {
 			contributions = append(contributions, e)
@@ -94,7 +98,7 @@ func buildNode(path []string, parent *developer.KnowledgeMapHierarchy, revision 
 		return buildNode(path[1:], existingNode, revision, dev)
 	}
 	newNode := &developer.KnowledgeMapHierarchy{
-		Name:     path[0],
+		Name: path[0],
 	}
 	parent.Children = append(parent.Children, newNode)
 	if len(path) <= 1 {
@@ -119,9 +123,9 @@ func findNode(nodes []*developer.KnowledgeMapHierarchy, name string) *developer.
 
 func NewCore(connection *sqlx.DB) Core {
 	return Core{
-		scene:    scene.NewStore(connection),
-		app:      app.NewStore(connection),
+		scene:     scene.NewStore(connection),
+		app:       app.NewStore(connection),
 		developer: developer.NewStore(connection),
-		revision: revision.NewStore(connection),
+		revision:  revision.NewStore(connection),
 	}
 }
