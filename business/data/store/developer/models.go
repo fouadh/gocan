@@ -32,4 +32,5 @@ type KnowledgeMapHierarchy struct {
 	Size          int                      `json:"size,omitempty"`
 	MainDeveloper string                   `json:"mainDeveloper,omitempty"`
 	Effort        float64                  `json:"effort,omitempty"`
+	DevDiffusion  float64                  `json:"devDiffusion,omitempty"`
 }

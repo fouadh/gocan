@@ -120,6 +120,15 @@ func buildNode(path []string, parent *developer.KnowledgeMapHierarchy, revision 
 		newNode.Weight = dev.Ownership
 		newNode.MainDeveloper = dev.Author
 		newNode.Effort = effort.Effort
+		if effort.Effort <= 0.25 {
+			newNode.DevDiffusion = 0.25
+		} else if effort.Effort <= 0.5 {
+			newNode.DevDiffusion = 0.5
+		} else if effort.Effort <= 0.75 {
+			newNode.DevDiffusion = 0.75
+		} else {
+			newNode.DevDiffusion = 1.0
+		}
 		return nil
 	} else {
 		return buildNode(path[1:], parent.Children[len(parent.Children)-1], revision, dev, effort)
