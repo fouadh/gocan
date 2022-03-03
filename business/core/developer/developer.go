@@ -34,7 +34,12 @@ func (c Core) BuildKnowledgeMap(a app.App, before time.Time, after time.Time) (d
 		return developer.KnowledgeMapHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
 	}
 
-	return buildKnowledgeMap(a.Name, revs, md), nil
+	efforts, err := c.QueryEntityEfforts(a.Id, before, after)
+	if err != nil {
+		return developer.KnowledgeMapHierarchy{}, errors.Wrap(err, "Unable to fetch entity efforts")
+	}
+
+	return buildKnowledgeMap(a.Name, revs, md, efforts), nil
 }
 
 func (c Core) QueryEntityEffortsPerAuthor(appId string, before time.Time, after time.Time) ([]developer.EntityEffortPerAuthor, error) {
@@ -73,7 +78,10 @@ func (c Core) QueryEntityEffortsForEntity(appId string, entity string, before ti
 	return contributions, nil
 }
 
-func buildKnowledgeMap(appName string, revisions []revision.Revision, developers []developer.EntityDeveloper) developer.KnowledgeMapHierarchy {
+func buildKnowledgeMap(appName string,
+	revisions []revision.Revision,
+	developers []developer.EntityDeveloper,
+	efforts []developer.EntityEffort) developer.KnowledgeMapHierarchy {
 	app := developer.KnowledgeMapHierarchy{
 		Name:     appName,
 		Children: []*developer.KnowledgeMapHierarchy{},
@@ -83,19 +91,25 @@ func buildKnowledgeMap(appName string, revisions []revision.Revision, developers
 		devMap[dev.Entity] = dev
 	}
 
+	effortMap := make(map[string]developer.EntityEffort)
+	for _, effort := range efforts {
+		effortMap[effort.Entity] = effort
+	}
+
 	for _, revision := range revisions {
 		dev := devMap[revision.Entity]
+		effort := effortMap[revision.Entity]
 		path := strings.Split(revision.Entity, "/")
-		buildNode(path, &app, revision, dev)
+		buildNode(path, &app, revision, dev, effort)
 	}
 
 	return app
 }
 
-func buildNode(path []string, parent *developer.KnowledgeMapHierarchy, revision revision.Revision, dev developer.EntityDeveloper) *developer.KnowledgeMapHierarchy {
+func buildNode(path []string, parent *developer.KnowledgeMapHierarchy, revision revision.Revision, dev developer.EntityDeveloper, effort developer.EntityEffort) *developer.KnowledgeMapHierarchy {
 	existingNode := findNode(parent.Children, path[0])
 	if existingNode != nil {
-		return buildNode(path[1:], existingNode, revision, dev)
+		return buildNode(path[1:], existingNode, revision, dev, effort)
 	}
 	newNode := &developer.KnowledgeMapHierarchy{
 		Name: path[0],
@@ -105,10 +119,10 @@ func buildNode(path []string, parent *developer.KnowledgeMapHierarchy, revision 
 		newNode.Size = revision.Code
 		newNode.Weight = dev.Ownership
 		newNode.MainDeveloper = dev.Author
-
+		newNode.Effort = effort.Effort
 		return nil
 	} else {
-		return buildNode(path[1:], parent.Children[len(parent.Children)-1], revision, dev)
+		return buildNode(path[1:], parent.Children[len(parent.Children)-1], revision, dev, effort)
 	}
 }
 

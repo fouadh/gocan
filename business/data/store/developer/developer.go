@@ -121,6 +121,7 @@ func (s Store) QueryDevelopmentEffort(appId string, before time.Time, after time
 					where
 					s.app_id=:app_id
 					AND c.date between :after and :before
+					AND s.file not like '%%=>%%'
 	             group by s.file) t2
 	            on t1.file = t2.file
 	                )
