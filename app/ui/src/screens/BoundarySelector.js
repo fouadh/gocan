@@ -43,7 +43,6 @@ export function BoundarySelector({sceneId, appId, onChange}) {
         </>
     } else {
         selector = <>
-            <p>Please use the <strong> gocan create-boundary </strong> command to create selectable boundaries.</p>
         </>
     }
 
