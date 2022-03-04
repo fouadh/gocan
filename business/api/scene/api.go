@@ -15,7 +15,7 @@ type handlers struct {
 	Scene scene.Core
 }
 
-func NewHandlers(connection *sqlx.DB) api.HttpMappings {
+func HttpMappings(connection *sqlx.DB) api.HttpMappings {
 	return handlers{
 		App:   app.NewCore(connection),
 		Scene: scene.NewCore(connection),

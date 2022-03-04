@@ -1,6 +1,7 @@
 package active_set
 
 import (
+	"com.fha.gocan/business/api"
 	active_set "com.fha.gocan/business/core/active-set"
 	"com.fha.gocan/business/core/commit"
 	active_set2 "com.fha.gocan/business/data/store/active-set"
@@ -9,19 +10,19 @@ import (
 	"net/http"
 )
 
-type Handlers struct {
+type handlers struct {
 	ActiveSet active_set.Core
 	Commit    commit.Core
 }
 
-func NewHandlers(connection *sqlx.DB) Handlers {
-	return Handlers{
+func HttpMappings(connection *sqlx.DB) api.HttpMappings {
+	return handlers{
 		ActiveSet: active_set.NewCore(connection),
-		Commit: commit.NewCore(connection),
+		Commit:    commit.NewCore(connection),
 	}
 }
 
-func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	query := r.URL.Query()
@@ -42,4 +43,10 @@ func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[stri
 	}
 
 	return web.Respond(w, payload, 200)
+}
+
+func (h handlers) GetMappings() map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
+	handlers["/scenes/:sceneId/apps/:appId/active-set"] = h.query
+	return handlers
 }

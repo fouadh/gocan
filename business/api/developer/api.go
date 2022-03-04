@@ -1,6 +1,7 @@
 package developer
 
 import (
+	"com.fha.gocan/business/api"
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/core/developer"
@@ -11,21 +12,21 @@ import (
 	"net/http"
 )
 
-type Handlers struct {
+type handlers struct {
 	App       app.Core
 	Developer developer.Core
 	Commit    commit.Core
 }
 
-func NewHandlers(connection *sqlx.DB) Handlers {
-	return Handlers{
+func HttpMappings(connection *sqlx.DB) api.HttpMappings {
+	return handlers{
 		App:       app.NewCore(connection),
 		Developer: developer.NewCore(connection),
 		Commit:    commit.NewCore(connection),
 	}
 }
 
-func (h *Handlers) BuildKnowledgeMap(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) buildKnowledgeMap(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	a, err := h.App.QueryById(appId)
@@ -52,7 +53,7 @@ func (h *Handlers) BuildKnowledgeMap(w http.ResponseWriter, r *http.Request, par
 	return web.Respond(w, payload, 200)
 }
 
-func (h *Handlers) QueryDevelopers(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) queryDevelopers(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	query := r.URL.Query()
@@ -75,7 +76,7 @@ func (h *Handlers) QueryDevelopers(w http.ResponseWriter, r *http.Request, param
 	return web.Respond(w, payload, 200)
 }
 
-func (h *Handlers) QueryEntityContributions(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) queryEntityContributions(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	query := r.URL.Query()
@@ -114,4 +115,12 @@ func (h *Handlers) QueryEntityContributions(w http.ResponseWriter, r *http.Reque
 	}
 
 	return web.Respond(w, payload, 200)
+}
+
+func (h handlers) GetMappings() map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
+	handlers["/scenes/:sceneId/apps/:appId/developers"] = h.queryDevelopers
+	handlers["/scenes/:sceneId/apps/:appId/knowledge-map"] = h.buildKnowledgeMap
+	handlers["/scenes/:sceneId/apps/:appId/entity-contributions"] = h.queryEntityContributions
+	return handlers
 }

@@ -1,6 +1,7 @@
 package coupling
 
 import (
+	"com.fha.gocan/business/api"
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/commit"
 	"com.fha.gocan/business/core/coupling"
@@ -11,21 +12,21 @@ import (
 	"strconv"
 )
 
-type Handlers struct {
+type handlers struct {
 	Coupling coupling.Core
 	App      app.Core
 	Commit   commit.Core
 }
 
-func NewHandlers(connection *sqlx.DB) Handlers {
-	return Handlers{
+func HttpMappings(connection *sqlx.DB) api.HttpMappings {
+	return handlers{
 		Coupling: coupling.NewCore(connection),
 		App:      app.NewCore(connection),
 		Commit:   commit.NewCore(connection),
 	}
 }
 
-func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) buildCouplingHierarchy(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	query := r.URL.Query()
@@ -65,7 +66,7 @@ func (h *Handlers) BuildCouplingHierarchy(w http.ResponseWriter, r *http.Request
 	return web.Respond(w, c, 200)
 }
 
-func (h *Handlers) BuildEntityCouplingHierarchy(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) buildEntityCouplingHierarchy(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	query := r.URL.Query()
@@ -100,4 +101,11 @@ func (h *Handlers) BuildEntityCouplingHierarchy(w http.ResponseWriter, r *http.R
 	}
 
 	return web.Respond(w, c, 200)
+}
+
+func (h handlers) GetMappings() map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
+	handlers["/scenes/:sceneId/apps/:appId/coupling-hierarchy"] = h.buildCouplingHierarchy
+	handlers["/scenes/:sceneId/apps/:appId/entity-coupling"] = h.buildEntityCouplingHierarchy
+	return handlers
 }

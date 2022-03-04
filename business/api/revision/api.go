@@ -1,6 +1,7 @@
 package revision
 
 import (
+	"com.fha.gocan/business/api"
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/commit"
@@ -12,7 +13,7 @@ import (
 	"net/http"
 )
 
-type Handlers struct {
+type handlers struct {
 	Revision   revision.Core
 	Scene      scene.Core
 	App        app.Core
@@ -21,8 +22,8 @@ type Handlers struct {
 	connection *sqlx.DB
 }
 
-func NewHandlers(connection *sqlx.DB) Handlers {
-	return Handlers{
+func HttpMappings(connection *sqlx.DB) api.HttpMappings {
+	return handlers{
 		Revision:   revision.NewCore(connection),
 		Scene:      scene.NewCore(connection),
 		App:        app.NewCore(connection),
@@ -32,7 +33,7 @@ func NewHandlers(connection *sqlx.DB) Handlers {
 	}
 }
 
-func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) query(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	query := r.URL.Query()
@@ -55,7 +56,7 @@ func (h *Handlers) Query(w http.ResponseWriter, r *http.Request, params map[stri
 	return web.Respond(w, result, 200)
 }
 
-func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) queryHotspots(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 	a, err := h.App.QueryById(appId)
 	if err != nil {
@@ -97,7 +98,7 @@ func (h *Handlers) QueryHotspots(w http.ResponseWriter, r *http.Request, params 
 	return web.Respond(w, payload, 200)
 }
 
-func (h *Handlers) QuerySceneHotspots(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) querySceneHotspots(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	sceneId := params["sceneId"]
 	s, err := h.Scene.QueryById(sceneId)
 	if err != nil {
@@ -121,7 +122,7 @@ func (h *Handlers) QuerySceneHotspots(w http.ResponseWriter, r *http.Request, pa
 	return web.Respond(w, payload, 200)
 }
 
-func (h *Handlers) QueryRevisionsTrendsById(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) queryRevisionsTrendsById(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	trendId := params["trendId"]
 	trends, err := h.Revision.RevisionTrendsById(trendId)
 	if err != nil {
@@ -137,7 +138,7 @@ func (h *Handlers) QueryRevisionsTrendsById(w http.ResponseWriter, r *http.Reque
 	return web.Respond(w, payload, 200)
 }
 
-func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) queryRevisionsTrends(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 	trends, err := h.Revision.RevisionTrendsByAppId(appId)
 	if err != nil {
@@ -151,4 +152,14 @@ func (h *Handlers) QueryRevisionsTrends(w http.ResponseWriter, r *http.Request, 
 	}
 
 	return web.Respond(w, payload, 200)
+}
+
+func (h handlers) GetMappings() map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
+	handlers["/scenes/:sceneId/apps/:appId/revisions"] = h.query
+	handlers["/scenes/:sceneId/apps/:appId/hotspots"] = h.queryHotspots
+	handlers["/scenes/:sceneId/hotspots"] = h.querySceneHotspots
+	handlers["/scenes/:sceneId/apps/:appId/revisions-trends/:trendId"] = h.queryRevisionsTrendsById
+	handlers["/scenes/:sceneId/apps/:appId/revisions-trends"] = h.queryRevisionsTrends
+	return handlers
 }

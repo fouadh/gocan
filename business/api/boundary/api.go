@@ -1,6 +1,7 @@
 package boundary
 
 import (
+	"com.fha.gocan/business/api"
 	"com.fha.gocan/business/core/boundary"
 	boundary2 "com.fha.gocan/business/data/store/boundary"
 	"com.fha.gocan/foundation/web"
@@ -9,17 +10,17 @@ import (
 	"net/http"
 )
 
-type Handlers struct {
+type handlers struct {
 	Boundary boundary.Core
 }
 
-func NewHandlers(connection *sqlx.DB) Handlers {
-	return Handlers{
+func HttpMappings(connection *sqlx.DB) api.HttpMappings {
+	return handlers{
 		Boundary: boundary.NewCore(connection),
 	}
 }
 
-func (h *Handlers) QueryByAppId(w http.ResponseWriter, r *http.Request, params map[string]string) error  {
+func (h *handlers) queryByAppId(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	boundaries, err := h.Boundary.QueryByAppId(appId)
@@ -34,4 +35,10 @@ func (h *Handlers) QueryByAppId(w http.ResponseWriter, r *http.Request, params m
 	}
 
 	return web.Respond(w, payload, 200)
+}
+
+func (h handlers) GetMappings() map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
+	handlers["/scenes/:sceneId/apps/:appId/boundaries"] = h.queryByAppId
+	return handlers
 }

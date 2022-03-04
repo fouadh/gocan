@@ -1,6 +1,7 @@
 package complexity
 
 import (
+	"com.fha.gocan/business/api"
 	"com.fha.gocan/business/core/complexity"
 	complexity2 "com.fha.gocan/business/data/store/complexity"
 	"com.fha.gocan/foundation/web"
@@ -9,17 +10,17 @@ import (
 	"net/http"
 )
 
-type Handlers struct {
+type handlers struct {
 	Complexity complexity.Core
 }
 
-func NewHandlers(connection *sqlx.DB) Handlers {
-	return Handlers{
+func HttpMappings(connection *sqlx.DB) api.HttpMappings {
+	return handlers{
 		Complexity: complexity.NewCore(connection),
 	}
 }
 
-func (h *Handlers) QueryAnalyses(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) queryAnalyses(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	appId := params["appId"]
 
 	data, err := h.Complexity.QueryAnalyses(appId)
@@ -36,7 +37,7 @@ func (h *Handlers) QueryAnalyses(w http.ResponseWriter, r *http.Request, params 
 	return web.Respond(w, payload, 200)
 }
 
-func (h *Handlers) QueryAnalysisEntriesById(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+func (h *handlers) queryAnalysisEntriesById(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	complexityId := params["complexityId"]
 
 	data, err := h.Complexity.QueryAnalysisEntriesById(complexityId)
@@ -51,4 +52,11 @@ func (h *Handlers) QueryAnalysisEntriesById(w http.ResponseWriter, r *http.Reque
 	}
 
 	return web.Respond(w, payload, 200)
+}
+
+func (h handlers) GetMappings() map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
+	handlers["/scenes/:sceneId/apps/:appId/complexity-analyses"] = h.queryAnalyses
+	handlers["/scenes/:sceneId/apps/:appId/complexity-analyses/:complexityId"] = h.queryAnalysisEntriesById
+	return handlers
 }

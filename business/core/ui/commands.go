@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"com.fha.gocan/business/api"
 	active_set "com.fha.gocan/business/api/active-set"
 	app2 "com.fha.gocan/business/api/app"
 	"com.fha.gocan/business/api/boundary"
@@ -116,49 +117,25 @@ func start(ctx context.Context) *cobra.Command {
 }
 
 func createHandlers(connection *sqlx.DB) map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
-	sceneHandlers := scene.NewHandlers(connection)
-	appHandlers := app2.NewHandlers(connection)
-	revisionHandlers := revision.NewHandlers(connection)
-	couplingHandlers := coupling.NewHandlers(connection)
-	churnHandlers := churn.NewHandlers(connection)
-	modusOperandiHandlers := modus_operandi.NewHandlers(connection)
-	activeSetHandlers := active_set.NewHandlers(connection)
-	developerHandlers := developer.NewHandlers(connection)
-	boundaryHandlers := boundary.NewHandlers(connection)
-	complexityHandlers := complexity.NewHandlers(connection)
-
-	handlers := make(map[string](func(w http.ResponseWriter, r *http.Request, params map[string]string) error))
-	for k, v := range sceneHandlers.GetMappings() {
-		handlers[k] = v
+	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
+	mappings := []api.HttpMappings{
+		scene.HttpMappings(connection),
+		app2.HttpMappings(connection),
+		revision.HttpMappings(connection),
+		boundary.HttpMappings(connection),
+		coupling.HttpMappings(connection),
+		churn.HttpMappings(connection),
+		modus_operandi.HttpMappings(connection),
+		active_set.HttpMappings(connection),
+		developer.HttpMappings(connection),
+		complexity.HttpMappings(connection),
 	}
 
-	handlers["/scenes/:sceneId/apps"] = appHandlers.QueryAll
-	handlers["/scenes/:sceneId/apps/:appId"] = appHandlers.QueryById
-	handlers["/scenes/:sceneId/apps/:appId/entities"] = appHandlers.QueryEntities
-
-	handlers["/scenes/:sceneId/apps/:appId/revisions"] = revisionHandlers.Query
-	handlers["/scenes/:sceneId/apps/:appId/hotspots"] = revisionHandlers.QueryHotspots
-	handlers["/scenes/:sceneId/hotspots"] = revisionHandlers.QuerySceneHotspots
-	handlers["/scenes/:sceneId/apps/:appId/revisions-trends/:trendId"] = revisionHandlers.QueryRevisionsTrendsById
-	handlers["/scenes/:sceneId/apps/:appId/revisions-trends"] = revisionHandlers.QueryRevisionsTrends
-
-	handlers["/scenes/:sceneId/apps/:appId/boundaries"] = boundaryHandlers.QueryByAppId
-
-	handlers["/scenes/:sceneId/apps/:appId/coupling-hierarchy"] = couplingHandlers.BuildCouplingHierarchy
-	handlers["/scenes/:sceneId/apps/:appId/entity-coupling"] = couplingHandlers.BuildEntityCouplingHierarchy
-
-	handlers["/scenes/:sceneId/apps/:appId/code-churn"] = churnHandlers.Query
-
-	handlers["/scenes/:sceneId/apps/:appId/modus-operandi"] = modusOperandiHandlers.Query
-
-	handlers["/scenes/:sceneId/apps/:appId/active-set"] = activeSetHandlers.Query
-
-	handlers["/scenes/:sceneId/apps/:appId/developers"] = developerHandlers.QueryDevelopers
-	handlers["/scenes/:sceneId/apps/:appId/knowledge-map"] = developerHandlers.BuildKnowledgeMap
-	handlers["/scenes/:sceneId/apps/:appId/entity-contributions"] = developerHandlers.QueryEntityContributions
-
-	handlers["/scenes/:sceneId/apps/:appId/complexity-analyses"] = complexityHandlers.QueryAnalyses
-	handlers["/scenes/:sceneId/apps/:appId/complexity-analyses/:complexityId"] = complexityHandlers.QueryAnalysisEntriesById
+	for _, m := range mappings {
+		for k, v := range m.GetMappings() {
+			handlers[k] = v
+		}
+	}
 
 	return handlers
 }
