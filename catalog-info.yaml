@@ -5,7 +5,7 @@ metadata:
   description: A source code analyzer to detect code suspected of crimes.
   tags:
     - go
-  spec:
-    type: service
-    lifecycle: production
-    owner: fouadh
+spec:
+  type: service
+  lifecycle: production
+  owner: fouadh
