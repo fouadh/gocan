@@ -75,8 +75,6 @@ func (c Core) AnalyzeRepoComplexity(complexityId string, directory string, t bou
 		return complexity.ComplexityEntry{}, err
 	}
 
-	// "/Users/fhamdi/code/10-19 Personal/11 Projects/13.01 gocan/gocan/bin/gocan" create-complexity-analysis full5 -a maat -s gocan --directory "/Users/fhamdi/code/10-19 Personal/11 Projects/13.01 gocan/gocan-tutorial/code-maat"
-
 	mean := float64(indentationsCounter) / float64(linesCounter)
 	stdev := 0.
 	for _, i := range indentations {
