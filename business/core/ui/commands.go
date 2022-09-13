@@ -3,6 +3,7 @@ package ui
 import (
 	"com.fha.gocan/business/api"
 	active_set "com.fha.gocan/business/api/active-set"
+	"com.fha.gocan/business/api/age"
 	app2 "com.fha.gocan/business/api/app"
 	"com.fha.gocan/business/api/boundary"
 	"com.fha.gocan/business/api/churn"
@@ -129,6 +130,7 @@ func createHandlers(connection *sqlx.DB) map[string]func(w http.ResponseWriter, 
 		active_set.HttpMappings(connection),
 		developer.HttpMappings(connection),
 		complexity.HttpMappings(connection),
+		age.HttpMappings(connection),
 	}
 
 	for _, m := range mappings {
