@@ -13,6 +13,7 @@ import {ComplexityAnalysis} from "./ComplexityAnalysis";
 import {EntityCoupling} from "./EntityCoupling";
 import {EntityContributions} from "./EntityContributions";
 import {CoordinationNeeds} from "./CoordinationNeeds";
+import {CodeAge} from "./CodeAge";
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -57,6 +58,9 @@ export function AppDetails() {
                 </TabPanel>
                 <TabPanel header="Hotspots">
                     <Hotspots sceneId={sceneId} appId={appId} date={dateRange}/>
+                </TabPanel>
+                <TabPanel header="Code Age">
+                    <CodeAge sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Complexity">
                     <ComplexityAnalysis sceneId={sceneId} appId={appId}/>
