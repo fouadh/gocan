@@ -1,6 +1,7 @@
 package main
 
 import (
+	"com.fha.gocan/business/core/age"
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/churn"
@@ -54,6 +55,7 @@ func Root() *cobra.Command {
 		coupling.Commands(ctx),
 		scene.Commands(ctx),
 		app.Commands(ctx),
+		age.Commands(ctx),
 		developer.Commands(ctx),
 		boundary.Commands(ctx),
 		complexity.Commands(ctx),
