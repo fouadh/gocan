@@ -5,8 +5,10 @@ import (
 	"com.fha.gocan/business/core/app"
 	boundary2 "com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/data/store/boundary"
+	"com.fha.gocan/business/data/store/complexity"
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
+	"com.fha.gocan/foundation/terminal"
 	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
@@ -18,6 +20,7 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 		create(ctx),
 		delete(ctx),
 		list(ctx),
+		get(ctx),
 	}
 }
 
@@ -91,15 +94,7 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 
 			ui.Ok()
 
-			table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Stdev", "Max"}, csv)
-			for _, cy := range data.Entries {
-				table.Add(cy.Date.String(), strconv.Itoa(cy.Lines),
-					strconv.Itoa(cy.Indentations),
-					humanize.FtoaWithDigits(cy.Mean, 2),
-					humanize.FtoaWithDigits(cy.Stdev, 2),
-					strconv.Itoa(cy.Max))
-			}
-			table.Print()
+			printComplexityEntries(ui, csv, data.Entries)
 
 			return nil
 		},
@@ -122,6 +117,18 @@ gocan create-complexity-analysis myanalysis --app myapp --scene myscene --direct
 	cmd.MarkFlagRequired("directory")
 
 	return &cmd
+}
+
+func printComplexityEntries(ui terminal.UI, csv bool, entries []complexity.ComplexityEntry) {
+	table := ui.Table([]string{"Date", "Lines", "Indentations", "Mean", "Stdev", "Max"}, csv)
+	for _, cy := range entries {
+		table.Add(cy.Date.String(), strconv.Itoa(cy.Lines),
+			strconv.Itoa(cy.Indentations),
+			humanize.FtoaWithDigits(cy.Mean, 2),
+			humanize.FtoaWithDigits(cy.Stdev, 2),
+			strconv.Itoa(cy.Max))
+	}
+	table.Print()
 }
 
 func delete(ctx foundation.Context) *cobra.Command {
@@ -166,6 +173,76 @@ func delete(ctx foundation.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+
+	return &cmd
+}
+
+func get(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var appName string
+	var csv bool
+	var verbose bool
+
+	cmd := cobra.Command{
+		Use:     "complexity-analysis",
+		Args:    cobra.ExactArgs(1),
+		Short:   "Retrieve a complexity analysis by its name",
+		Example: "gocan complexity-analysis myfile --app myapp --scene myscene",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.SetVerbose(verbose)
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
+
+			c := NewCore(connection)
+
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
+			if err != nil {
+				return errors.Wrap(err, "Unable to find the app")
+			}
+
+			analysisName := args[0]
+			ui.Log("Retrieving analysis " + analysisName + "...")
+
+			data, err := c.QueryAnalyses(a.Id)
+			if err != nil {
+				return errors.Wrap(err, "Unable to fetch analyses")
+			}
+
+			var found []complexity.ComplexityEntry = nil
+
+			if len(data) > 0 {
+				for _, an := range data {
+					if an.Name == analysisName {
+						found, err = c.QueryAnalysisEntriesById(an.Id)
+						if err != nil {
+							return errors.Wrap(err, "Error while looking for analysis "+an.Id)
+						}
+					}
+
+				}
+			} else {
+				ui.Log("No analysis found.")
+			}
+
+			if found != nil {
+				printComplexityEntries(ui, csv, found)
+			}
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "Application name")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	cmd.MarkFlagRequired("scene")
