@@ -16,6 +16,8 @@ doc: backend
 	mkdir -p ./doc/commands
 	./bin/gocan generate-doc --directory ./doc/commands
 
+build-without-doc: frontend backend
+
 build: frontend backend doc
 
 run:
