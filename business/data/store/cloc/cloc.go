@@ -87,7 +87,7 @@ func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx 
 			:blank, 
 			:complexity, 
 			:is_binary
-		)
+		) ON CONFLICT DO NOTHING
 `
 			if _, err := s.connection.NamedExec(q, fi); err != nil {
 				return errors.Wrap(err, "Unable to save cloc analysis")
