@@ -46,6 +46,84 @@ func (c Core) QueryEntityEffortsPerAuthor(appId string, before time.Time, after 
 	return c.developer.QueryEntityEffortsPerAuthor(appId, before, after)
 }
 
+type Network struct {
+	Nodes []Node `json:"nodes"`
+	Links []Link `json:"links"`
+}
+
+type Node struct {
+	Id   string `json:"id"`
+	Name string `json:"name"`
+}
+
+type Link struct {
+	Source string `json:"source"`
+	Target string `json:"target"`
+}
+
+func (c Core) QueryEntityEffortsGraph(appId string, before time.Time, after time.Time) (Network, error) {
+	efforts, err := c.QueryEntityEffortsPerAuthor(appId, before, after)
+	if err != nil {
+		return Network{}, errors.Wrap(err, "Unable to query entity efforts")
+	}
+
+	devsByName := make(map[string]bool)
+	entities := make(map[string][]string)
+
+	var nodes []Node
+	for _, effort := range efforts {
+		if !devsByName[effort.Author] {
+			devsByName[effort.Author] = true
+			nodes = append(nodes, Node{
+				Id:   effort.Author,
+				Name: effort.Author,
+			})
+		}
+
+		if entities[effort.Entity] == nil {
+			entities[effort.Entity] = []string{}
+		}
+
+		entities[effort.Entity] = append(entities[effort.Entity], effort.Author)
+	}
+
+	return Network{
+		Nodes: nodes,
+		Links: buildLinks(entities),
+	}, nil
+}
+
+// ouch ugly algorithm
+func buildLinks(entities map[string][]string) []Link {
+	var links []Link
+	var linksByDev = make(map[string]map[string]bool)
+
+	for _, devs := range entities {
+		for _, dev1 := range devs {
+			for _, dev2 := range devs {
+				if dev1 != dev2 {
+					if linksByDev[dev1] == nil {
+						linksByDev[dev1] = make(map[string]bool)
+					}
+					if linksByDev[dev2] == nil {
+						linksByDev[dev2] = make(map[string]bool)
+					}
+
+					if !linksByDev[dev1][dev2] && !linksByDev[dev2][dev1] {
+						link := Link{
+							Source: dev1,
+							Target: dev2,
+						}
+						links = append(links, link)
+						linksByDev[dev1][dev2] = true
+					}
+				}
+			}
+		}
+	}
+	return links
+}
+
 func (c Core) QueryEntityEfforts(appId string, before time.Time, after time.Time) ([]developer.EntityEffort, error) {
 	return c.developer.QueryDevelopmentEffort(appId, before, after)
 }

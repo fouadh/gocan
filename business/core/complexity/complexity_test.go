@@ -45,7 +45,7 @@ func TestComplexityAnalysis(t *testing.T) {
     line 4
 `
 	file.WriteString(s)
-	file.Close()
+	//file.Close()
 
 	c := Core{}
 	now := time.Now()

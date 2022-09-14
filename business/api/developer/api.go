@@ -117,10 +117,28 @@ func (h *handlers) queryEntityContributions(w http.ResponseWriter, r *http.Reque
 	return web.Respond(w, payload, 200)
 }
 
+func (h *handlers) queryDevelopersNetwork(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+
+	query := r.URL.Query()
+	beforeTime, afterTime, err := h.Commit.ExtractDateRangeFromQueryParams(appId, query)
+	if err != nil {
+		return err
+	}
+
+	graph, err := h.Developer.QueryEntityEffortsGraph(appId, beforeTime, afterTime)
+	if err != nil {
+		return err
+	}
+
+	return web.Respond(w, graph, 200)
+}
+
 func (h handlers) GetMappings() map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
 	handlers["/scenes/:sceneId/apps/:appId/developers"] = h.queryDevelopers
 	handlers["/scenes/:sceneId/apps/:appId/knowledge-map"] = h.buildKnowledgeMap
 	handlers["/scenes/:sceneId/apps/:appId/entity-contributions"] = h.queryEntityContributions
+	handlers["/scenes/:sceneId/apps/:appId/developers-network"] = h.queryDevelopersNetwork
 	return handlers
 }
