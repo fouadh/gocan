@@ -14,6 +14,7 @@ import {EntityCoupling} from "./EntityCoupling";
 import {EntityContributions} from "./EntityContributions";
 import {CoordinationNeeds} from "./CoordinationNeeds";
 import {CodeAge} from "./CodeAge";
+import {DevNetwork} from "./DevNetwork";
 
 function useQuery() {
     return new URLSearchParams(useLocation().search);
@@ -88,6 +89,9 @@ export function AppDetails() {
                 </TabPanel>
                 <TabPanel header="Entity Contributions">
                     <EntityContributions sceneId={sceneId} appId={appId} date={dateRange} entities={entities} />
+                </TabPanel>
+                <TabPanel header="Developers Network">
+                    <DevNetwork sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
             </TabView>
         </>
