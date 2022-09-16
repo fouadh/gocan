@@ -19,7 +19,61 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 		knowledgeMap(ctx),
 		list(ctx),
 		rename(ctx),
+		createTeam(ctx),
 	}
+}
+
+func createTeam(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var appName string
+	var members []string
+	var verbose bool
+
+	cmd := cobra.Command{
+		Use:   "create-team",
+		Short: "Create a team of developers with its members",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.SetVerbose(verbose)
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
+
+			a, err := app.FindAppByAppNameAndSceneName(connection, appName, sceneName)
+			if err != nil {
+				return errors.Wrap(err, "error fetching the app")
+			}
+			if a.Id == "" {
+				return errors.Errorf("Unable to retrieve the app")
+			}
+
+			c := NewCore(connection)
+
+			teamName := args[0]
+			if err := c.CreateTeam(a.Id, teamName, members); err != nil {
+				return errors.Wrap(err, "Unable to create the team")
+			}
+
+			ui.Print("The team has been created.")
+
+			ui.Ok()
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
+	cmd.Flags().StringArrayVarP(&members, "member", "c", []string{}, "Team members")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+	cmd.MarkFlagRequired("app")
+	cmd.MarkFlagRequired("members")
+
+	return &cmd
 }
 
 func rename(ctx foundation.Context) *cobra.Command {

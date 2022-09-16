@@ -156,6 +156,10 @@ func (c Core) QueryEntityEffortsForEntity(appId string, entity string, before ti
 	return contributions, nil
 }
 
+func (c Core) CreateTeam(appId string, teamName string, members []string) error {
+	return nil
+}
+
 func buildKnowledgeMap(appName string,
 	revisions []revision.Revision,
 	developers []developer.EntityDeveloper,
