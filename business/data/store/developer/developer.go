@@ -147,6 +147,21 @@ func (s Store) QueryDevelopmentEffort(appId string, before time.Time, after time
 	return results, err
 }
 
+func (s Store) DeleteTeam(appId string, teamName string) error {
+	const q = `delete from teams where name=:team_name and app_id=:app_id`
+
+	data := struct {
+		AppId    string `db:"app_id"`
+		TeamName string `db:"team_name"`
+	}{
+		AppId:    appId,
+		TeamName: teamName,
+	}
+
+	_, err := s.connection.NamedExec(q, data)
+	return err
+}
+
 func (s Store) CreateTeam(newTeam NewTeam) (Team, error) {
 
 	team := Team{

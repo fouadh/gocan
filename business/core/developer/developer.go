@@ -164,6 +164,10 @@ func (c Core) CreateTeam(appId string, teamName string, members []string) (devel
 	})
 }
 
+func (c Core) DeleteTeam(appId string, teamName string) error {
+	return c.developer.DeleteTeam(appId, teamName)
+}
+
 func buildKnowledgeMap(appName string,
 	revisions []revision.Revision,
 	developers []developer.EntityDeveloper,
