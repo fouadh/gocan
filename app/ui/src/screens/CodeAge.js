@@ -23,8 +23,8 @@ export function CodeAge({sceneId, appId, date}) {
             if (dateRange.max) {
                 params.append("before", dateRange.max);
             }
-            const today = new Date();
-            const initialDate = today.getFullYear() + "-" - (today.getMonth() + 1) + "-" + today.getDay();
+            const initialDate = dateRange.max;
+            console.log("initial date", initialDate);
             params.append("initialDate", initialDate);
             axios.get(`${endpoint}?${params}`)
                 .then(it => it.data)
