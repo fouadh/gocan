@@ -7,6 +7,15 @@ type Boundary struct {
 	Modules []Module `json:"modules"`
 }
 
+func (b Boundary) FindModule(moduleName string) Module {
+	for _, m := range b.Modules {
+		if m.Name == moduleName {
+			return m
+		}
+	}
+	return Module{}
+}
+
 type NewBoundary struct {
 	Name    string
 	AppId   string

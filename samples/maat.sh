@@ -55,6 +55,9 @@ echo "Perform architectural analysis on the detailed boundaries"
 echo "Analyze the revisions from an architectural level"
 "$GOCAN" revisions maat --scene maat --boundary src_test_boundaries
 
+echo "Analyze the revisions from a specific module"
+"$GOCAN" revisions maat --scene maat --boundary src_test_boundaries --module Code
+
 echo "Create a revisions trends"
 "$GOCAN" create-revisions-trends src_test --scene maat --app maat --boundary src_test_boundaries
 

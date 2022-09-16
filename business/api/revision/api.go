@@ -10,6 +10,7 @@ import (
 	revision2 "com.fha.gocan/business/data/store/revision"
 	"com.fha.gocan/foundation/web"
 	"github.com/jmoiron/sqlx"
+	"github.com/pkg/errors"
 	"net/http"
 )
 
@@ -70,10 +71,23 @@ func (h *handlers) queryHotspots(w http.ResponseWriter, r *http.Request, params 
 	}
 
 	boundaryName := query.Get("boundaryName")
+	moduleName := query.Get("moduleName")
 
 	var hotspots revision2.HotspotHierarchy
 
-	if boundaryName != "" {
+	if boundaryName != "" && moduleName != "" {
+		b, err := h.Boundary.QueryByAppIdAndName(appId, boundaryName)
+		if err != nil {
+			return err
+		}
+
+		var mod = b.FindModule(moduleName)
+		if mod.Name == "" {
+			return errors.New("unable to retrieve module " + moduleName)
+		}
+
+		hotspots, err = h.Revision.QueryAppHotspotsByModule(a, mod, beforeTime, afterTime)
+	} else if boundaryName != "" {
 		b, err := h.Boundary.QueryByAppIdAndName(appId, boundaryName)
 		if err != nil {
 			return err

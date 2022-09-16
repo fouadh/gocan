@@ -101,6 +101,7 @@ func list(ctx context.Context) *cobra.Command {
 	var before string
 	var after string
 	var boundaryName string
+	var moduleName string
 	var csv bool
 	var verbose bool
 
@@ -126,6 +127,18 @@ func list(ctx context.Context) *cobra.Command {
 
 			if boundaryName == "" {
 				revisions, err = c.Query(a.Id, beforeTime, afterTime)
+			} else if moduleName != "" {
+				b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
+				if err != nil {
+					return errors.Wrap(err, "Unable to get boundary")
+				}
+
+				var mod = b.FindModule(moduleName)
+				if mod.Name == "" {
+					return errors.New("unable to retrieve module " + moduleName)
+				}
+
+				revisions, err = c.QueryByModule(a.Id, mod, beforeTime, afterTime)
 			} else {
 				b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
 				if err != nil {
@@ -156,6 +169,7 @@ func list(ctx context.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Optional boundary name to get the analysis for a specific boundary")
+	cmd.Flags().StringVarP(&moduleName, "module", "", "", "Optional module name to get the analysis for a specific module. Boundary must also be set.")
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the revisions before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the revisions after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")

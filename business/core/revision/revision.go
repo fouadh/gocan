@@ -34,6 +34,14 @@ func (c Core) Query(appId string, before time.Time, after time.Time) ([]revision
 	return c.revision.QueryByAppIdAndDateRange(appId, before, after)
 }
 
+func (c Core) QueryByModule(appId string, mod boundary.Module, before time.Time, after time.Time) ([]revision.Revision, error) {
+	revs, err := c.Query(appId, before, after)
+	if err != nil {
+		return nil, err
+	}
+	return filterRevisionsByModule(revs, mod), nil
+}
+
 func (c Core) QueryAppHotspots(a app.App, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
 	revs, err := c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
 	if err != nil {
@@ -41,6 +49,26 @@ func (c Core) QueryAppHotspots(a app.App, before time.Time, after time.Time) (re
 	}
 
 	return buildHotspots(a.Name, revs), nil
+}
+
+func (c Core) QueryAppHotspotsByModule(a app.App, mod boundary.Module, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
+	revs, err := c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
+	if err != nil {
+		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
+	}
+
+	return buildHotspots(a.Name, filterRevisionsByModule(revs, mod)), nil
+}
+
+func filterRevisionsByModule(revs []revision.Revision, mod boundary.Module) []revision.Revision {
+	var filteredRevs []revision.Revision
+
+	for _, rev := range revs {
+		if strings.HasPrefix(rev.Entity, mod.Path) {
+			filteredRevs = append(filteredRevs, rev)
+		}
+	}
+	return filteredRevs
 }
 
 func (c Core) QueryAppHotspotsForBoundary(a app.App, b boundary.Boundary, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
