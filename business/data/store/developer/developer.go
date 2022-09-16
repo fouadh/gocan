@@ -3,6 +3,8 @@ package developer
 import (
 	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
+	"github.com/pborman/uuid"
+	"github.com/pkg/errors"
 	"time"
 )
 
@@ -143,6 +145,49 @@ func (s Store) QueryDevelopmentEffort(appId string, before time.Time, after time
 	var results []EntityEffort
 	err := db.NamedQuerySlice(s.connection, q, data, &results)
 	return results, err
+}
+
+func (s Store) CreateTeam(newTeam NewTeam) (Team, error) {
+
+	team := Team{
+		Id:    uuid.NewUUID().String(),
+		Name:  newTeam.Name,
+		AppId: newTeam.AppId,
+	}
+
+	var members []TeamMember
+	for _, m := range newTeam.Members {
+		members = append(members, TeamMember{
+			Name:   m,
+			TeamId: team.Id,
+		})
+	}
+	team.Members = members
+
+	tx := s.connection.MustBegin()
+
+	if _, err := tx.NamedExec("insert into teams(id, name, app_id) values(:id, :name, :app_id)", team); err != nil {
+		if err := tx.Rollback(); err != nil {
+			return Team{}, errors.Wrap(err, "Unable to rollback after trying saving team")
+		}
+		return Team{}, errors.Wrap(err, "Cannot create team")
+	}
+
+	for _, m := range team.Members {
+		if _, err := tx.NamedExec("insert into team_members(team_id, member_name) values(:team_id, :member_name)", m); err != nil {
+			if err := tx.Rollback(); err != nil {
+				return Team{}, errors.Wrap(err, "Unable to rollback after trying saving team members")
+			}
+			return Team{}, errors.Wrap(err, "Cannot create team member")
+		}
+	}
+
+	err := tx.Commit()
+	if err != nil {
+		return Team{}, errors.Wrap(err, "Unable to commit transaction")
+	}
+
+	return team, nil
 }
 
 func NewStore(connection *sqlx.DB) Store {

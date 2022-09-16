@@ -34,3 +34,21 @@ type KnowledgeMapHierarchy struct {
 	Effort        float64                  `json:"effort,omitempty"`
 	DevDiffusion  float64                  `json:"devDiffusion,omitempty"`
 }
+
+type NewTeam struct {
+	Name    string `validate:"required,max=255"`
+	AppId   string `validate:"required"`
+	Members []string
+}
+
+type TeamMember struct {
+	Name   string `db:"member_name"`
+	TeamId string `db:"team_id"`
+}
+
+type Team struct {
+	Id      string `db:"id"`
+	Name    string `db:"name"`
+	AppId   string `db:"app_id"`
+	Members []TeamMember
+}

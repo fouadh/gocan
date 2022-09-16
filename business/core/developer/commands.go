@@ -53,7 +53,7 @@ func createTeam(ctx foundation.Context) *cobra.Command {
 			c := NewCore(connection)
 
 			teamName := args[0]
-			if err := c.CreateTeam(a.Id, teamName, members); err != nil {
+			if _, err := c.CreateTeam(a.Id, teamName, members); err != nil {
 				return errors.Wrap(err, "Unable to create the team")
 			}
 
