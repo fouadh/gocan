@@ -4,9 +4,23 @@ import {CirclePacking} from "../components/CirclePacking";
 import {Spinner} from "../components/Spinner";
 import {DateSelector} from "../components/DateSelector";
 import {Button} from 'primereact/button';
+import {Calendar} from "primereact/calendar";
+
+function formatDate(d) {
+    const year = d.getFullYear();
+    const month = d.getMonth() + 1;
+    const day = d.getDate();
+
+    const monthStr = month < 10 ? `0${month}` : `${month}`;
+    const dayStr = day < 10 ? `0${day}` : `${day}`;
+
+    return `${year}-${monthStr}-${dayStr}`;
+}
+
 
 export function CodeAge({sceneId, appId, date}) {
     const [dateRange, setDateRange] = useState(date);
+    const [initialDate, setInitialDate] = useState(new Date(date.max + "T00:00"));
     const [analyze, setAnalyze] = useState(true);
     const [hospots, setHotspots] = useState();
     const [loading, setLoading] = useState(false);
@@ -23,9 +37,7 @@ export function CodeAge({sceneId, appId, date}) {
             if (dateRange.max) {
                 params.append("before", dateRange.max);
             }
-            const initialDate = dateRange.max;
-            console.log("initial date", initialDate);
-            params.append("initialDate", initialDate);
+            params.append("initialDate", formatDate(initialDate));
             axios.get(`${endpoint}?${params}`)
                 .then(it => it.data)
                 .then(it => {
@@ -39,7 +51,7 @@ export function CodeAge({sceneId, appId, date}) {
         }
 
         return () => subscribed = false;
-    }, [sceneId, appId, analyze, dateRange]);
+    }, [sceneId, appId, analyze, dateRange, initialDate]);
 
     let screen;
 
@@ -57,6 +69,15 @@ export function CodeAge({sceneId, appId, date}) {
         <div className="card mt-4">
             <div className="flex align-items-center">
                 <DateSelector min={date.min} max={date.max} onChange={e => setDateRange(e)}/>
+                <div className="p-field p-col-12 p-md-4 mr-4">
+                <span className="p-float-label">
+                    <Calendar id="initialDate" value={initialDate} onChange={e => {
+                        setInitialDate(e.value);
+                    }} dateFormat="yy-mm-dd"/>
+                    <label htmlFor="initialDate">Counting From</label>
+                </span>
+                    </div>
+
                 <Button label="Submit" onClick={e => setAnalyze(true)}/>
             </div>
         </div>

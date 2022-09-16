@@ -24,6 +24,7 @@ func (s Store) QueryEntityAge(appId string, initialDate string, before time.Time
 				 inner join commits c on c.id = stats.commit_id
 		where c.app_id=:app_id
 		AND date between :after and :before
+		AND file not like '%=>%'
 		group by file
 		order by max(date)
 `
