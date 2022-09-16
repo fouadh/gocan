@@ -199,12 +199,12 @@ func (c Core) CreateComplexityAnalysis(analysisName string, appId string, before
 					fmt.Println("WARNING: File cannot be analyzed for revision " + rev)
 				}
 
-				if err == nil {
+				if err == nil && c.Lines > 0 {
 					complexities = append(complexities, c)
 				}
 			} else {
 				c, err := c.AnalyzeRepoComplexity(complexityId, directory, t, revDate, spaces)
-				if err == nil {
+				if err == nil && c.Lines > 0 {
 					complexities = append(complexities, c)
 				}
 			}

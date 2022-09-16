@@ -76,3 +76,8 @@ echo "Perform architectural analysis on the pipes filter architecture"
 
 echo "Study code churn"
 "$GOCAN" code-churn maat --scene maat
+
+echo "Create a complexity analysis for the Parse module"
+"$GOCAN" create-complexity-analysis parse-analysis --scene maat --application maat \
+         --boundary pipes_filter_boundaries --module Parse \
+         --directory $tmp_dir/maat
