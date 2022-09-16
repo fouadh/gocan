@@ -37,8 +37,27 @@ func (h *handlers) queryByAppId(w http.ResponseWriter, r *http.Request, params m
 	return web.Respond(w, payload, 200)
 }
 
+func (h *handlers) queryModules(w http.ResponseWriter, r *http.Request, params map[string]string) error {
+	appId := params["appId"]
+	boundaryName := params["boundaryName"]
+
+	modules, err := h.Boundary.QueryModules(appId, boundaryName)
+	if err != nil {
+		return errors.Wrap(err, "Cannot retrieve modules")
+	}
+
+	payload := struct {
+		Modules []boundary2.Module `json:"modules"`
+	}{
+		Modules: modules,
+	}
+
+	return web.Respond(w, payload, 200)
+}
+
 func (h handlers) GetMappings() map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error {
 	handlers := make(map[string]func(w http.ResponseWriter, r *http.Request, params map[string]string) error)
 	handlers["/scenes/:sceneId/apps/:appId/boundaries"] = h.queryByAppId
+	handlers["/scenes/:sceneId/apps/:appId/boundaries/:boundaryName/modules"] = h.queryModules
 	return handlers
 }

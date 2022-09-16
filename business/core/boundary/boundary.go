@@ -75,3 +75,11 @@ func (c Core) DeleteBoundaryByName(appId string, boundaryName string) error {
 func (c Core) QueryByAppIdAndName(appId string, name string) (boundary.Boundary, error) {
 	return c.Boundary.QueryByAppIdAndName(appId, name)
 }
+
+func (c Core) QueryModules(appId string, boundaryName string) ([]boundary.Module, error) {
+	b, err := c.QueryByAppIdAndName(appId, boundaryName)
+	if err != nil {
+		return nil, err
+	}
+	return b.Modules, nil
+}
