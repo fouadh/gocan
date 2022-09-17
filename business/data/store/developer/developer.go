@@ -44,6 +44,7 @@ func (s Store) QueryEntityEffortsPerAuthor(appId string, before time.Time, after
 	SELECT 
 		entity,
 	    author,
+		team,
 		authorRevisions,
 	    totalRevisions
 	FROM 

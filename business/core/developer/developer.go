@@ -142,7 +142,7 @@ func (c Core) QueryEntityEffortsForEntity(appId string, entity string, before ti
 		return []developer.EntityEffortPerAuthor{}, nil
 	}
 
-	contributions := []developer.EntityEffortPerAuthor{}
+	var contributions []developer.EntityEffortPerAuthor
 	for _, e := range efforts {
 		if e.Entity == entity {
 			contributions = append(contributions, e)

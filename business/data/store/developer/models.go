@@ -16,6 +16,7 @@ type Developer struct {
 type EntityEffortPerAuthor struct {
 	Entity          string
 	Author          string
+	Team            string
 	AuthorRevisions int
 	TotalRevisions  int
 }

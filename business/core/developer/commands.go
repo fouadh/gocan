@@ -280,9 +280,9 @@ func entityEffortsPerAuthor(ctx foundation.Context) *cobra.Command {
 
 			ui.Ok()
 
-			table := ui.Table([]string{"entity", "author", "author-revs", "total-revs"}, csv)
+			table := ui.Table([]string{"entity", "author", "team", "author-revs", "total-revs"}, csv)
 			for _, dev := range data {
-				table.Add(dev.Entity, dev.Author, fmt.Sprint(dev.AuthorRevisions), fmt.Sprint(dev.TotalRevisions))
+				table.Add(dev.Entity, dev.Author, dev.Team, fmt.Sprint(dev.AuthorRevisions), fmt.Sprint(dev.TotalRevisions))
 			}
 			table.Print()
 
@@ -300,6 +300,7 @@ func entityEffortsPerAuthor(ctx foundation.Context) *cobra.Command {
 
 	return &cmd
 }
+
 func entityEfforts(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
