@@ -21,6 +21,13 @@ type EntityEffortPerAuthor struct {
 	TotalRevisions  int
 }
 
+type EntityEffortPerTeam struct {
+	Entity         string
+	Team           string
+	TeamRevisions  int
+	TotalRevisions int
+}
+
 type EntityEffort struct {
 	Entity string  `db:"entity"`
 	Effort float64 `db:"effort"`

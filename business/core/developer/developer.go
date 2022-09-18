@@ -168,6 +168,49 @@ func (c Core) DeleteTeam(appId string, teamName string) error {
 	return c.developer.DeleteTeam(appId, teamName)
 }
 
+func (c Core) QueryEntityEffortsPerTeam(appId string, beforeTime time.Time, afterTime time.Time) ([]developer.EntityEffortPerTeam, error) {
+	efforts, err := c.QueryEntityEffortsPerAuthor(appId, beforeTime, afterTime)
+	if err != nil {
+		return nil, errors.Wrap(err, "Unable to query entity efforts per author")
+	}
+
+	effortsPerEntity := make(map[string]map[string]developer.EntityEffortPerTeam)
+
+	for _, e := range efforts {
+		if effortsPerEntity[e.Entity] == nil {
+			effortsPerEntity[e.Entity] = make(map[string]developer.EntityEffortPerTeam)
+		}
+		team := effortsPerEntity[e.Entity][e.Team]
+		if team.Entity == "" {
+			team = developer.EntityEffortPerTeam{
+				Entity:         e.Entity,
+				Team:           e.Team,
+				TeamRevisions:  e.AuthorRevisions,
+				TotalRevisions: e.TotalRevisions,
+			}
+		} else {
+			team.TeamRevisions = team.TeamRevisions + e.AuthorRevisions
+		}
+		effortsPerEntity[e.Entity][e.Team] = team
+	}
+
+	var results []developer.EntityEffortPerTeam
+	for _, m := range effortsPerEntity {
+		for _, e := range m {
+			results = append(results, e)
+		}
+	}
+
+	sort.Slice(results, func(i, j int) bool {
+		if results[i].Entity != results[j].Entity {
+			return results[i].Entity < results[j].Entity
+		}
+		return results[i].TeamRevisions > results[j].TeamRevisions
+	})
+
+	return results, nil
+}
+
 func buildKnowledgeMap(appName string,
 	revisions []revision.Revision,
 	developers []developer.EntityDeveloper,

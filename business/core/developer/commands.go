@@ -15,6 +15,7 @@ func Commands(ctx foundation.Context) []*cobra.Command {
 	return []*cobra.Command{
 		mainDevs(ctx),
 		entityEffortsPerAuthor(ctx),
+		entityEffortsPerTeam(ctx),
 		entityEfforts(ctx),
 		knowledgeMap(ctx),
 		list(ctx),
@@ -243,6 +244,64 @@ func mainDevs(ctx foundation.Context) *cobra.Command {
 	return &cmd
 }
 
+func entityEffortsPerTeam(ctx foundation.Context) *cobra.Command {
+	var sceneName string
+	var before string
+	var after string
+	var csv bool
+	var verbose bool
+
+	cmd := cobra.Command{
+		Use:     "entity-efforts-per-team",
+		Aliases: []string{"eept"},
+		Short:   "Get the efforts associated with entities of an application per team",
+		Args:    cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			ui := ctx.Ui
+			ui.SetVerbose(verbose)
+			connection, err := ctx.GetConnection()
+			if err != nil {
+				return err
+			}
+			defer connection.Close()
+
+			ui.Log("Retrieving entity efforts...")
+
+			c := NewCore(connection)
+
+			a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
+			if err != nil {
+				return errors.Wrap(err, "Invalid argument(s)")
+			}
+
+			data, err := c.QueryEntityEffortsPerTeam(a.Id, beforeTime, afterTime)
+			if err != nil {
+				return errors.Wrap(err, "Cannot retrieve entity efforts per author")
+			}
+
+			ui.Ok()
+
+			table := ui.Table([]string{"entity", "team", "author-revs", "total-revs"}, csv)
+			for _, dev := range data {
+				table.Add(dev.Entity, dev.Team, fmt.Sprint(dev.TeamRevisions), fmt.Sprint(dev.TotalRevisions))
+			}
+			table.Print()
+
+			return nil
+		},
+	}
+
+	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch the entity efforts before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the entity efforts after this day")
+	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
+	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
+
+	cmd.MarkFlagRequired("scene")
+
+	return &cmd
+}
+
 func entityEffortsPerAuthor(ctx foundation.Context) *cobra.Command {
 	var sceneName string
 	var before string
@@ -280,9 +339,9 @@ func entityEffortsPerAuthor(ctx foundation.Context) *cobra.Command {
 
 			ui.Ok()
 
-			table := ui.Table([]string{"entity", "author", "team", "author-revs", "total-revs"}, csv)
+			table := ui.Table([]string{"entity", "author", "author-revs", "total-revs"}, csv)
 			for _, dev := range data {
-				table.Add(dev.Entity, dev.Author, dev.Team, fmt.Sprint(dev.AuthorRevisions), fmt.Sprint(dev.TotalRevisions))
+				table.Add(dev.Entity, dev.Author, fmt.Sprint(dev.AuthorRevisions), fmt.Sprint(dev.TotalRevisions))
 			}
 			table.Print()
 
