@@ -35,8 +35,8 @@ func NewCore(connection *sqlx.DB) Core {
 	}
 }
 
-func (c Core) Import(appId string, path string, before string, after string, ctx foundation.Context, intervalBetweenAnalyses int) error {
-	commits, err := git.GetCommits(path, before, after, ctx)
+func (c Core) Import(appId string, path string, beforeDate string, afterDate string, beforeCommit string, afterCommit string, ctx foundation.Context, intervalBetweenAnalyses int) error {
+	commits, err := git.GetCommits(path, beforeDate, afterDate, beforeCommit, afterCommit, ctx)
 
 	sort.Slice(commits, func(i, j int) bool {
 		return commits[i].Date.After(commits[j].Date)
@@ -53,7 +53,7 @@ func (c Core) Import(appId string, path string, before string, after string, ctx
 	for _, ct := range commits {
 		commitsMap[ct.Id] = ct
 	}
-	stats, err := git.GetStats(path, before, after, commitsMap, ctx)
+	stats, err := git.GetStats(path, beforeDate, afterDate, commitsMap, ctx)
 	if err != nil {
 		return err
 	}

@@ -15,19 +15,30 @@ import (
 	"time"
 )
 
-func GetCommits(path string, before string, after string, ctx foundation.Context) ([]commit.Commit, error) {
-	ctx.Ui.Log("looking for commits between " + after + " and " + before)
+func GetCommits(path string, beforeDate string, afterDate string, beforeCommit string, afterCommit string, ctx foundation.Context) ([]commit.Commit, error) {
+	ctx.Ui.Log("looking for commits between " + afterDate + " and " + beforeDate)
 
 	args := []string{
 		"log",
 		"--before",
-		before,
+		beforeDate,
 		"--date=iso",
 		"--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},",
 	}
 
-	if after != "" {
-		args = append(args, "--after", after)
+	if afterDate != "" {
+		args = append(args, "--after", afterDate)
+	}
+
+	if afterCommit != "" {
+		args = append(args, afterCommit)
+		if beforeCommit != "" {
+			args = append(args, ".."+beforeCommit)
+		} else {
+			args = append(args, "..HEAD")
+		}
+	} else if beforeCommit != "" {
+		args = append(args, beforeCommit)
 	}
 
 	cmd := exec.Command("git", args...)
@@ -56,15 +67,15 @@ func GetCommits(path string, before string, after string, ctx foundation.Context
 
 	commits := []commit.Commit{}
 
-	beforeTime, err := date.ParseDay(before)
+	beforeTime, err := date.ParseDay(beforeDate)
 	if err != nil {
 		return []commit.Commit{}, errors.Wrap(err, "Unable to parse before date")
 	}
 
 	var afterTime time.Time
 
-	if after != "" {
-		afterTime, err = date.ParseDay(after)
+	if afterDate != "" {
+		afterTime, err = date.ParseDay(afterDate)
 		if err != nil {
 			return []commit.Commit{}, errors.Wrap(err, "Unable to parse after date")
 		}
@@ -72,7 +83,7 @@ func GetCommits(path string, before string, after string, ctx foundation.Context
 
 	for _, gc := range gitCommits {
 		date, _ := time.Parse("2006-01-02 15:04:05 -0700", gc.Date)
-		if after != "" {
+		if afterDate != "" {
 			if date.After(afterTime) && date.Before(beforeTime) {
 				commits = append(commits, commit.Commit{
 					Id:      gc.Id,
@@ -128,7 +139,7 @@ func GetStats(path string, before string, after string, commitsMap map[string]co
 	return stats, nil
 }
 
-func Checkout(commitId string, directory string) (error) {
+func Checkout(commitId string, directory string) error {
 	_, err := shell.ExecuteCommand("git", []string{"checkout", commitId}, directory)
 	if err != nil {
 		return errors.Wrap(err, fmt.Sprintf("git checkout %s failed", commitId))
@@ -174,4 +185,3 @@ type gitCommit struct {
 	Date    string
 	Message string
 }
-
