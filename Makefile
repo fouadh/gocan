@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 VERSION := 0.2.4.SNAPSHOT
-PLATFORMS := linux/amd64 darwin/amd64
+PLATFORMS := darwin/arm64
 temp = $(subst /, ,$@)
 os = $(word 1, $(temp))
 arch = $(word 2, $(temp))

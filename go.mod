@@ -9,14 +9,14 @@ require (
 	github.com/dimfeld/httptreemux/v5 v5.3.0
 	github.com/dustin/go-humanize v1.0.0
 	github.com/fatih/color v1.12.0
-	github.com/fergusstrange/embedded-postgres v1.6.0
+	github.com/fergusstrange/embedded-postgres v1.17.0
 	github.com/go-playground/validator v9.31.0+incompatible
 	github.com/icza/mjpeg v0.0.0-20210726201846-5ff75d3c479f
 	github.com/jmoiron/sqlx v1.3.3
 	github.com/pborman/uuid v1.2.1
 	github.com/pkg/errors v0.9.1
 	github.com/spf13/cobra v1.1.3
-	golang.org/x/tools v0.1.0
+	golang.org/x/tools v0.1.5
 )
 
 require (
@@ -26,7 +26,6 @@ require (
 	github.com/Masterminds/semver v1.5.0 // indirect
 	github.com/OpenPeeDeeP/depguard v1.0.1 // indirect
 	github.com/alexkohler/prealloc v1.0.0 // indirect
-	github.com/andybalholm/brotli v1.0.0 // indirect
 	github.com/ashanbrown/forbidigo v1.1.0 // indirect
 	github.com/ashanbrown/makezero v0.0.0-20210308000810-4155955488a0 // indirect
 	github.com/bkielbasa/cyclop v1.2.0 // indirect
@@ -40,7 +39,6 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/dbaggerman/cuba v0.3.2 // indirect
 	github.com/denis-tingajkin/go-header v0.4.2 // indirect
-	github.com/dsnet/compress v0.0.1 // indirect
 	github.com/esimonov/ifshort v1.0.2 // indirect
 	github.com/fatih/structtag v1.2.0 // indirect
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
@@ -63,7 +61,6 @@ require (
 	github.com/gobwas/pool v0.2.1 // indirect
 	github.com/gobwas/ws v1.1.0 // indirect
 	github.com/gofrs/flock v0.8.0 // indirect
-	github.com/golang/snappy v0.0.1 // indirect
 	github.com/golangci/check v0.0.0-20180506172741-cfe4005ccda2 // indirect
 	github.com/golangci/dupl v0.0.0-20180902072040-3e9179ac440a // indirect
 	github.com/golangci/go-misc v0.0.0-20180628070357-927a3d87b613 // indirect
@@ -100,14 +97,12 @@ require (
 	github.com/julz/importas v0.0.0-20210228071311-d0bf5cb4e1db // indirect
 	github.com/kisielk/errcheck v1.6.0 // indirect
 	github.com/kisielk/gotool v1.0.0 // indirect
-	github.com/klauspost/compress v1.11.0 // indirect
-	github.com/klauspost/pgzip v1.2.4 // indirect
 	github.com/kulti/thelper v0.4.0 // indirect
 	github.com/kunwardeep/paralleltest v1.0.2 // indirect
 	github.com/kyoh86/exportloopref v0.1.8 // indirect
 	github.com/ldez/gomoddirectives v0.2.1 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/lib/pq v1.9.0 // indirect
+	github.com/lib/pq v1.10.4 // indirect
 	github.com/magiconair/properties v1.8.1 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
 	github.com/maratori/testpackage v1.0.1 // indirect
@@ -119,7 +114,6 @@ require (
 	github.com/mbilski/exhaustivestruct v1.2.0 // indirect
 	github.com/mgechev/dots v0.0.0-20190921121421-c36f7dcfbb81 // indirect
 	github.com/mgechev/revive v1.0.5 // indirect
-	github.com/mholt/archiver/v3 v3.5.0 // indirect
 	github.com/minio/blake2b-simd v0.0.0-20160723061019-3f5f724cb5b1 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.1.2 // indirect
@@ -129,11 +123,9 @@ require (
 	github.com/nbutton23/zxcvbn-go v0.0.0-20210217022336-fa2cb2858354 // indirect
 	github.com/nishanths/exhaustive v0.1.0 // indirect
 	github.com/nishanths/predeclared v0.2.1 // indirect
-	github.com/nwaples/rardecode v1.1.0 // indirect
 	github.com/olekukonko/tablewriter v0.0.5 // indirect
 	github.com/pelletier/go-toml v1.2.0 // indirect
 	github.com/phayes/checkstyle v0.0.0-20170904204023-bfd46e6a821d // indirect
-	github.com/pierrec/lz4/v4 v4.0.3 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/polyfloyd/go-errorlint v0.0.0-20201127212506-19bd8db6546f // indirect
 	github.com/quasilyte/go-ruleguard v0.3.1 // indirect
@@ -162,7 +154,6 @@ require (
 	github.com/timakin/bodyclose v0.0.0-20200424151742-cb6215831a94 // indirect
 	github.com/tomarrell/wrapcheck v1.0.0 // indirect
 	github.com/tommy-muehle/go-mnd/v2 v2.3.1 // indirect
-	github.com/ulikunitz/xz v0.5.8 // indirect
 	github.com/ultraware/funlen v0.0.3 // indirect
 	github.com/ultraware/whitespace v0.0.4 // indirect
 	github.com/unchartedsoftware/witch v0.0.0-20200617171400-4f405404126f // indirect
@@ -171,7 +162,7 @@ require (
 	github.com/xi2/xz v0.0.0-20171230120015-48954b6210f8 // indirect
 	golang.org/x/crypto v0.0.0-20210322153248-0c34fe9e7dc2 // indirect
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b // indirect
-	golang.org/x/mod v0.4.1 // indirect
+	golang.org/x/mod v0.4.2 // indirect
 	golang.org/x/sys v0.0.0-20210525143221-35b2ab0089ea // indirect
 	golang.org/x/text v0.3.5 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
