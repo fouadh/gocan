@@ -3,6 +3,8 @@ kind: Component
 metadata:
   name: gocan
   description: Analyze your code like a crime scene!
+  annotations:
+    backstage.io/techdocs-ref: "dir:."
   tags:
     - go
 spec:
