@@ -2,10 +2,10 @@ apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
   name: gocan
-  description: A source code analyzer to detect code suspected of crimes.
+  description: Analyze your code like a crime scene!
   tags:
     - go
 spec:
   type: service
   lifecycle: production
-  owner: fouadh
+  owner: Fouad Hamdi
