@@ -18,6 +18,6 @@ func Today() string {
 	return time.Now().Format("2006-01-02")
 }
 
-func LongTimeAgo() string {
-	return time.Now().Format("2006-01-02")
+func OneYearAgo() string {
+	return time.Now().AddDate(-1, 0, 0).Format("2006-01-02")
 }
