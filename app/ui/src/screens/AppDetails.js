@@ -11,7 +11,6 @@ import {KnowledgeMap} from "./KnowledgeMap";
 import {Hotspots} from "./Hotspots";
 import {ComplexityAnalysis} from "./ComplexityAnalysis";
 import {EntityCoupling} from "./EntityCoupling";
-import {EntityContributions} from "./EntityContributions";
 import {CoordinationNeeds} from "./CoordinationNeeds";
 import {CodeAge} from "./CodeAge";
 
@@ -86,9 +85,9 @@ export function AppDetails() {
                 <TabPanel header="Coordination Needs">
                     <CoordinationNeeds sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
-                <TabPanel header="Entity Contributions">
-                    <EntityContributions sceneId={sceneId} appId={appId} date={dateRange} entities={entities} />
-                </TabPanel>
+                {/*<TabPanel header="Entity Contributions">*/}
+                {/*    <EntityContributions sceneId={sceneId} appId={appId} date={dateRange} entities={entities} />*/}
+                {/*</TabPanel>*/}
                 {/*<TabPanel header="Developers Network">*/}
                 {/*    <DevNetwork sceneId={sceneId} appId={appId} date={dateRange}/>*/}
                 {/*</TabPanel>*/}
