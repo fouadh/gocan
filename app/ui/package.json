@@ -51,5 +51,8 @@
   },
   "msw": {
     "workerDirectory": "public"
+  },
+  "resolutions": {
+    "**/babel-loader/loader-utils": "^1.4.2"
   }
 }
