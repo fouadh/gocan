@@ -53,6 +53,7 @@
     "workerDirectory": "public"
   },
   "resolutions": {
-    "**/babel-loader/loader-utils": "^1.4.2"
+    "**/babel-loader/loader-utils": "^1.4.2",
+    "ejs": "^3.1.7"
   }
 }
