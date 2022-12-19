@@ -58,6 +58,7 @@
     "minimist": "^1.2.6",
     "**/recursive-readdir/minimatch": "^3.0.5",
     "d3-color": "^3.1.0",
-    "terser": "^5.4.12"
+    "terser": "^5.4.12",
+    "**/portfinder/async": "^2.6.4"
   }
 }
