@@ -56,6 +56,8 @@
     "**/babel-loader/loader-utils": "^1.4.2",
     "ejs": "^3.1.7",
     "minimist": "^1.2.6",
-    "**/recursive-readdir/minimatch": "^3.0.5"
+    "**/recursive-readdir/minimatch": "^3.0.5",
+    "d3-color": "^3.1.0",
+    "terser": "^5.4.12"
   }
 }
