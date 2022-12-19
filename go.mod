@@ -1,6 +1,6 @@
 module com.fha.gocan
 
-go 1.17
+go 1.19
 
 require (
 	github.com/Boostport/migration v0.21.2
