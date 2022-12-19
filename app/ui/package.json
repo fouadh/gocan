@@ -55,6 +55,7 @@
   "resolutions": {
     "**/babel-loader/loader-utils": "^1.4.2",
     "ejs": "^3.1.7",
-    "minimist": "^1.2.6"
+    "minimist": "^1.2.6",
+    "**/recursive-readdir/minimatch": "^3.0.5"
   }
 }
