@@ -1,9 +1,9 @@
-## gocan entity-efforts-per-author
+## gocan entity-efforts-per-team
 
-Get the efforts associated with entities of an application per author
+Get the efforts associated with entities of an application per team
 
 ```
-gocan entity-efforts-per-author [flags]
+gocan entity-efforts-per-team [flags]
 ```
 
 ### Options
@@ -12,7 +12,7 @@ gocan entity-efforts-per-author [flags]
       --after string    Fetch all the entity efforts after this day
       --before string   Fetch the entity efforts before this day
       --csv             get the results in csv format
-  -h, --help            help for entity-efforts-per-author
+  -h, --help            help for entity-efforts-per-team
   -s, --scene string    Scene name
       --verbose         display the log information
 ```

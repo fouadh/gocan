@@ -1,21 +1,16 @@
-## gocan delete-app
+## gocan delete-team
 
-Delete an application
-
-```
-gocan delete-app [flags]
-```
-
-### Examples
+Delete a team and its members
 
 ```
-gocan delete-app myapp -s myscene
+gocan delete-team [flags]
 ```
 
 ### Options
 
 ```
-  -h, --help           help for delete-app
+  -a, --app string     App name
+  -h, --help           help for delete-team
   -s, --scene string   Scene name
       --verbose        display the log information
 ```

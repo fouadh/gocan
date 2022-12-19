@@ -1,9 +1,15 @@
-## gocan revision-trends
+## gocan complexity-analysis
 
-Retrieve a saved revision trends
+Retrieve a complexity analysis by its name
 
 ```
-gocan revision-trends [flags]
+gocan complexity-analysis [flags]
+```
+
+### Examples
+
+```
+gocan complexity-analysis myfile --app myapp --scene myscene
 ```
 
 ### Options
@@ -11,7 +17,7 @@ gocan revision-trends [flags]
 ```
   -a, --app string     Application name
       --csv            get the results in csv format
-  -h, --help           help for revision-trends
+  -h, --help           help for complexity-analysis
   -s, --scene string   Scene name
       --verbose        display the log information
 ```
