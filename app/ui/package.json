@@ -21,6 +21,7 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
+    "dev": "NODE_ENV=development react-scripts start",
     "start": "react-scripts start",
     "build": "yarn build-dist && yarn copy-dist",
     "build-dist": "react-scripts build",
