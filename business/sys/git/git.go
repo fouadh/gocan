@@ -134,7 +134,7 @@ func GetStats(path string, before string, after string, commitsMap map[string]co
 	for _, row := range rows {
 		if len(strings.Split(row, "\t")) > 1 {
 			if _, ok := commitsMap[currentCommit]; ok {
-				s := buildStat(currentCommit, row, exclusions)
+				s := buildStat(currentCommit, row, exclusions, ctx)
 				if (s != stat.Stat{}) {
 					stats = append(stats, s)
 				}
@@ -174,12 +174,13 @@ func CheckIfAllCommited(directory string) (bool, error) {
 	return strings.TrimSpace(string(out)) == "", nil
 }
 
-func buildStat(commitId string, line string, exclusions []glob.Glob) stat.Stat {
+func buildStat(commitId string, line string, exclusions []glob.Glob, ctx foundation.Context) stat.Stat {
 	cols := strings.Split(line, "\t")
 	filename := cols[2]
 
 	for _, exclusion := range exclusions {
 		if exclusion.Match(filename) {
+			ctx.Ui.Log("Ignore stat of " + filename)
 			return stat.Stat{}
 		}
 	}
