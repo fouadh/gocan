@@ -42,6 +42,8 @@ func GetCommits(path string, beforeDate string, afterDate string, beforeCommit s
 	}
 
 	cmd := exec.Command("git", args...)
+	ctx.Ui.Log("git command: " + cmd.String())
+
 	cmd.Dir = path
 	out, err := cmd.Output()
 	if err != nil {
@@ -53,13 +55,19 @@ func GetCommits(path string, beforeDate string, afterDate string, beforeCommit s
 		return nil, errors.New("no output returned by the git command")
 	}
 
+	ctx.Ui.Log("git log command ran successfully")
+
 	outStr = outStr[:len(outStr)-1]
 	data := fmt.Sprintf("[%s]", outStr)
 	data = strings.ReplaceAll(data, "\\", "\\\\")
+
 	gitCommits := []gitCommit{}
+
 	if err := json.Unmarshal([]byte(data), &gitCommits); err != nil {
 		return nil, err
 	}
+
+	ctx.Ui.Log("git logs were unmarshalled successfully...")
 
 	if err != nil {
 		return []commit.Commit{}, fmt.Errorf("Cannot get commits: %s", err)
@@ -81,6 +89,7 @@ func GetCommits(path string, beforeDate string, afterDate string, beforeCommit s
 		}
 	}
 
+	ctx.Ui.Log("Building commit objects from logs...")
 	for _, gc := range gitCommits {
 		date, _ := time.Parse("2006-01-02 15:04:05 -0700", gc.Date)
 		if afterDate != "" {
