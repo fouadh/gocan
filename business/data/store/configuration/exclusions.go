@@ -2,6 +2,7 @@ package configuration
 
 import (
 	"com.fha.gocan/foundation/db"
+	"github.com/gobwas/glob"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -68,5 +69,21 @@ func (s Store) QueryExclusions(appId string) ([]string, error) {
 	for i := range rows {
 		results[i] = rows[i].Exclusion
 	}
+	return results, nil
+}
+
+func (s Store) QueryExclusionsAsGlobs(appId string) ([]glob.Glob, error) {
+	exclusions, err := s.QueryExclusions(appId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	results := make([]glob.Glob, len(exclusions))
+
+	for i, _ := range exclusions {
+		results[i] = glob.MustCompile(exclusions[i])
+	}
+
 	return results, nil
 }

@@ -6,6 +6,7 @@ import (
 	"com.fha.gocan/foundation"
 	"encoding/json"
 	"github.com/boyter/scc/processor"
+	"github.com/gobwas/glob"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 	"io/ioutil"
@@ -21,7 +22,17 @@ func NewStore(connection *sqlx.DB) Store {
 	return Store{connection: connection}
 }
 
-func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx foundation.Context) error {
+func include(filename string, exclusions []glob.Glob) bool {
+	for _, exclusion := range exclusions {
+		if exclusion.Match(filename) {
+			return false
+		}
+	}
+
+	return true
+}
+
+func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx foundation.Context, exclusions []glob.Glob) error {
 	initialBranch, err := git.GetCurrentBranch(directory)
 	if err != nil {
 		return err
@@ -34,7 +45,7 @@ func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx 
 	processor.ConfigureLazy(true)
 	processor.Format = "json"
 	processor.Files = true
-	processor.GitIgnore = false
+	processor.GitIgnore = true
 	processor.Complexity = false
 
 	if err := git.Checkout(ct.Id, directory); err != nil {
@@ -44,8 +55,6 @@ func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx 
 	file, _ := ioutil.TempFile(os.TempDir(), "gocan*.txt")
 	defer os.Remove(file.Name())
 	processor.FileOutput = file.Name()
-	// todo rely on the .gitignore file if exists to exclude files/folders from analysis
-	processor.Exclude = []string{"node_modules", ".idea"}
 	processor.Process()
 
 	data, _ := ioutil.ReadAll(file)
@@ -54,43 +63,47 @@ func (s Store) ImportCloc(appId string, directory string, ct commit.Commit, ctx 
 
 	for _, c := range clocs {
 		for _, fi := range c.Files {
-			var path string
-			if directory != "." {
-				path = strings.Replace(fi.Location, directory, "", 1)
-				if strings.Index(path, "/") == 0 {
-					path = strings.Replace(path, "/", "", 1)
+			if include(fi.Filename, exclusions) {
+				var path string
+				if directory != "." {
+					path = strings.Replace(fi.Location, directory, "", 1)
+					if strings.Index(path, "/") == 0 {
+						path = strings.Replace(path, "/", "", 1)
+					}
+				} else {
+					path = fi.Location
+				}
+
+				fi.AppId = appId
+				fi.CommitId = ct.Id
+				fi.Location = path
+
+				const q = `
+					insert into cloc(
+									 app_id, 
+									 commit_id, 
+									 file, lines, 
+									 language, extension, filename, code, comment, blank, complexity, is_binary
+					) values(
+						:app_id, 
+						:commit_id, 
+						:file, 
+						:lines, 
+						:language, 
+						:extension, 
+						:filename, 
+						:code, 
+						:comment,
+						:blank, 
+						:complexity, 
+						:is_binary
+					) ON CONFLICT DO NOTHING
+`
+				if _, err := s.connection.NamedExec(q, fi); err != nil {
+					return errors.Wrap(err, "Unable to save cloc analysis")
 				}
 			} else {
-				path = fi.Location
-			}
-
-			fi.AppId = appId
-			fi.CommitId = ct.Id
-			fi.Location = path
-
-			const q = `
-		insert into cloc(
-		                 app_id, 
-		                 commit_id, 
-		                 file, lines, 
-		                 language, extension, filename, code, comment, blank, complexity, is_binary
-		) values(
-			:app_id, 
-			:commit_id, 
-			:file, 
-			:lines, 
-			:language, 
-			:extension, 
-			:filename, 
-			:code, 
-			:comment,
-			:blank, 
-			:complexity, 
-			:is_binary
-		) ON CONFLICT DO NOTHING
-`
-			if _, err := s.connection.NamedExec(q, fi); err != nil {
-				return errors.Wrap(err, "Unable to save cloc analysis")
+				ctx.Ui.Log("Exclude " + fi.Filename + " from cloc analysis")
 			}
 		}
 	}

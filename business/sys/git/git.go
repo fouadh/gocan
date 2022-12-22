@@ -7,6 +7,7 @@ import (
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/shell"
 	"fmt"
+	"github.com/gobwas/glob"
 	"github.com/pkg/errors"
 	"os/exec"
 	"strconv"
@@ -108,7 +109,7 @@ func GetCommits(path string, beforeDate string, afterDate string, beforeCommit s
 	return commits, nil
 }
 
-func GetStats(path string, before string, after string, commitsMap map[string]commit.Commit, ctx foundation.Context) ([]stat.Stat, error) {
+func GetStats(path string, before string, after string, commitsMap map[string]commit.Commit, ctx foundation.Context, exclusions []glob.Glob) ([]stat.Stat, error) {
 	ctx.Ui.Log("Getting the git logs to extract stats")
 	args := []string{
 		"log",
@@ -133,7 +134,10 @@ func GetStats(path string, before string, after string, commitsMap map[string]co
 	for _, row := range rows {
 		if len(strings.Split(row, "\t")) > 1 {
 			if _, ok := commitsMap[currentCommit]; ok {
-				stats = append(stats, buildStat(currentCommit, row))
+				s := buildStat(currentCommit, row, exclusions)
+				if (s != stat.Stat{}) {
+					stats = append(stats, s)
+				}
 			}
 		} else if row != "" {
 			currentCommit = row
@@ -170,13 +174,21 @@ func CheckIfAllCommited(directory string) (bool, error) {
 	return strings.TrimSpace(string(out)) == "", nil
 }
 
-func buildStat(commitId string, line string) stat.Stat {
+func buildStat(commitId string, line string, exclusions []glob.Glob) stat.Stat {
 	cols := strings.Split(line, "\t")
+	filename := cols[2]
+
+	for _, exclusion := range exclusions {
+		if exclusion.Match(filename) {
+			return stat.Stat{}
+		}
+	}
+
 	insertions, _ := strconv.Atoi(cols[0])
 	deletions, _ := strconv.Atoi(cols[1])
 	return stat.Stat{
 		CommitId:   commitId,
-		File:       cols[2],
+		File:       filename,
 		Insertions: insertions,
 		Deletions:  deletions,
 	}

@@ -4,6 +4,7 @@ import (
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/cloc"
 	"com.fha.gocan/business/data/store/commit"
+	"com.fha.gocan/business/data/store/configuration"
 	"com.fha.gocan/business/data/store/coupling"
 	"com.fha.gocan/business/data/store/scene"
 	"com.fha.gocan/business/data/store/stat"
@@ -16,22 +17,24 @@ import (
 )
 
 type Core struct {
-	scene    scene.Store
-	app      app.Store
-	commit   commit.Store
-	stat     stat.Store
-	cloc     cloc.Store
-	coupling coupling.Store
+	scene      scene.Store
+	app        app.Store
+	commit     commit.Store
+	stat       stat.Store
+	cloc       cloc.Store
+	coupling   coupling.Store
+	exclusions configuration.Store
 }
 
 func NewCore(connection *sqlx.DB) Core {
 	return Core{
-		scene:    scene.NewStore(connection),
-		app:      app.NewStore(connection),
-		commit:   commit.NewStore(connection),
-		stat:     stat.NewStore(connection),
-		cloc:     cloc.NewStore(connection),
-		coupling: coupling.NewStore(connection),
+		scene:      scene.NewStore(connection),
+		app:        app.NewStore(connection),
+		commit:     commit.NewStore(connection),
+		stat:       stat.NewStore(connection),
+		cloc:       cloc.NewStore(connection),
+		coupling:   coupling.NewStore(connection),
+		exclusions: configuration.NewStore(connection),
 	}
 }
 
@@ -53,7 +56,13 @@ func (c Core) Import(appId string, path string, beforeDate string, afterDate str
 	for _, ct := range commits {
 		commitsMap[ct.Id] = ct
 	}
-	stats, err := git.GetStats(path, beforeDate, afterDate, commitsMap, ctx)
+
+	exclusions, err := c.exclusions.QueryExclusionsAsGlobs(appId)
+	if err != nil {
+		return err
+	}
+
+	stats, err := git.GetStats(path, beforeDate, afterDate, commitsMap, ctx, exclusions)
 	if err != nil {
 		return err
 	}
@@ -66,14 +75,14 @@ func (c Core) Import(appId string, path string, beforeDate string, afterDate str
 		return errors.Errorf("No commit to analyze")
 	}
 
-	if err = c.cloc.ImportCloc(appId, path, commits[0], ctx); err != nil {
+	if err = c.cloc.ImportCloc(appId, path, commits[0], ctx, exclusions); err != nil {
 		return errors.Wrap(err, "Unable to save clocs")
 	}
 
 	if intervalBetweenAnalyses > 0 {
 		for i := len(commits) - 1; i >= 0; i -= intervalBetweenAnalyses {
 			ctx.Ui.Log("Analyzing commit " + commits[i].Id + " of " + date.FormatDay(commits[i].Date))
-			if err = c.cloc.ImportCloc(appId, path, commits[i], ctx); err != nil {
+			if err = c.cloc.ImportCloc(appId, path, commits[i], ctx, nil); err != nil {
 				return errors.Wrap(err, "Unable to save clocs")
 			}
 		}
