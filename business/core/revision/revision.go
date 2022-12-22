@@ -177,8 +177,10 @@ func buildHotspots(appName string, revisions []revision.Revision) revision.Hotsp
 	}
 
 	for _, revision := range revisions {
-		path := strings.Split(revision.Entity, "/")
-		buildNode(path, &root, revision)
+		if revision.NumberOfRevisions > 3 && revision.Code > 0 {
+			path := strings.Split(revision.Entity, "/")
+			buildNode(path, &root, revision)
+		}
 	}
 
 	return root
