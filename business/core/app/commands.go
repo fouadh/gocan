@@ -175,7 +175,7 @@ gocan app-summary myapp --scene myscene
 			}
 			defer connection.Close()
 
-			ctx.Ui.Log("Retrieving the apps...")
+			ctx.Ui.Log("Retrieving the application...")
 			c := NewCore(connection)
 			ct := commit.NewCore(connection)
 

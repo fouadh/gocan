@@ -6,6 +6,7 @@ import (
 	"com.fha.gocan/business/core/boundary"
 	"com.fha.gocan/business/core/churn"
 	"com.fha.gocan/business/core/complexity"
+	"com.fha.gocan/business/core/configuration"
 	"com.fha.gocan/business/core/coupling"
 	db2 "com.fha.gocan/business/core/db"
 	"com.fha.gocan/business/core/developer"
@@ -62,6 +63,7 @@ func Root() *cobra.Command {
 		churn.Commands(ctx),
 		modus_operandi.Commands(ctx),
 		storyboard.Commands(ctx),
+		configuration.Commands(ctx),
 	}
 
 	for _, c := range commands {
