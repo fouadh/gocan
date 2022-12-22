@@ -6,7 +6,6 @@ import (
 	"com.fha.gocan/foundation"
 	"com.fha.gocan/foundation/date"
 	"com.fha.gocan/foundation/shell"
-	"encoding/json"
 	"fmt"
 	"github.com/pkg/errors"
 	"os/exec"
@@ -23,7 +22,7 @@ func GetCommits(path string, beforeDate string, afterDate string, beforeCommit s
 		"--before",
 		beforeDate,
 		"--date=iso",
-		"--pretty=format:{%n  \"Id\": \"%H\",%n  \"Author\": \"%aN\",%n  \"Date\": \"%ad\",%n  \"Message\": \"%f\"%n},",
+		"--pretty=format:%H|GOCAN|%aN|GOCAN|%ad|GOCAN|%f",
 	}
 
 	if afterDate != "" {
@@ -41,36 +40,31 @@ func GetCommits(path string, beforeDate string, afterDate string, beforeCommit s
 		args = append(args, beforeCommit)
 	}
 
-	cmd := exec.Command("git", args...)
-	ctx.Ui.Log("git command: " + cmd.String())
+	gitLogs := []gitLog{}
 
+	cmd := exec.Command("git", args...)
 	cmd.Dir = path
+	ctx.Ui.Log("git command: " + cmd.String())
 	out, err := cmd.Output()
 	if err != nil {
 		return nil, errors.Wrap(err, "cannot run git log command")
 	}
-
 	outStr := string(out)
 	if len(outStr) == 0 {
 		return nil, errors.New("no output returned by the git command")
 	}
 
-	ctx.Ui.Log("git log command ran successfully")
+	data := fmt.Sprintf("%s", outStr)
+	lines := strings.Split(data, "\n")
 
-	outStr = outStr[:len(outStr)-1]
-	data := fmt.Sprintf("[%s]", outStr)
-	data = strings.ReplaceAll(data, "\\", "\\\\")
-
-	gitCommits := []gitCommit{}
-
-	if err := json.Unmarshal([]byte(data), &gitCommits); err != nil {
-		return nil, err
-	}
-
-	ctx.Ui.Log("git logs were unmarshalled successfully...")
-
-	if err != nil {
-		return []commit.Commit{}, fmt.Errorf("Cannot get commits: %s", err)
+	for _, line := range lines {
+		cols := strings.Split(line, "|GOCAN|")
+		gitLogs = append(gitLogs, gitLog{
+			Id:      cols[0],
+			Author:  cols[1],
+			Date:    cols[2],
+			Message: cols[3],
+		})
 	}
 
 	commits := []commit.Commit{}
@@ -90,7 +84,7 @@ func GetCommits(path string, beforeDate string, afterDate string, beforeCommit s
 	}
 
 	ctx.Ui.Log("Building commit objects from logs...")
-	for _, gc := range gitCommits {
+	for _, gc := range gitLogs {
 		date, _ := time.Parse("2006-01-02 15:04:05 -0700", gc.Date)
 		if afterDate != "" {
 			if date.After(afterTime) && date.Before(beforeTime) {
@@ -188,7 +182,7 @@ func buildStat(commitId string, line string) stat.Stat {
 	}
 }
 
-type gitCommit struct {
+type gitLog struct {
 	Id      string
 	Author  string
 	Date    string
