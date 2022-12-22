@@ -1,6 +1,7 @@
 package configuration
 
 import (
+	"com.fha.gocan/foundation/db"
 	"github.com/jmoiron/sqlx"
 	"github.com/pkg/errors"
 )
@@ -37,4 +38,35 @@ func (s Store) CreateExclusions(appId string, exclusions []string) error {
 	}
 
 	return tx.Commit()
+}
+
+func (s Store) QueryExclusions(appId string) ([]string, error) {
+	const q = `
+	SELECT exclusion FROM exclusions WHERE app_id = :app_id
+	`
+
+	data := struct {
+		AppId string `db:"app_id"`
+	}{
+		AppId: appId,
+	}
+
+	type exclusion struct {
+		Exclusion string `db:"exclusion"`
+	}
+
+	var rows []exclusion
+
+	err := db.NamedQuerySlice(s.connection, q, data, &rows)
+
+	if err != nil {
+		return nil, errors.Wrap(err, "Unable to fetch the exclusions")
+	}
+
+	results := make([]string, len(rows))
+
+	for i := range rows {
+		results[i] = rows[i].Exclusion
+	}
+	return results, nil
 }
