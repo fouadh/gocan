@@ -5,7 +5,6 @@ import (
 	"com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/data/store/revision"
 	context "com.fha.gocan/foundation"
-	"encoding/json"
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"sort"
@@ -16,7 +15,6 @@ func Commands(ctx context.Context) []*cobra.Command {
 	return []*cobra.Command{
 		list(ctx),
 		authors(ctx),
-		hotspots(ctx),
 		createTrends(ctx),
 		trends(ctx),
 	}
@@ -173,73 +171,6 @@ func list(ctx context.Context) *cobra.Command {
 	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the revisions before this day")
 	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the revisions after this day")
 	cmd.Flags().BoolVar(&csv, "csv", false, "get the results in csv format")
-	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
-
-	cmd.MarkFlagRequired("scene")
-
-	return &cmd
-}
-
-func hotspots(ctx context.Context) *cobra.Command {
-	var sceneName string
-	var boundaryName string
-	var before string
-	var after string
-	var verbose bool
-
-	cmd := cobra.Command{
-		Use:   "hotspots",
-		Args:  cobra.MaximumNArgs(1),
-		Short: "Get the hotspots of an application in JSON formatted for d3.js",
-		RunE: func(cmd *cobra.Command, args []string) error {
-			ui := ctx.Ui
-			ui.SetVerbose(verbose)
-			ui.Log("Getting app hotspots...")
-
-			connection, err := ctx.GetConnection()
-			if err != nil {
-				return err
-			}
-			defer connection.Close()
-
-			c := NewCore(connection)
-
-			var hotspots revision.HotspotHierarchy
-
-			if len(args) > 0 {
-				a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, args[0], before, after)
-				if err != nil {
-					return errors.Wrap(err, "Cannot extract information")
-				}
-
-				if boundaryName != "" {
-					b, err := c.boundary.QueryByAppIdAndName(a.Id, boundaryName)
-					if err != nil {
-						return errors.Wrap(err, "Boundary not found")
-					}
-					hotspots, err = c.QueryAppHotspotsForBoundary(a, b, beforeTime, afterTime)
-				} else {
-					hotspots, err = c.QueryAppHotspots(a, beforeTime, afterTime)
-				}
-			} else {
-				hotspots, err = c.QuerySceneHotspots(sceneName, before, after, connection)
-			}
-
-			if err != nil {
-				return errors.Wrap(err, "Command failed")
-			}
-			ui.Ok()
-			str, _ := json.MarshalIndent(hotspots, "", "  ")
-			ui.Print(string(str))
-
-			return nil
-		},
-	}
-
-	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
-	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use. Only valid for an application hotspots.")
-	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the hotspots before this day")
-	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the hotspots after this day")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
 	cmd.MarkFlagRequired("scene")

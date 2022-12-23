@@ -281,6 +281,15 @@ export const handlers = [
         }))
     }),
 
+    rest.get('/api/scenes/s123/apps/a1/boundaries/production/tests/modules', (req, res, ctx) => {
+        return res(ctx.json({
+            modules: [
+                {boundaryId: "b123", path: "src/main", name: "main"},
+                {boundaryId: "b123", path: "src/tests", name: "tests"},
+            ]
+        }))
+    }),
+
     rest.get('/api/scenes/s123/apps/a1/revisions-trends', (req, res, ctx) => {
         return res(ctx.json({
             trends: [

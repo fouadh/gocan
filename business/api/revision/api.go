@@ -43,7 +43,27 @@ func (h *handlers) query(w http.ResponseWriter, r *http.Request, params map[stri
 		return err
 	}
 
-	revs, err := h.Revision.Query(appId, beforeTime, afterTime)
+	boundaryName := query.Get("boundaryName")
+	moduleName := query.Get("moduleName")
+
+	var revs []revision2.Revision
+
+	if boundaryName != "" && moduleName != "" {
+		b, err := h.Boundary.QueryByAppIdAndName(appId, boundaryName)
+		if err != nil {
+			return err
+		}
+
+		var mod = b.FindModule(moduleName)
+		if mod.Name == "" {
+			return errors.New("unable to retrieve module " + moduleName)
+		}
+
+		revs, err = h.Revision.QueryByModule(appId, mod, beforeTime, afterTime)
+	} else {
+		revs, err = h.Revision.Query(appId, beforeTime, afterTime)
+	}
+
 	if err != nil {
 		return err
 	}
