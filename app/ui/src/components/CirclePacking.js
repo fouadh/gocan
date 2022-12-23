@@ -78,7 +78,7 @@ export function CirclePacking({
       return svg
         .append('g')
         .selectAll('circle')
-        .data(root.descendants().slice(1))
+        .data(root.descendants())
         .join('circle')
         .style('fill', fillColor)
         .style('fill-opacity', fillOpacity)

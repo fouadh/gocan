@@ -61,17 +61,17 @@ export const handlers = [
     rest.get('/api/scenes/s123/apps/a1/revisions', (req, res, ctx) => {
         return res(ctx.json({
             revisions: [
-                {entity: "file 1", numberOfRevisions: 10},
-                {entity: "file 2", numberOfRevisions: 10},
-                {entity: "file 3", numberOfRevisions: 8},
-                {entity: "file 4", numberOfRevisions: 7},
-                {entity: "file 5", numberOfRevisions: 3},
-                {entity: "file 6", numberOfRevisions: 3},
-                {entity: "file 7", numberOfRevisions: 2},
-                {entity: "file 8", numberOfRevisions: 1},
-                {entity: "file 9", numberOfRevisions: 1},
-                {entity: "file 10", numberOfRevisions: 1},
-                {entity: "file 11", numberOfRevisions: 1},
+                {entity: "file 1", numberOfRevisions: 10, code: 21},
+                {entity: "file 2", numberOfRevisions: 10, code: 67},
+                {entity: "file 3", numberOfRevisions: 8, code: 122},
+                {entity: "file 4", numberOfRevisions: 7, code: 678},
+                {entity: "file 5", numberOfRevisions: 3, code: 10},
+                {entity: "file 6", numberOfRevisions: 3, code: 123},
+                {entity: "file 7", numberOfRevisions: 2, code: 272},
+                {entity: "file 8", numberOfRevisions: 1, code: 0},
+                {entity: "file 9", numberOfRevisions: 1, code: 987},
+                {entity: "file 10", numberOfRevisions: 1, code: 1223},
+                {entity: "file 11", numberOfRevisions: 1, code: 98},
             ]
         }))
     }),

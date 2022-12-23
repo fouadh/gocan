@@ -9,6 +9,7 @@
     "axios": "^0.26.0",
     "d3": "^7.0.1",
     "d3-cloud": "^1.2.5",
+    "lodash": "^4.17.21",
     "primeflex": "^3.0.1",
     "primeicons": "^5.0.0",
     "primereact": "^7.2.0",

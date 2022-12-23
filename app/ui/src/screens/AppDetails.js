@@ -56,7 +56,7 @@ export function AppDetails() {
                     <Revisions sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Hotspots">
-                    <Hotspots sceneId={sceneId} appId={appId} date={dateRange}/>
+                    <Hotspots appName={application?.name} sceneId={sceneId} appId={appId} date={dateRange}/>
                 </TabPanel>
                 <TabPanel header="Code Age">
                     <CodeAge sceneId={sceneId} appId={appId} date={dateRange}/>
