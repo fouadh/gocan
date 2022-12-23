@@ -1,8 +1,6 @@
 package revision
 
 import (
-	"com.fha.gocan/business/core"
-	app2 "com.fha.gocan/business/core/app"
 	"com.fha.gocan/business/data/store/app"
 	"com.fha.gocan/business/data/store/boundary"
 	"com.fha.gocan/business/data/store/revision"
@@ -42,24 +40,6 @@ func (c Core) QueryByModule(appId string, mod boundary.Module, before time.Time,
 	return filterRevisionsByModule(revs, mod), nil
 }
 
-func (c Core) QueryAppHotspots(a app.App, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
-	revs, err := c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
-	if err != nil {
-		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
-	}
-
-	return buildHotspots(a.Name, revs), nil
-}
-
-func (c Core) QueryAppHotspotsByModule(a app.App, mod boundary.Module, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
-	revs, err := c.revision.QueryByAppIdAndDateRange(a.Id, before, after)
-	if err != nil {
-		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
-	}
-
-	return buildHotspots(a.Name, filterRevisionsByModule(revs, mod)), nil
-}
-
 func filterRevisionsByModule(revs []revision.Revision, mod boundary.Module) []revision.Revision {
 	var filteredRevs []revision.Revision
 
@@ -69,42 +49,6 @@ func filterRevisionsByModule(revs []revision.Revision, mod boundary.Module) []re
 		}
 	}
 	return filteredRevs
-}
-
-func (c Core) QueryAppHotspotsForBoundary(a app.App, b boundary.Boundary, before time.Time, after time.Time) (revision.HotspotHierarchy, error) {
-	revs, err := c.revision.QueryByBoundary(a.Id, b, before, after)
-	if err != nil {
-		return revision.HotspotHierarchy{}, errors.Wrap(err, "Unable to fetch revisions")
-	}
-
-	return buildHotspots(a.Name, revs), nil
-}
-
-func (c Core) QuerySceneHotspots(sceneName string, before string, after string, connection *sqlx.DB) (revision.HotspotHierarchy, error) {
-	hotspots := revision.HotspotHierarchy{
-		Name:     "root",
-		Children: []*revision.HotspotHierarchy{},
-	}
-
-	apps, err := app2.NewCore(connection).QueryBySceneName(sceneName)
-	if err != nil {
-		return revision.HotspotHierarchy{}, errors.Wrap(err, "Cannot retrieve scene applications")
-	}
-
-	for _, appli := range apps {
-		a, beforeTime, afterTime, err := core.ExtractDateRangeAndAppFromArgs(connection, sceneName, appli.Name, before, after)
-		if err != nil {
-			return revision.HotspotHierarchy{}, errors.Wrap(err, "Cannot extract information")
-		}
-		appHotspots, err := c.QueryAppHotspots(a, beforeTime, afterTime)
-		if err != nil {
-			return revision.HotspotHierarchy{}, errors.Wrap(err, "Cannot get hotspots of app "+appli.Name)
-		}
-
-		hotspots.Children = append(hotspots.Children, &appHotspots)
-	}
-
-	return hotspots, nil
 }
 
 func (c Core) RevisionTrendsByName(name string, appId string) (revision.RevisionTrends, error) {
@@ -168,47 +112,4 @@ func (c Core) RevisionTrendsByAppId(appId string) ([]revision.RevisionTrends, er
 
 func (c Core) QueryByBoundary(appId string, b boundary.Boundary, before time.Time, after time.Time) ([]revision.Revision, error) {
 	return c.revision.QueryByBoundary(appId, b, before, after)
-}
-
-func buildHotspots(appName string, revisions []revision.Revision) revision.HotspotHierarchy {
-	root := revision.HotspotHierarchy{
-		Name:     appName,
-		Children: []*revision.HotspotHierarchy{},
-	}
-
-	for _, revision := range revisions {
-		if revision.NumberOfRevisions > 3 && revision.Code > 0 {
-			path := strings.Split(revision.Entity, "/")
-			buildNode(path, &root, revision)
-		}
-	}
-
-	return root
-}
-
-func buildNode(path []string, parent *revision.HotspotHierarchy, rev revision.Revision) *revision.HotspotHierarchy {
-	existingNode := findNode(parent.Children, path[0])
-	if existingNode != nil {
-		return buildNode(path[1:], existingNode, rev)
-	}
-	newNode := &revision.HotspotHierarchy{
-		Name: path[0],
-	}
-	parent.Children = append(parent.Children, newNode)
-	if len(path) <= 1 {
-		newNode.Size = rev.Code
-		newNode.Weight = rev.NormalizedNumberOfRevisions
-		return nil
-	} else {
-		return buildNode(path[1:], parent.Children[len(parent.Children)-1], rev)
-	}
-}
-
-func findNode(nodes []*revision.HotspotHierarchy, name string) *revision.HotspotHierarchy {
-	for _, n := range nodes {
-		if n.Name == name {
-			return n
-		}
-	}
-	return nil
 }

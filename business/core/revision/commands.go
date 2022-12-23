@@ -223,8 +223,8 @@ func createTrends(ctx context.Context) *cobra.Command {
 
 	cmd.Flags().StringVarP(&sceneName, "scene", "s", "", "Scene name")
 	cmd.Flags().StringVarP(&appName, "app", "a", "", "App name")
-	cmd.Flags().StringVarP(&before, "before", "", "", "Fetch all the hotspots before this day")
-	cmd.Flags().StringVarP(&after, "after", "", "", "Fetch all the hotspots after this day")
+	cmd.Flags().StringVarP(&before, "before", "", "", "Create trends for before this day")
+	cmd.Flags().StringVarP(&after, "after", "", "", "Create trends for after this day")
 	cmd.Flags().StringVarP(&boundaryName, "boundary", "", "", "Boundary to use")
 	cmd.Flags().BoolVar(&verbose, "verbose", false, "display the log information")
 
