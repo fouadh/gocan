@@ -61,7 +61,7 @@ export const handlers = [
     rest.get('/api/scenes/s123/apps/a1/revisions', (req, res, ctx) => {
         return res(ctx.json({
             revisions: [
-                {entity: "file 1", numberOfRevisions: 10, code: 21},
+                {entity: "file 1", numberOfRevisions: 23, code: 21},
                 {entity: "file 2", numberOfRevisions: 10, code: 67},
                 {entity: "file 3", numberOfRevisions: 8, code: 122},
                 {entity: "file 4", numberOfRevisions: 7, code: 678},

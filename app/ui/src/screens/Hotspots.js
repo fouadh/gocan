@@ -6,14 +6,18 @@ import {DateSelector} from "../components/DateSelector";
 import {Button} from 'primereact/button';
 import {BoundarySelector} from "./BoundarySelector";
 import {ModuleSelector} from "./ModuleSelector";
+import {Slider} from 'primereact/slider'
+import './Hotspots.css'
 import * as _ from 'lodash'
 
-function revisionsToHotspots(appName, revisions) {
+function revisionsToHotspots(appName, revisions, minRevs) {
   const hierarchies = {}
-  const filteredRevisions = revisions.filter(rev => rev.code > 0)
-  const maxNumberOfRevs = _.maxBy(filteredRevisions, rev => rev.numberOfRevisions).numberOfRevisions
+  const filteredRevisions = revisions.filter(rev => rev.code > 0 && rev.numberOfRevisions >= minRevs)
+  const revsRange = [_.minBy(revisions, rev => rev.numberOfRevisions).numberOfRevisions, _.maxBy(revisions, rev => rev.numberOfRevisions).numberOfRevisions]
+  const maxNumberOfRevs = revsRange[1]
+  const codeRange = [_.minBy(revisions, rev => rev.code).code, _.maxBy(revisions, rev => rev.code).code]
 
-  filteredRevisions.filter(rev => rev.code > 0).forEach(rev => {
+  filteredRevisions.forEach(rev => {
     const filename = rev.entity
     const pathElements = filename.split('/')
 
@@ -64,6 +68,9 @@ function revisionsToHotspots(appName, revisions) {
 
   return {
     name: appName,
+    maxRevisions: maxNumberOfRevs,
+    codeRange: codeRange,
+    revsRange: revsRange,
     children: Object.values(hierarchies)
   }
 }
@@ -75,6 +82,9 @@ export function Hotspots({appName, sceneId, appId, date}) {
   const [analyze, setAnalyze] = useState(true);
   const [hospots, setHotspots] = useState();
   const [loading, setLoading] = useState(false);
+  const [minRevs, setMinRevs] = useState(0);
+  const [revisions, setRevisions] = useState();
+  const [revsRange, setRevsRange] = useState([0, 1]);
 
   useEffect(() => {
     let subscribed = true;
@@ -101,19 +111,23 @@ export function Hotspots({appName, sceneId, appId, date}) {
       }
       axios.get(`${endpoint}?${params}`)
           .then(it => it.data)
-          .then(revisions => revisionsToHotspots(appName, revisions.revisions))
-          .then(it => {
-            if (subscribed) {
-              setHotspots(it);
-            }
-          }).finally(() => {
-        setLoading(false);
-        setAnalyze(false);
-      });
+          .then(revisions => setRevisions(revisions.revisions))
+          .finally(() => {
+            setLoading(false);
+            setAnalyze(false);
+          });
     }
 
     return () => subscribed = false;
   }, [sceneId, appId, appName, analyze, dateRange, boundaryName, moduleName]);
+
+  useEffect(() => {
+    if (revisions) {
+      const hotspots = revisionsToHotspots(appName, revisions, minRevs)
+      setRevsRange(hotspots.revsRange)
+      setHotspots(hotspots)
+    }
+  }, [revisions, minRevs])
 
   let screen;
 
@@ -135,6 +149,12 @@ export function Hotspots({appName, sceneId, appId, date}) {
         {boundaryName && <ModuleSelector sceneId={sceneId} appId={appId} boundaryName={boundaryName}
                                          onChange={e => setModuleName(e.value)}/>}
         <Button label="Submit" onClick={e => setAnalyze(true)}/>
+      </div>
+    </div>
+    <div className="controls card mt-4">
+      <div className="slider">
+        <h5>Minimal number of revisions ({minRevs})</h5>
+        <Slider value={minRevs} max={revsRange[1]} min={revsRange[0]} onChange={e => setMinRevs(e.value)}/>
       </div>
     </div>
     {screen}
