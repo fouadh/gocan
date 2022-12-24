@@ -10,12 +10,16 @@ import {Slider} from 'primereact/slider'
 import './Hotspots.css'
 import * as _ from 'lodash'
 
-function revisionsToHotspots(appName, revisions, minRevs) {
+function revisionsToHotspots(appName, revisions, minRevs, minCode) {
   const hierarchies = {}
-  const filteredRevisions = revisions.filter(rev => rev.code > 0 && rev.numberOfRevisions >= minRevs)
   const revsRange = [_.minBy(revisions, rev => rev.numberOfRevisions).numberOfRevisions, _.maxBy(revisions, rev => rev.numberOfRevisions).numberOfRevisions]
   const maxNumberOfRevs = revsRange[1]
   const codeRange = [_.minBy(revisions, rev => rev.code).code, _.maxBy(revisions, rev => rev.code).code]
+
+  const filteredRevisions = revisions.filter(
+      rev => rev.code > minCode &&
+          rev.numberOfRevisions >= minRevs
+  )
 
   filteredRevisions.forEach(rev => {
     const filename = rev.entity
@@ -31,8 +35,10 @@ function revisionsToHotspots(appName, revisions, minRevs) {
           weight: rev.numberOfRevisions / maxNumberOfRevs
         }
         if (currentFolder) {
+          fileInfo.path = currentFolder.path + '/' + element
           currentFolder.children.push(fileInfo)
         } else {
+          fileInfo.path = element
           hierarchies[element] = fileInfo
         }
       } else {
@@ -44,7 +50,8 @@ function revisionsToHotspots(appName, revisions, minRevs) {
           } else {
             const folder = {
               name: element,
-              children: []
+              children: [],
+              path: currentFolder.path + '/' + element
             }
             currentFolder.children.push(folder)
             currentFolder = folder
@@ -57,7 +64,8 @@ function revisionsToHotspots(appName, revisions, minRevs) {
           } else {
             currentFolder = {
               name: element,
-              children: []
+              children: [],
+              path: element
             }
             hierarchies[element] = currentFolder
           }
@@ -75,6 +83,16 @@ function revisionsToHotspots(appName, revisions, minRevs) {
   }
 }
 
+function BreadCrumb({breadcrumb, onPathClicked = () => {}}) {
+  return <div className="breadcrumb">
+    {
+      breadcrumb.map((c, index) => <span>
+              { index < breadcrumb.length - 1 ? <><a href="#" onClick={() => onPathClicked(c)}>{c.element}</a><span> / </span></> : breadcrumb.length === 1 ? <a href="#" onClick={() => onPathClicked(c)}>{c.element}</a>: <span>{c.element}</span>}
+            </span>)
+    }
+  </div>
+}
+
 export function Hotspots({appName, sceneId, appId, date}) {
   const [dateRange, setDateRange] = useState(date);
   const [boundaryName, setBoundaryName] = useState();
@@ -82,12 +100,15 @@ export function Hotspots({appName, sceneId, appId, date}) {
   const [analyze, setAnalyze] = useState(true);
   const [hospots, setHotspots] = useState();
   const [loading, setLoading] = useState(false);
-  const [minRevs, setMinRevs] = useState(0);
   const [revisions, setRevisions] = useState();
+  const [minRevs, setMinRevs] = useState(0);
   const [revsRange, setRevsRange] = useState([0, 1]);
+  const [minCode, setMinCode] = useState(0);
+  const [codeRange, setCodeRange] = useState([0, 1]);
+  const [breadcrumb, setBreadcrumb] = useState([{element: appName}])
+  const [zoomToPath, setZoomToPath] = useState()
 
   useEffect(() => {
-    let subscribed = true;
     if (analyze) {
       setLoading(true);
       let endpoint;
@@ -117,17 +138,29 @@ export function Hotspots({appName, sceneId, appId, date}) {
             setAnalyze(false);
           });
     }
-
-    return () => subscribed = false;
-  }, [sceneId, appId, appName, analyze, dateRange, boundaryName, moduleName]);
+  }, [sceneId, appId, analyze, dateRange, boundaryName, moduleName]);
 
   useEffect(() => {
     if (revisions) {
-      const hotspots = revisionsToHotspots(appName, revisions, minRevs)
+      const hotspots = revisionsToHotspots(appName, revisions, minRevs, minCode)
       setRevsRange(hotspots.revsRange)
+      setCodeRange(hotspots.codeRange)
       setHotspots(hotspots)
     }
-  }, [revisions, minRevs])
+  }, [revisions, minRevs, minCode, appName])
+
+  function onNodeClicked(node) {
+    const path = node.data.path
+    if (path) {
+      const pathElements = []
+      const elements = path.split('/');
+      elements
+          .forEach((e, index) => pathElements.push({element: e, path: elements.slice(0, index+1).join("/")}))
+      setBreadcrumb([{element: appName}, ...pathElements])
+    } else {
+      setBreadcrumb([{element: appName}])
+    }
+  }
 
   let screen;
 
@@ -135,7 +168,7 @@ export function Hotspots({appName, sceneId, appId, date}) {
     screen = <Spinner/>;
   } else if (hospots) {
     screen = <div style={{display: "flex", justifyContent: "center"}}>
-      <CirclePacking width={975} height={975} data={hospots}/>
+      <CirclePacking width={975} height={975} data={hospots} onNodeClicked={(node) => onNodeClicked(node)} zoomToPath={zoomToPath}/>
     </div>;
   } else {
     screen = <><p>Unable to get hotspots</p></>
@@ -152,9 +185,14 @@ export function Hotspots({appName, sceneId, appId, date}) {
       </div>
     </div>
     <div className="controls card mt-4">
+      <BreadCrumb breadcrumb={breadcrumb} onPathClicked={(e) => setZoomToPath(e.path)} />
       <div className="slider">
-        <h5>Minimal number of revisions ({minRevs})</h5>
+        <h5>Minimum number of revisions ({minRevs})</h5>
         <Slider value={minRevs} max={revsRange[1]} min={revsRange[0]} onChange={e => setMinRevs(e.value)}/>
+      </div>
+      <div className="slider">
+        <h5>Minimum number of code ({minCode})</h5>
+        <Slider value={minCode} max={codeRange[1]} min={codeRange[0]} onChange={e => setMinCode(e.value)}/>
       </div>
     </div>
     {screen}
