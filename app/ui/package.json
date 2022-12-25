@@ -28,7 +28,8 @@
     "build-dist": "react-scripts build",
     "copy-dist": "rm -rf ../../business/core/ui/dist/* && mkdir -p ../../business/core/ui/dist && cp -R build/* ../../business/core/ui/dist",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "prettify": "prettier --write ."
   },
   "eslintConfig": {
     "extends": [
@@ -49,7 +50,8 @@
     ]
   },
   "devDependencies": {
-    "msw": "^0.49.2"
+    "msw": "^0.49.2",
+    "prettier": "^2.8.1"
   },
   "msw": {
     "workerDirectory": "public"

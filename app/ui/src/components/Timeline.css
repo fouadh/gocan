@@ -1,6 +1,6 @@
 .Timeline {
-    height: 600px;
-    min-width: 500px;
-    width: calc(100% + 1em);
-    margin-bottom: 2em;
+  height: 600px;
+  min-width: 500px;
+  width: calc(100% + 1em);
+  margin-bottom: 2em;
 }

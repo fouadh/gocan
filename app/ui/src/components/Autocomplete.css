@@ -1,35 +1,35 @@
 body {
-    font-family: sans-serif;
+  font-family: sans-serif;
 }
 .autocomplete input {
-    border: 1px solid #999;
-    padding: 0.5rem;
-    width: 680px;
+  border: 1px solid #999;
+  padding: 0.5rem;
+  width: 680px;
 }
 .no-suggestions {
-    color: #999;
-    padding: 0.5rem;
+  color: #999;
+  padding: 0.5rem;
 }
 .suggestions {
-    border: 1px solid #999;
-    border-top-width: 0;
-    list-style: none;
-    margin-top: 0;
-    max-height: 143px;
-    overflow-y: auto;
-    padding-left: 0;
-    width: 680px;
+  border: 1px solid #999;
+  border-top-width: 0;
+  list-style: none;
+  margin-top: 0;
+  max-height: 143px;
+  overflow-y: auto;
+  padding-left: 0;
+  width: 680px;
 }
 .suggestions li {
-    padding: 0.5rem;
+  padding: 0.5rem;
 }
 .suggestion-active,
 .suggestions li:hover {
-    background-color: #ccc;
-    color: #000;
-    cursor: pointer;
-    font-weight: 700;
+  background-color: #ccc;
+  color: #000;
+  cursor: pointer;
+  font-weight: 700;
 }
 .suggestions li:not(:last-of-type) {
-    border-bottom: 1px solid #999;
+  border-bottom: 1px solid #999;
 }

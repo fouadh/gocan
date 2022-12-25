@@ -1,11 +1,16 @@
-import React from "react"
+import React from 'react'
 
 const Gradient = ({ id, colors, ...props }) => (
-  <linearGradient id={id} gradientUnits="userSpaceOnUse" spreadMethod="pad" {...props}>
+  <linearGradient
+    id={id}
+    gradientUnits="userSpaceOnUse"
+    spreadMethod="pad"
+    {...props}
+  >
     {colors.map((color, i) => (
       <stop
         key={i}
-        offset={`${i * 100 / (colors.length - 1)}%`}
+        offset={`${(i * 100) / (colors.length - 1)}%`}
         stopColor={color}
       />
     ))}
@@ -13,7 +18,7 @@ const Gradient = ({ id, colors, ...props }) => (
 )
 
 Gradient.defaultProps = {
-  id: "Gradient",
+  id: 'Gradient',
   colors: [],
 }
 
