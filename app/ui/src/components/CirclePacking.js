@@ -82,14 +82,9 @@ export function CirclePacking({
   function zoomTo(v) {
     setView(v)
     const k = width / v[2]
-    label.attr(
-      'transform',
-      (d) => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`
-    )
-    node.attr(
-      'transform',
-      (d) => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`
-    )
+    const newPosition = (d) => [(d.x - v[0]) * k, (d.y - v[1]) * k]
+    label.attr('transform', (d) => `translate(${newPosition(d)})`)
+    node.attr('transform', (d) => `translate(${newPosition(d)})`)
     node.attr('r', (d) => d.r * k)
   }
 
