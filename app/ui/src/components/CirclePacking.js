@@ -1,5 +1,5 @@
 import * as d3 from "d3";
-import React, {useEffect, useRef} from "react"
+import React, {useEffect, useRef, useState} from "react"
 
 const color = d3
     .scaleLinear()
@@ -40,6 +40,68 @@ export function CirclePacking({
                                 }
                               }) {
   const container = useRef(null)
+  const [svg, setSvg] = useState()
+  const [label, setLabel] = useState()
+  const [node, setNode] = useState()
+  const [focus, setFocus] = useState()
+  const [view, setView] = useState()
+
+  function zoom(
+      d
+  ) {
+    let viewElement = view
+    if (!viewElement) {
+      viewElement = [d.x, d.y, d.r * 2]
+      setView(viewElement)
+    }
+    const interpolator = d3.interpolateZoom(viewElement, [focus.x, focus.y, focus.r * 2])
+    const transition = svg
+        .transition()
+        .duration(interpolator.duration)
+        .tween('zoom', () => {
+          return (t) => {
+            zoomTo(interpolator(t));
+          }
+        })
+
+    label
+        .filter(function (d) {
+          return (
+              d.parent === focus ||
+              (this).style.display === 'inline'
+          )
+        })
+        .transition(transition)
+        .style('fill-opacity', (d) => (d.parent === focus ? 1 : 0))
+        .on('start', function (d) {
+          if (d.parent === focus)
+            (this).style.display = 'inline'
+        })
+        .on('end', function (d) {
+          if (d.parent !== focus)
+            (this).style.display = 'none'
+        })
+  }
+
+  function zoomTo(v) {
+    setView(v)
+    const k = width / v[2]
+    label.attr(
+        'transform',
+        (d) => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`
+    )
+    node.attr(
+        'transform',
+        (d) => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`
+    )
+    node.attr('r', (d) => d.r * k)
+  }
+
+  useEffect(() => {
+    if (focus) {
+      zoom(focus)
+    }
+  }, [focus, svg, node, label])
 
   useEffect(() => {
     const color = d3
@@ -54,14 +116,14 @@ export function CirclePacking({
             .sum((d) => d.size || 0)
             .sort((a, b) => (b.value || 0) - (a.value || 0))
     )
-    let view
-    let focus = root
-    const svg = buildSvg()
-    const node = buildNodes()
-    buildTitle()
-    const label = buildLabels()
+    let svgElement = buildSvg();
+    setSvg(svgElement)
+    const nodeElement = buildNodes(svgElement)
+    setNode(nodeElement)
+    buildTitle(nodeElement)
+    const labelElement = buildLabels(svgElement)
+    setLabel(labelElement)
     if (zoomToPath) {
-      console.log("zoomToPath: ", zoomToPath)
       let nodes = root.children
       let elements = zoomToPath.split('/')
       let node
@@ -76,11 +138,9 @@ export function CirclePacking({
           }
         }
       }
-
-      zoomTo([node.x, node.y, node.r * 2])
+      setFocus(node)
     } else {
-      console.log('zoom to path undefined')
-      zoomTo([root.x, root.y, root.r * 2])
+      setFocus(root)
     }
 
     function buildSvg() {
@@ -97,7 +157,7 @@ export function CirclePacking({
       return svg
     }
 
-    function buildNodes() {
+    function buildNodes(svg) {
       return svg
           .append('g')
           .selectAll('circle')
@@ -115,15 +175,15 @@ export function CirclePacking({
               'click',
               (event, d) => {
                 onNodeClicked(d)
-                return focus !== d && d.children &&
-                    (zoom(event, d),
+                return d !== focus && d.children &&
+                    (setFocus(d),
                         event.stopPropagation());
               }
           )
           .attr('role', (d) => (focus !== d ? 'link' : null))
     }
 
-    function buildLabels() {
+    function buildLabels(svg) {
       return svg
           .style('font', '10px sans-serif')
           .attr('text-anchor', 'middle')
@@ -136,55 +196,11 @@ export function CirclePacking({
           .text((d) => (d).data.name)
     }
 
-    function buildTitle() {
+    function buildTitle(node) {
       node.append('title').text(setTitle)
     }
 
-    function zoom(
-        event,
-        d
-    ) {
-      focus = d
-      const transition = svg
-          .transition()
-          .duration(event.altKey ? 7500 : 750)
-          .tween('zoom', () => {
-            const i = d3.interpolateZoom(view, [focus.x, focus.y, focus.r * 2])
-            return (t) => zoomTo(i(t))
-          })
 
-      label
-          .filter(function (d) {
-            return (
-                d.parent === focus ||
-                (this).style.display === 'inline'
-            )
-          })
-          .transition(transition)
-          .style('fill-opacity', (d) => (d.parent === focus ? 1 : 0))
-          .on('start', function (d) {
-            if (d.parent === focus)
-              (this).style.display = 'inline'
-          })
-          .on('end', function (d) {
-            if (d.parent !== focus)
-              (this).style.display = 'none'
-          })
-    }
-
-    function zoomTo(v) {
-      view = v
-      const k = width / v[2]
-      label.attr(
-          'transform',
-          (d) => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`
-      )
-      node.attr(
-          'transform',
-          (d) => `translate(${(d.x - v[0]) * k},${(d.y - v[1]) * k})`
-      )
-      node.attr('r', (d) => d.r * k)
-    }
   }, [height, width, data, fillColor, fillOpacity, setTitle, zoomToPath])
 
   return <svg ref={container}/>
