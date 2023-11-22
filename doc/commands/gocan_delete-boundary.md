@@ -3,7 +3,7 @@
 Delete an application boundary
 
 ```
-gocan delete-boundary [flags]
+gocan delete-boundary <boundary-name> [flags]
 ```
 
 ### Examples

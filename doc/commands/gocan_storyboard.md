@@ -3,7 +3,13 @@
 Create a storyboard of visualizations
 
 ```
-gocan storyboard [flags]
+gocan storyboard <app-name> [flags]
+```
+
+### Examples
+
+```
+gocan storyboard myapp --scene myscene --filename /code/storyboard.avi --analysis hotspots --fps 8
 ```
 
 ### Options

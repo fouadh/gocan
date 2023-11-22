@@ -12,7 +12,7 @@ the different layers of an application. Or you can define a boundary for product
 
 
 ```
-gocan create-boundaries [flags]
+gocan create-boundaries <boundary-name> [flags]
 ```
 
 ### Examples

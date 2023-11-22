@@ -3,7 +3,7 @@
 Get the coupling relationships between entities for a given application
 
 ```
-gocan coupling [flags]
+gocan coupling <app-name> [flags]
 ```
 
 ### Examples

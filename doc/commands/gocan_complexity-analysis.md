@@ -3,7 +3,7 @@
 Retrieve a complexity analysis by its name
 
 ```
-gocan complexity-analysis [flags]
+gocan complexity-analysis <file-name> [flags]
 ```
 
 ### Examples

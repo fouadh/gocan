@@ -3,7 +3,13 @@
 Get the hotspots of an application in JSON formatted for d3.js
 
 ```
-gocan hotspots [flags]
+gocan hotspots <app-name> [flags]
+```
+
+### Examples
+
+```
+gocan hotspots myapp --scene myscene
 ```
 
 ### Options

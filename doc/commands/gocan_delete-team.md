@@ -3,7 +3,7 @@
 Delete a team and its members
 
 ```
-gocan delete-team [flags]
+gocan delete-team <team-name> [flags]
 ```
 
 ### Options

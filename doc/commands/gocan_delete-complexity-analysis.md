@@ -3,7 +3,7 @@
 Delete a complexity analysis
 
 ```
-gocan delete-complexity-analysis [flags]
+gocan delete-complexity-analysis <analysis-name> [flags]
 ```
 
 ### Examples

@@ -3,7 +3,7 @@
 Create a team of developers with its members
 
 ```
-gocan create-team [flags]
+gocan create-team <team-name> [flags]
 ```
 
 ### Options

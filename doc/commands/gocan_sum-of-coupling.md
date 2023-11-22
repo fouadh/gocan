@@ -3,7 +3,7 @@
 Get a sum of coupling for an application
 
 ```
-gocan sum-of-coupling [flags]
+gocan sum-of-coupling <app-name> [flags]
 ```
 
 ### Examples

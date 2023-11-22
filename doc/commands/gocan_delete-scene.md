@@ -3,7 +3,7 @@
 Delete the specified scene
 
 ```
-gocan delete-scene [flags]
+gocan delete-scene <scene-name> [flags]
 ```
 
 ### Examples

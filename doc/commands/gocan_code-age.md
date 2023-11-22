@@ -3,7 +3,7 @@
 Retrieve the age of the entities in months
 
 ```
-gocan code-age [flags]
+gocan code-age <app-name> [flags]
 ```
 
 ### Examples
