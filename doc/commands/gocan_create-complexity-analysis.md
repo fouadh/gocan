@@ -10,7 +10,7 @@ the specified entity.
 
 
 ```
-gocan create-complexity-analysis [flags]
+gocan create-complexity-analysis <analysis-name> [flags]
 ```
 
 ### Examples

@@ -3,7 +3,7 @@
 Get an application summary information
 
 ```
-gocan app [flags]
+gocan app <app-name> [flags]
 ```
 
 ### Examples

@@ -3,7 +3,7 @@
 Create a scene
 
 ```
-gocan create-scene [flags]
+gocan create-scene <scene-name> [flags]
 ```
 
 ### Examples

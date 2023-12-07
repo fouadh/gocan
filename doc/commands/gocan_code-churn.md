@@ -3,7 +3,7 @@
 Get the code churn of an application
 
 ```
-gocan code-churn [flags]
+gocan code-churn <app-name> [flags]
 ```
 
 ### Examples

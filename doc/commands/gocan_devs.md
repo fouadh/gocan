@@ -3,7 +3,7 @@
 Get the developers of an application
 
 ```
-gocan devs [flags]
+gocan devs <app-name> [flags]
 ```
 
 ### Options

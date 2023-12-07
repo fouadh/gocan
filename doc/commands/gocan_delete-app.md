@@ -3,7 +3,7 @@
 Delete an application
 
 ```
-gocan delete-app [flags]
+gocan delete-app <app-name> [flags]
 ```
 
 ### Examples

@@ -3,7 +3,7 @@
 Get global file metrics for an application
 
 ```
-gocan file-metrics [flags]
+gocan file-metrics <app-name> [flags]
 ```
 
 ### Examples

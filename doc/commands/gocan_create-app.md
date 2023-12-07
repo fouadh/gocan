@@ -3,7 +3,7 @@
 Create an application in a scene
 
 ```
-gocan create-app [flags]
+gocan create-app <app-name> [flags]
 ```
 
 ### Examples
